@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: comment-c-function
+# key: /**
+# --
+/**
+ * $0
+ *
+ * @param {$1} $2
+ * @return {$3}
+ */
+
