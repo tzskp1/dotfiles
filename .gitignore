@@ -1,0 +1,12 @@
+/el-get/*
+/elpa/*
+/ac-comphist.dat
+/history
+/tramp
+/url/*
+/woman-cache.el
+/srecode-map.el
+/semanticdb
+/auto-save-list/*
+/.python-environments/*
+*.elc
