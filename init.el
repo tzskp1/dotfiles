@@ -30,6 +30,7 @@
 (el-get-bundle auto-complete)
 (el-get-bundle yatex)
 (el-get-bundle ddskk)
+(el-get-bundle slime-theme)
 (el-get-bundle markdown-mode)
 (el-get-bundle jedi)
 (el-get-bundle haskell-mode)
@@ -44,6 +45,10 @@
 (el-get-bundle eldoc-extension)
 (el-get-bundle auto-complete-c-headers)
 (el-get-bundle Golevka/emacs-clang-complete-async)
+
+;;# Theme
+(require 'slime-theme)
+(add-to-list 'default-frame-alist '(alpha . 95))
 
 ;;# ミニバッファを複数起動
 (setq enable-recursive-minibuffers t)
@@ -145,6 +150,11 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 ;;# Arduino mode
 (setq auto-mode-alist (cons '("\\.\\(pde\\|ino\\)$" . arduino-mode) auto-mode-alist))
 (autoload 'arduino-mode "arduino-mode" "Arduino editing mode." t)
+
+;;# dired
+(load "dired-x")
+(require 'wdired)
+(define-key dired-mode-map "p" 'wdired-change-to-wdired-mode)
 
 ;;# key binding
 (defun interrupt-and-recompile ()
@@ -341,7 +351,6 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
  '(anything-samewindow nil))
 (push '("^\\*helm" :regexp t :width 60 :position :right) popwin:special-display-config)
 (push '("*Help*" :width 80 :position :right :noselect t :stick t) popwin:special-display-config)
-(define-key global-map [(super o)] 'dired-jump-other-window)
 (push '("*ri*" :width 70 :position :right :noselect t :stick t) popwin:special-display-config)
 (push '("*rspec-compilation*" :height 40 :position :bottom) popwin:special-display-config)
 ;; Apropos
@@ -364,15 +373,15 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (push '("*Kill Ring*") popwin:special-display-config)
 ;; sdic
 (push '("*sdic*") popwin:special-display-config)
-;; Completions
-(push '("*Completions*") popwin:special-display-config)
+;; ;; Completions
+;; (push '("*Completions*") popwin:special-display-config)
 ;; ;; magit
 ;; (push '(magit-status-mode) popwin:special-display-config)
 
-;;# dired
-(load "dired-x")
-(require 'wdired)
-(define-key dired-mode-map (kbd "C-M-r") 'wdired-change-to-wdired-mode)
+;; 自動分割を抑制
+(setq split-height-threshold nil)
+(setq split-width-threshold nil)
+
 
 ;;# tramp
 (setq tramp-auto-save-directory "~/bak/emacs")
@@ -519,10 +528,11 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 ;; Dired
 (eval-after-load 'dired
   '(progn
-     (evil-add-dhtn-bindings dired-mode-map 'normal
-       "d" 'dired-up-directory
-       "n" 'dired-find-file                   ; "j"
-       ";" (lookup-key dired-mode-map ":")))) ; ":d", ":v", ":s", ":e"
+	 (evil-add-dhtn-bindings dired-mode-map 'normal
+	   "d" 'dired-up-directory
+	   "n" 'dired-find-file                   ; "j"
+	   ";" (lookup-key dired-mode-map ":"))
+	 )) ; ":d", ":v", ":s", ":e"
 
 ;; (eval-after-load 'compilation-mode
 ;;   '(progn
@@ -879,6 +889,15 @@ Add additional BINDINGS if specified. For dvorak keyboard."
      (define-key c-mode-base-map (kbd "C-c C-c") 'nil)))
 ;;# auto-complete-c-headers
 (require 'auto-complete-c-headers)
+ (add-to-list 'achead:include-directories '"/usr/include/c++/4.8
+ /usr/include/x86_64-linux-gnu/c++/4.8
+ /usr/include/c++/4.8/backward
+ /usr/lib/gcc/x86_64-linux-gnu/4.8/include
+ /usr/local/include
+ /usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed
+ /usr/include/x86_64-linux-gnu
+ /usr/include
+ /usr/include/opencv")
 (add-hook 'c++-mode-hook '(setq ac-sources (append ac-sources '(ac-source-c-headers))))
 (add-hook 'c-mode-hook '(setq ac-sources (append ac-sources '(ac-source-c-headers))))
 ;;# auto-complete-clang-async
@@ -887,6 +906,19 @@ Add additional BINDINGS if specified. For dvorak keyboard."
   (setq ac-clang-complete-executable "~/.emacs.d/el-get/emacs-clang-complete-async/clang-complete")
   (setq ac-sources (append ac-sources '(ac-source-clang-async)))
   (ac-clang-launch-completion-process))
+
+(setq ac-clang-cflags
+      (mapcar (lambda (item)(concat "-I" item))
+              (split-string
+			 "/usr/include/c++/4.8
+ /usr/include/x86_64-linux-gnu/c++/4.8
+ /usr/include/c++/4.8/backward
+ /usr/lib/gcc/x86_64-linux-gnu/4.8/include
+ /usr/local/include
+ /usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed
+ /usr/include/x86_64-linux-gnu
+ /usr/include
+ /usr/include/opencv")))
 (defun my-ac-config ()
   (add-hook 'c-mode-common-hook 'ac-cc-mode-setup)
   (add-hook 'auto-complete-mode-hook 'ac-common-setup)
@@ -1222,28 +1254,10 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 
 ;;# others
 (require 'git-gutter)
+(global-git-gutter-mode t)
 (require 'yaml-mode)
 (require 'rainbow-mode)
 (require 'flycheck)
-
-;;# popwin.el
-(require 'popwin)
-(custom-set-variables
- '(popwin:popup-window-position 'bottom)
- '(popwin:popup-window-height 15)
- '(popwin:adjust-other-windows nil)
- '(display-buffer-function 'popwin:display-buffer)
- '(anything-samewindow nil))
-;;(push '("^\\*anything" :regexp t :width 40 :position :left) popwin:special-display-config)
-(push '("^\\*helm" :regexp t :width 60 :position :right) popwin:special-display-config)
-(push '("^\\*magit" :regexp t :width 60 :position :right) popwin:special-display-config)
-(push '("*Help*" :width 80 :position :right :noselect t :stick t) popwin:special-display-config)
-;; (push '("*anything imenu*" :width 40 :position :left) popwin:special-display-config)
-;; (push '("*Moccur*" :height 50 :position :left) popwin:special-display-config)
-(define-key global-map [(super o)] 'dired-jump-other-window)
-(push '("*ri*" :width 70 :position :right :noselect t :stick t) popwin:special-display-config)
-(push '("*rspec-compilation*" :height 40 :position :bottom) popwin:special-display-config)
-;; (push '("^\\*SPEEDBAR" :regexp t :width 40 :position :left :noselect t :stick t) popwin:special-display-config)
 
 ;;# eldoc
 (require 'eldoc)
