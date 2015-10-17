@@ -15,7 +15,7 @@
     (goto-char (point-max))
     (eval-print-last-sexp)))
 
-;;# install package
+;;# installing packages
 (el-get-bundle elpa:edit-server)
 (el-get-bundle rainbow-delimiters)
 (el-get-bundle flymake-cursor)
@@ -45,6 +45,7 @@
 (el-get-bundle eldoc-extension)
 (el-get-bundle auto-complete-c-headers)
 (el-get-bundle Golevka/emacs-clang-complete-async)
+(el-get-bundle undohist)
 
 ;;# Theme
 (require 'slime-theme)
@@ -414,6 +415,9 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 ;;# flymake
 (require 'flymake)
 (load-library "flymake-cursor")
+(defadvice flymake-post-syntax-check (before flymake-force-check-was-interrupted)
+  (setq flymake-check-was-interrupted t))
+(ad-activate 'flymake-post-syntax-check)
 
 ;;# for chrome
 (require 'edit-server)
@@ -1267,3 +1271,22 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+
+;;# font
+(set-face-attribute 'default nil
+					:family "ricty"
+					:height 140)
+;; (set-default-font "ricty-11:spacing=1")
+;; (set-face-font 'variable-pitch "ricty-11:spacing=1")
+(set-fontset-font (frame-parameter nil 'font)
+				  'japanese-jisx0208
+				  '("ricty" . "unicode-bmp"))
+;; (add-to-list 'face-font-rescale-alist
+;;              '("ricty" . 1.2))
+
+;;# undohist
+(require 'undohist)
+(undohist-initialize)
+;;; 永続化を無視するファイル名の正規表現
+(setq undohist-ignored-files
+      '("/tmp/"))
