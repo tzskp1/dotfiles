@@ -19,7 +19,7 @@ if [ -e ~/.emacs.d ]; then
 fi
 ln -s $nh/.emacs.d ~/
 
-if [ -e /usr/local/texlive/texmf-local ]; then
-	sudo mv /usr/local/texlive/texmf-local /usr/local/texlive/texmf-local.bak
+if [ -e ~/texmf ]; then
+	sudo mv ~/texmf ~/texmf.bak
 fi
-sudo ln -s $nh/texmf-local /usr/local/texlive/
+sudo ln -s $nh/texmf ~/texmf 
