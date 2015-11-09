@@ -6,6 +6,8 @@ install_emacs() {
 }
 
 nh=$(pwd)
+sudo apt-get update
+sudo apt-get upgrade
 yes | sudo apt-get install zsh build-essential llvm libclang-dev silversearcher-ag mercurial git ddskk
 yes | sudo apt-get build-dep emacs24
 
@@ -21,7 +23,7 @@ else
 fi
 
 # login shell
-chsh -s /usr/bin/zsh
+sudo chsh -s /usr/bin/zsh
 
 sh ./deploy.sh
 
