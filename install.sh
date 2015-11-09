@@ -73,6 +73,6 @@ sudo chsh -s /usr/bin/zsh
 sh ./deploy.sh
 
 yes_no "Do you want to install ricky's fonts?"
-if [ $? ]; then
+if [ ! $? ]; then
 	install_ricky
 fi
