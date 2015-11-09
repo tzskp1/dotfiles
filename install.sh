@@ -5,9 +5,13 @@ install_emacs() {
 	./configure && make install
 }
 install_texlive() {
-	wget -O- http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz | tar xfvz - 
-	cd install-tl-*
-	echo "I" | sudo ./install-tl
+	sudo apt-get install texlive-full xzdec
+	tlmgr init-usertree
+	sudo apt-get install texlive-lang-cjk
+	tlmgr init-usertree
+	#wget -O- http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz | tar xfvz - 
+	#cd install-tl-*
+	#echo "I" | sudo ./install-tl
 }
 
 nh=$(pwd)

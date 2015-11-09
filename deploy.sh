@@ -18,3 +18,8 @@ if [ -e ~/.emacs.d ]; then
 	mv ~/.emacs.d ~/.emacs.d.bak
 fi
 ln -s $nh/.emacs.d ~/
+
+if [ -e /usr/local/texlive/texmf-local ]; then
+	mv /usr/local/texlive/texmf-local /usr/local/texlive/texmf-local.bak
+fi
+ln -s $nh/texmf-local /usr/local/texlive/
