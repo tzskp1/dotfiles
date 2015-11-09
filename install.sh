@@ -1,4 +1,19 @@
 #!/bin/sh
+nh=$(pwd)
+
+yes_no() {
+  MSG=$1
+  while :
+  do
+    echo -n "${MSG} y/N: "
+    read ans
+    case $ans in
+    [yY]) return 0 ;;
+    [nN]) return 1 ;;
+    esac
+  done
+}
+
 install_emacs() {
 	wget -O-  http://ftp.gnu.org/gnu/emacs/emacs-24.4.tar.xz | tar xJvf -
 	cd emacs-24.4
@@ -13,11 +28,24 @@ install_texlive() {
 	#cd install-tl-*
 	#echo "I" | sudo ./install-tl
 }
+install_ricky() {
+	unzip migu-1m-20150712.zip
+	cd migu-1m-20150712 
+	mkdir ~./.fonts/
+	mv migu-1m-*.ttf ~/.fonts/
+	fc-cache -fv
+	git clone https://github.com/yascentur/Ricty.git
+	cd Ricty/
+	git checkout refs/tags/3.2.3
+	./ricty_generator.sh auto
+	mv Ricty*.ttf ~/.fonts/
+	fc-cache -fv
+	cd $nh
+}
 
-nh=$(pwd)
 yes | sudo apt-get update
 yes | sudo apt-get upgrade
-yes | sudo apt-get install zsh build-essential llvm libclang-dev silversearcher-ag mercurial git ddskk
+yes | sudo apt-get install zsh build-essential llvm libclang-dev silversearcher-ag mercurial git ddskk pandoc fontforge fonts-inconsolata
 yes | sudo apt-get build-dep emacs24
 
 #tex live 2015
@@ -44,4 +72,7 @@ sudo chsh -s /usr/bin/zsh
 
 sh ./deploy.sh
 
-
+yes_no "Do you want to install ricky's fonts?"
+if [ $? ]; then
+	install_ricky
+fi
