@@ -17,7 +17,7 @@ yes_no() {
 install_emacs() {
 	wget -O-  http://ftp.gnu.org/gnu/emacs/emacs-24.4.tar.xz | tar xJvf -
 	cd emacs-24.4
-	./configure && make install
+	./configure && sudo make install
 }
 install_texlive() {
 	echo "y" | sudo apt-get install texlive-full xzdec
@@ -70,7 +70,7 @@ fi
 # login shell
 sudo chsh -s /usr/bin/zsh
 
-./deploy.sh
+$nh/deploy.sh
 
 yes_no "Do you want to install ricky's fonts?"
 if [ ! $? ]; then
