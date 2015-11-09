@@ -17,7 +17,7 @@ source \${ZDOTDIR}/.zshenv
 #---------------------------- " > ~/.zshenv
 fi
 
-if [ -f ~/.emacs.d ]; then
-	rm ~/.emacs.d 
+if [ -e ~/.emacs.d ]; then
+	rm -rf ~/.emacs.d 
 fi
-ln -s $nh/.emacs.d ~/.emacs.d
+ln -s $nh/.emacs.d ~/
