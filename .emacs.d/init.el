@@ -30,7 +30,7 @@
 (el-get-bundle auto-complete)
 (el-get-bundle yatex)
 (el-get-bundle ddskk)
-(el-get-bundle slime-theme)
+(el-get-bundle emacsfodder/emacs-slime-theme)
 (el-get-bundle markdown-mode)
 (el-get-bundle jedi)
 (el-get-bundle haskell-mode)
