@@ -18,6 +18,6 @@ source \${ZDOTDIR}/.zshenv
 fi
 
 if [ -e ~/.emacs.d ]; then
-	rm -rf ~/.emacs.d 
+	mv ~/.emacs.d ~/.emacs.d.bak
 fi
 ln -s $nh/.emacs.d ~/
