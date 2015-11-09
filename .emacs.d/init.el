@@ -822,12 +822,12 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 (setq skk-kakutei-when-unique-candidate t)
 ;;モードで RET を入力したときに確定のみ行い、改行はしない
 (setq skk-egg-like-newline t)
-(setq skk-kuten-touten-alist
-  '(
-    (jp . ("." . "," ))
-    (en . ("." . ","))
-    ))
-(setq-default skk-kutouten-type 'en)
+;; (setq skk-kuten-touten-alist
+;;   '(
+;;     (jp . ("." . "," ))
+;;     (en . ("." . ","))
+;;     ))
+;; (setq-default skk-kutouten-type 'en)
 
 ;;# markdown
 (require 'markdown-mode)
