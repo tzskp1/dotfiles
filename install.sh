@@ -29,7 +29,7 @@ install_texlive() {
 	#echo "I" | sudo ./install-tl
 }
 install_ricky() {
-	unzip migu-1m-20150712.zip
+	unzip migumigu.zip
 	cd migu-1m-20150712 
 	mkdir ~./.fonts/
 	mv migu-1m-*.ttf ~/.fonts/
