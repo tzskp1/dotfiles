@@ -4,12 +4,25 @@ install_emacs() {
 	cd emacs-24.4
 	./configure && make install
 }
+install_texlive() {
+	wget -O- http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz | tar xfvz - 
+	cd install-tl-*
+	echo "I" | sudo ./install-tl
+}
 
 nh=$(pwd)
 yes | sudo apt-get update
 yes | sudo apt-get upgrade
 yes | sudo apt-get install zsh build-essential llvm libclang-dev silversearcher-ag mercurial git ddskk
 yes | sudo apt-get build-dep emacs24
+
+#tex live 2015
+which platex > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+	echo " "
+else
+	install_texlive
+fi
 
 # emacs 24.4
 which emacs > /dev/null 2>&1
