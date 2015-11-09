@@ -43,10 +43,10 @@ install_ricky() {
 	cd $nh
 }
 
-yes | sudo apt-get update
-yes | sudo apt-get upgrade
-yes | sudo apt-get install zsh build-essential llvm libclang-dev silversearcher-ag mercurial git ddskk pandoc fontforge fonts-inconsolata
-yes | sudo apt-get build-dep emacs24
+echo "y" | sudo apt-get update
+echo "y" | sudo apt-get upgrade
+echo "y" | sudo apt-get install zsh build-essential llvm libclang-dev silversearcher-ag mercurial git ddskk pandoc fontforge fonts-inconsolata
+echo "y" | sudo apt-get build-dep emacs24
 
 #tex live 2015
 which platex > /dev/null 2>&1
