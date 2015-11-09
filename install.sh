@@ -6,10 +6,8 @@ install_emacs() {
 }
 
 nh=$(pwd)
-yes | sudo apt-get install zsh build-essential
+yes | sudo apt-get install zsh build-essential llvm libclang-dev silversearcher-ag mercurial git ddskk
 yes | sudo apt-get build-dep emacs24
-# for emacs
-yes | sudo apt-get install llvm libclang-dev silversearcher-ag mercurial git ddskk
 
 # emacs 24.4
 which emacs > /dev/null 2>&1
