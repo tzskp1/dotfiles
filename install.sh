@@ -1,5 +1,5 @@
 #!/bin/sh
-function install_emacs(){
+install_emacs() {
 	wget -O-  http://ftp.gnu.org/gnu/emacs/emacs-24.4.tar.xz | tar xJvf -
 	cd emacs-24.4
 	./configure && make install
@@ -23,6 +23,6 @@ fi
 # login shell
 chsh -s /usr/bin/zsh
 
-source ./deploy.sh
+sh ./deploy.sh
 
 
