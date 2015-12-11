@@ -704,29 +704,6 @@ Add additional BINDINGS if specified. For dvorak keyboard."
         (remove-duplicates
          (mapcan #'yas--table-all-keys (yas--get-snippet-tables)))))
 
-;;# YaTeX
-(autoload 'yatex-mode "yatex" "Yet Another LaTeX mode" t)
-(setq auto-mode-alist
-      (append '(("\\.tex$" . yatex-mode)
-                ("\\.ltx$" . yatex-mode)
-                ("\\.cls$" . yatex-mode)
-                ("\\.sty$" . yatex-mode)
-                ("\\.clo$" . yatex-mode)
-                ("\\.bbl$" . yatex-mode)) auto-mode-alist))
-(setq YaTeX-inhibit-prefix-letter t)
-(setq YaTeX-kanji-code nil)
-(setq YaTeX-latex-message-code 'utf-8)
-(setq YaTeX-use-LaTeX2e t)
-(setq YaTeX-use-AMS-LaTeX t)
-(setq YaTeX-dvi2-command-ext-alist
-      '(("TeXworks\\|texworks\\|texstudio\\|mupdf\\|SumatraPDF\\|Preview\\|Skim\\|TeXShop\\|evince\\|okular\\|zathura\\|qpdfview\\|Firefox\\|firefox\\|chrome\\|chromium\\|Adobe\\|Acrobat\\|AcroRd32\\|acroread\\|pdfopen\\|xdg-open\\|open\\|start" . ".pdf")))
-(setq tex-command "ptex2pdf -u -l -ot '-synctex=1'")
-(setq bibtex-command "latexmk -e '$latex=q/uplatex %O -synctex=1 %S/' -e '$bibtex=q/upbibtex %O %B/' -e '$biber=q/biber %O --bblencoding=utf8 -u -U --output_safechars %B/' -e '$makeindex=q/upmendex %O -o %D %S/' -e '$dvipdf=q/dvipdfmx %O -o %D %S/' -norc -gg -pdfdvi")
-(setq makeindex-command  "latexmk -e '$latex=q/uplatex %O -synctex=1 %S/' -e '$bibtex=q/upbibtex %O %B/' -e '$biber=q/biber %O --bblencoding=utf8 -u -U --output_safechars %B/' -e '$makeindex=q/upmendex %O -o %D %S/' -e '$dvipdf=q/dvipdfmx %O -o %D %S/' -norc -gg -pdfdvi")
-(setq dvi2-command "evince")
-(setq tex-pdfview-command "evince")
-(setq dviprint-command-format "xdg-open `echo %s | sed -e \"s/\\.[^.]*$/\\.pdf/\"`")
-
 (require 'dbus)
 (defun un-urlify (fname-or-url)
   "A trivial function that replaces a prefix of file:/// with just /."
@@ -1290,3 +1267,9 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 ;;; 永続化を無視するファイル名の正規表現
 (setq undohist-ignored-files
       '("/tmp/"))
+
+;;# YaTeX
+(setq auto-mode-alist
+      (cons (cons "\\.tex$" 'yatex-mode) auto-mode-alist))
+(autoload 'yatex-mode "yatex" "Yet Another LaTeX mode" t)
+
