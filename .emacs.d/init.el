@@ -832,6 +832,7 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 
 ;;# c
 (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+(c-set-offset (quote cpp-macro) 0 nil)
 (require 'cc-mode)
 ;; c-mode-common-hook は C/C++ の設定
 (add-hook 'c-mode-common-hook
