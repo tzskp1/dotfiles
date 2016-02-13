@@ -1274,4 +1274,13 @@ Add additional BINDINGS if specified. For dvorak keyboard."
       (cons (cons "\\.tex$" 'yatex-mode) auto-mode-alist))
 (autoload 'yatex-mode "yatex" "Yet Another LaTeX mode" t)
 (setq YaTeX-kanji-code 4)
+; skk 対策
+(add-hook 'skk-mode-hook
+	  (lambda ()
+	    (if (eq major-mode 'yatex-mode)
+		(progn
+		  (define-key skk-j-mode-map "\\" 'self-insert-command)
+		  (define-key skk-j-mode-map "$" 'YaTeX-insert-dollar)
+		  ))
+	    ))
 
