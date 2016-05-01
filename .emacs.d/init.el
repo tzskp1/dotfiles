@@ -48,6 +48,7 @@
 (el-get-bundle company-irony)
 (el-get-bundle flycheck-irony)
 (el-get-bundle company-jedi)
+(el-get-bundle rtags)
 
 
 ;;# Theme
@@ -594,6 +595,7 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 (evil-define-key nil helm-map "\C-t" 'helm-previous-line)
 (evil-define-key nil helm-map "\C-h" 'helm-next-line)
 (global-set-key (kbd "C-x C-b") 'helm-mini)
+(global-set-key (kbd "M-x") 'helm-M-x)
 ;; (evil-define-key nil helm-moccur-map "\C-h" 'helm-next-line)
 ;; (evil-define-key nil helm-moccur-map "\C-t" 'helm-previous-line)
 ;; ;; List files in git repos
@@ -678,6 +680,16 @@ Add additional BINDINGS if specified. For dvorak keyboard."
      (add-hook 'c-mode-common-hook 'irony-mode)))
 (eval-after-load 'company
   '(add-to-list 'company-backends 'company-irony))
+
+;;# rtags
+(when (require 'rtags nil 'noerror)
+  (add-hook 'c-mode-common-hook
+            (lambda ()
+              (when (rtags-is-indexed)
+                (local-set-key (kbd "M-.") 'rtags-find-symbol-at-point)
+                (local-set-key (kbd "M-;") 'rtags-find-symbol)
+                (local-set-key (kbd "M-@") 'rtags-find-references)
+                (local-set-key (kbd "M-,") 'rtags-location-stack-back)))))
 
 (require 'dbus)
 (defun un-urlify (fname-or-url)
