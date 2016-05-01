@@ -1,10 +1,13 @@
 ;; package requirement
 ;; llvm
+;; llvm-dev
 ;; libclang-dev
 ;; silversearcher-ag
 ;; mercurial
 ;; git
 ;; ddskk
+;; cmake
+;; python-virtualenv
 (when load-file-name
   (setq user-emacs-directory (file-name-directory load-file-name)))
 (add-to-list 'load-path (locate-user-emacs-file "el-get/el-get"))
@@ -18,7 +21,6 @@
 ;;# installing packages
 (el-get-bundle elpa:edit-server)
 (el-get-bundle rainbow-delimiters)
-(el-get-bundle flymake-cursor)
 (el-get-bundle evil)
 (el-get-bundle evil-numbers)
 (el-get-bundle tarao/evil-plugins)
@@ -27,7 +29,6 @@
 (el-get-bundle emacs-helm/helm-descbinds)
 (el-get-bundle helm-ag)
 (el-get-bundle popwin)
-(el-get-bundle auto-complete)
 (el-get-bundle yatex)
 (el-get-bundle ddskk)
 (el-get-bundle emacsfodder/emacs-slime-theme)
@@ -36,16 +37,19 @@
 (el-get-bundle haskell-mode)
 (el-get-bundle magit)
 (el-get-bundle yasnippet)
-(el-get-bundle dropdown-list)
 (el-get-bundle git-gutter)
 (el-get-bundle yaml-mode)
 (el-get-bundle rainbow-mode)
 (el-get-bundle flycheck)
-(el-get-bundle popup)
+;; (el-get-bundle popup)
 (el-get-bundle eldoc-extension)
-(el-get-bundle auto-complete-c-headers)
-(el-get-bundle Golevka/emacs-clang-complete-async)
 (el-get-bundle undohist)
+(el-get-bundle company-mode/company-mode)
+(el-get-bundle irony-mode)
+(el-get-bundle company-irony)
+(el-get-bundle flycheck-irony)
+(el-get-bundle company-jedi)
+
 
 ;;# Theme
 (require 'slime-theme)
@@ -412,12 +416,24 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
  (interactive "F")
  (set-buffer (find-file (concat "/sudo::" file))))
 
-;;# flymake
-(require 'flymake)
-(load-library "flymake-cursor")
-(defadvice flymake-post-syntax-check (before flymake-force-check-was-interrupted)
-  (setq flymake-check-was-interrupted t))
-(ad-activate 'flymake-post-syntax-check)
+
+;;# flycheck
+(require 'flycheck)
+(when (require 'flycheck nil 'noerror)
+  (custom-set-variables
+   ;; エラーをポップアップで表示
+   '(flycheck-display-errors-function
+     (lambda (errors)
+       (let ((messages (mapcar #'flycheck-error-message errors)))
+         (popup-tip (mapconcat 'identity messages "\n")))))
+   '(flycheck-display-errors-delay 0.5))
+  (define-key flycheck-mode-map (kbd "C-M-h") 'flycheck-next-error)
+  (define-key flycheck-mode-map (kbd "C-M-t") 'flycheck-previous-error)
+  (add-hook 'c-mode-common-hook 'flycheck-mode))
+(eval-after-load "irony"
+  '(progn
+     (when (locate-library "flycheck-irony")
+       (flycheck-irony-setup))))
 
 ;;# for chrome
 (require 'edit-server)
@@ -639,70 +655,29 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 
 ;;# yasnippet
 (require 'yasnippet) ;;# not yasnippet-bundle
-
-;(setq yas/trigger-key (kbd "C-c m"))
+;; (setq yas/trigger-key (kbd "C-c m"))
 (yas/initialize)
 (yas/load-directory "~/.emacs.d/el-get/yasnippet/snippets")
 (yas/load-directory "~/.emacs.d/snippets")
 
-(require 'dropdown-list)
-(setq yas/prompt-functions '(yas/dropdown-prompt))
-(yas/global-mode 1)
+;;# company
+(require 'company)
+(global-company-mode) ; 全バッファで有効にする 
+(setq company-idle-delay 0) ; デフォルトは0.5
+(setq company-minimum-prefix-length 4) ; 4 文字以上で起動
+(setq company-selection-wrap-around t) ; 候補の一番下でさらに下に行こうとすると一番上に戻る
+(define-key company-active-map (kbd "C-h") 'company-select-next)
+(define-key company-active-map (kbd "C-t") 'company-select-previous)
 
-
-;; from http://d.hatena.ne.jp/antipop/20080321/1206090430
-;; [2008-03-17]
-;; yasnippet展開中はflymakeを無効にする
-(defvar flymake-is-active-flag nil)
-
-(defadvice yas/expand-snippet
-  (before inhibit-flymake-syntax-checking-while-expanding-snippet activate)
-  (setq flymake-is-active-flag
-        (or flymake-is-active-flag
-            (assoc-default 'flymake-mode (buffer-local-variables))))
-  (when flymake-is-active-flag
-    (flymake-mode-off)))
-
-(add-hook 'yas/after-exit-snippet-hook
-          '(lambda ()
-             (when flymake-is-active-flag
-               (flymake-mode-on)
-               (setq flymake-is-active-flag nil))))
-
-;;# auto-complete
-(require 'auto-complete-config nil 'noerror)
-(eval-after-load "auto-complete-config"
-  (progn
-    (add-to-list 'ac-dictionary-directories
-                 (concat user-emacs-directory "ac-dict"))
-    (setq ac-comphist-file "~/.emacs.d/ac-comphist.dat")))
-(ac-config-default)
-(ac-flyspell-workaround)
-(global-auto-complete-mode t)
-;; 追加メジャーモード
-(add-to-list 'ac-modes 'c++-mode-hook)
-(add-to-list 'ac-modes 'c-mode-hook)
-(add-to-list 'ac-modes 'sws-mode)
-(add-to-list 'ac-modes 'markdown-mode)
-(add-to-list 'ac-modes 'makefile-mode)
-(add-to-list 'ac-modes 'yatex-mode)
-(setq ac-source-yasnippet nil)
-(setq ac-auto-start 4)                         ; 4 文字以上で起動
-(setq ac-auto-show-menu 0.3)                   ; 0.8秒でメニュー表示
-(setq ac-use-comphist t)                       ; 補完候補をソート
-(setq ac-candidate-limit nil)                  ; 補完候補表示を無制限に
-;; (setq ac-use-quick-help nil)                   ; tool tip 無し
-(setq ac-use-menu-map t)                       ; キーバインド
-(define-key ac-menu-map (kbd "C-h")         'ac-next)
-(define-key ac-menu-map (kbd "C-t")         'ac-previous)
-;; (define-key ac-completing-map (kbd "<tab>") 'nil)
-(define-key ac-completing-map (kbd "<tab>") 'ac-complete)
-(define-key ac-completing-map (kbd "M-/")   'ac-stop)
-;; (define-key ac-completing-map (kbd "RET") nil) ; return での補完禁止
-(setf (symbol-function 'yas-active-keys)
-      (lambda ()
-        (remove-duplicates
-         (mapcan #'yas--table-all-keys (yas--get-snippet-tables)))))
+;;# irony
+(eval-after-load "irony"
+  '(progn
+     (custom-set-variables '(irony-additional-clang-options '("-std=c++11")))
+     (add-to-list 'company-backends 'company-irony)
+     (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+     (add-hook 'c-mode-common-hook 'irony-mode)))
+(eval-after-load 'company
+  '(add-to-list 'company-backends 'company-irony))
 
 (require 'dbus)
 (defun un-urlify (fname-or-url)
@@ -780,7 +755,7 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 
 (add-hook 'yatex-mode-hook
           '(lambda ()
-             (auto-fill-mode -1)))
+             (auto-fill-mode -2)))
 
 ;;# RefTeX with YaTeX
 ;(add-hook 'yatex-mode-hook 'turn-on-reftex)
@@ -841,96 +816,6 @@ Add additional BINDINGS if specified. For dvorak keyboard."
             (setq indent-tabs-mode nil)  ;; タブは利用しない
             (setq c-basic-offset 2)      ;; indent は 2 スペース
             ))
-(defun flymake-simple-generic-init (cmd &optional opts)
-  (let* ((temp-file  (flymake-init-create-temp-buffer-copy
-                      'flymake-create-temp-inplace))
-         (local-file (file-relative-name
-                      temp-file
-                      (file-name-directory buffer-file-name))))
-    (list cmd (append opts (list local-file)))))
-;; Makefile が無くてもC/C++のチェック
-(defun flymake-simple-make-or-generic-init (cmd &optional opts)
-  (if (file-exists-p "Makefile")
-      (flymake-simple-make-init)
-    (flymake-simple-generic-init cmd opts)))
-(defun flymake-c-init ()
-  (flymake-simple-make-or-generic-init
-   "gcc" '("-Wall" "-Wextra" "-pedantic" "-fsyntax-only")))
-(defun flymake-cc-init ()
-  (flymake-simple-make-or-generic-init
-   "g++" '("-Wall" "-Wextra" "-pedantic" "-fsyntax-only")))
-(push '("\\.[cC]\\'" flymake-c-init) flymake-allowed-file-name-masks)
-(push '("\\.\\(?:cc\|cpp\|CC\|CPP\\)\\'" flymake-cc-init) flymake-allowed-file-name-masks)
-(push '("\\.hpp\\'" flymake-master-make-header-init flymake-master-cleanup)
-      flymake-allowed-file-name-masks)
-(add-hook 'c-mode-common-hook
-          '(lambda ()
-             (flymake-mode t)))
-(eval-after-load "cc-mode"
-  '(progn
-     (define-key c-mode-base-map (kbd "C-c C-c") 'nil)))
-;;# auto-complete-c-headers
-(require 'auto-complete-c-headers)
- (add-to-list 'achead:include-directories '"/usr/include/c++/4.8
- /usr/include/x86_64-linux-gnu/c++/4.8
- /usr/include/c++/4.8/backward
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include
- /usr/local/include
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed
- /usr/include/x86_64-linux-gnu
- /usr/include
- /usr/include/opencv")
-(add-hook 'c++-mode-hook '(setq ac-sources (append ac-sources '(ac-source-c-headers))))
-(add-hook 'c-mode-hook '(setq ac-sources (append ac-sources '(ac-source-c-headers))))
-;;# auto-complete-clang-async
-(require 'auto-complete-clang-async)
-(defun ac-cc-mode-setup ()
-  (setq ac-clang-complete-executable "~/.emacs.d/el-get/emacs-clang-complete-async/clang-complete")
-  (setq ac-sources (append ac-sources '(ac-source-clang-async)))
-  (ac-clang-launch-completion-process))
-
-(setq ac-clang-cflags
-      (mapcar (lambda (item)(concat "-I" item))
-              (split-string
-			 "/usr/include/c++/4.8
- /usr/include/x86_64-linux-gnu/c++/4.8
- /usr/include/c++/4.8/backward
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include
- /usr/local/include
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed
- /usr/include/x86_64-linux-gnu
- /usr/include
- /usr/include/opencv")))
-(defun my-ac-config ()
-  (add-hook 'c-mode-common-hook 'ac-cc-mode-setup)
-  (add-hook 'auto-complete-mode-hook 'ac-common-setup)
-  (global-auto-complete-mode t))
-(my-ac-config)
-(add-hook 'c-mode-common-hook
-		  '(lambda ()
-			 ;; ac-omni-completion-sources is made buffer local so
-			 ;; you need to add it to a mode hook to activate on 
-			 ;; whatever buffer you want to use it with.  This
-			 ;; example uses C mode (as you probably surmised).
-
-			 ;; auto-complete.el expects ac-omni-completion-sources to be
-			 ;; a list of cons cells where each cell's car is a regex
-			 ;; that describes the syntactical bits you want AutoComplete
-			 ;; to be aware of. The cdr of each cell is the source that will
-			 ;; supply the completion data.  The following tells autocomplete
-			 ;; to begin completion when you type in a . or a ->
-
-			 (add-to-list 'ac-omni-completion-sources
-						  (cons "\\." '(ac-source-semantic)))
-			 (add-to-list 'ac-omni-completion-sources
-						  (cons "->" '(ac-source-semantic)))
-
-			 ;; ac-sources was also made buffer local in new versions of
-			 ;; autocomplete.  In my case, I want AutoComplete to use 
-			 ;; semantic and yasnippet (order matters, if reversed snippets
-			 ;; will appear before semantic tag completions).
-
-			 (setq ac-sources '(ac-source-semantic ac-source-yasnippet))))
 
 ;;# gauche(scheme)
 (put 'downcase-region 'disabled nil)
@@ -1030,11 +915,16 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 (setq geiser-active-implementations '(racket))
 
 ;;# python
-(require 'auto-complete-config)
 (require 'python)
-(require 'jedi)
-(add-hook 'python-mode-hook 'jedi:setup)
+(require 'jedi-core)
 (setq jedi:complete-on-dot t)
+(setq jedi:use-shortcuts t)
+(add-hook 'python-mode-hook 'jedi:setup)
+(add-to-list 'company-backends 'company-jedi) ; backendに追加
+;; (require 'auto-complete-config)
+;; (require 'jedi)
+;; (add-hook 'python-mode-hook 'jedi:setup)
+;; (setq jedi:complete-on-dot t)
 ;;(setq jedi:setup-keys t)
 ;; (define-key python-mode-map (kbd "<tab>") 'jedi:complete)
 
@@ -1234,12 +1124,13 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 ;; (require 'magit-flow)
 ;; (add-hook 'magit-mode-hook 'turn-on-magit-flow)
 
-;;# others
+;;# git-gutter
 (require 'git-gutter)
 (global-git-gutter-mode t)
+
+;;# others
 (require 'yaml-mode)
 (require 'rainbow-mode)
-(require 'flycheck)
 
 ;;# eldoc
 (require 'eldoc)
