@@ -8,6 +8,7 @@
 ;; ddskk
 ;; cmake
 ;; python-virtualenv
+;; rtags
 (when load-file-name
   (setq user-emacs-directory (file-name-directory load-file-name)))
 (add-to-list 'load-path (locate-user-emacs-file "el-get/el-get"))
@@ -49,6 +50,8 @@
 (el-get-bundle flycheck-irony)
 (el-get-bundle company-jedi)
 (el-get-bundle rtags)
+(el-get-bundle cmake-mode)
+(el-get-bundle popup)
 
 
 ;;# Theme
@@ -690,6 +693,7 @@ Add additional BINDINGS if specified. For dvorak keyboard."
                 (local-set-key (kbd "M-;") 'rtags-find-symbol)
                 (local-set-key (kbd "M-@") 'rtags-find-references)
                 (local-set-key (kbd "M-,") 'rtags-location-stack-back)))))
+(custom-set-variables '(rtags-use-helm t))
 
 (require 'dbus)
 (defun un-urlify (fname-or-url)
@@ -1187,3 +1191,10 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 		  ))
 	    ))
 
+;;# CMake
+(require 'cmake-mode)
+(setq auto-mode-alist
+	  (append
+	   '(("CMakeLists\\.txt\\'" . cmake-mode))
+	   '(("\\.cmake\\'" . cmake-mode))
+	   auto-mode-alist))
