@@ -33,7 +33,7 @@
 (el-get-bundle ddskk)
 (el-get-bundle emacsfodder/emacs-slime-theme)
 (el-get-bundle markdown-mode)
-(el-get-bundle jedi)
+(el-get-bundle jedi-core)
 (el-get-bundle haskell-mode)
 (el-get-bundle magit)
 (el-get-bundle yasnippet)
@@ -41,7 +41,6 @@
 (el-get-bundle yaml-mode)
 (el-get-bundle rainbow-mode)
 (el-get-bundle flycheck)
-;; (el-get-bundle popup)
 (el-get-bundle eldoc-extension)
 (el-get-bundle undohist)
 (el-get-bundle company-mode/company-mode)
@@ -638,10 +637,11 @@ Add additional BINDINGS if specified. For dvorak keyboard."
                              ))
 ; 自動補完を無効
 (custom-set-variables '(helm-ff-auto-update-initial-value nil))
-;; C-hでバックスペースと同じように文字を削除  
-(define-key helm-c-read-file-map (kbd "C-b") 'delete-backward-char)
-;; TABで任意補完。選択肢が出てきたらC-nやC-pで上下移動してから決定することも可能
-(define-key helm-c-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
+;; ;; C-hでバックスペースと同じように文字を削除  
+;; (define-key helm-c-read-file-map (kbd "C-b") 'delete-backward-char)
+;; ;; TABで任意補完。選択肢が出てきたらC-nやC-pで上下移動してから決定することも可能
+;; (define-key helm-c-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
+
 (helm-descbinds-mode t)
 (helm-mode 1)
 ;; 処理を変更したいコマンドをリストに登録していく
