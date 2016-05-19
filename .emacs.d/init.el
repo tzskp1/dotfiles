@@ -689,6 +689,7 @@ Add additional BINDINGS if specified. For dvorak keyboard."
   (add-hook 'c-mode-common-hook
             (lambda ()
               (when (rtags-is-indexed)
+				(define-key evil-normal-state-local-map (kbd "<return>") 'rtags-find-symbol-at-point)
                 (local-set-key (kbd "M-.") 'rtags-find-symbol-at-point)
                 (local-set-key (kbd "M-;") 'rtags-find-symbol)
                 (local-set-key (kbd "M-@") 'rtags-find-references)
@@ -832,6 +833,9 @@ Add additional BINDINGS if specified. For dvorak keyboard."
             (setq indent-tabs-mode nil)  ;; タブは利用しない
             (setq c-basic-offset 2)      ;; indent は 2 スペース
             ))
+(eval-after-load "cc-mode"
+  '(progn
+     (define-key c-mode-base-map (kbd "C-c C-c") 'nil)))
 
 ;;# gauche(scheme)
 (put 'downcase-region 'disabled nil)
@@ -1107,8 +1111,10 @@ Add additional BINDINGS if specified. For dvorak keyboard."
   ;; "gt" 'evil-previous-visual-line
   "gm" 'evil-middle-of-visual-line
   "k" 'magit-key-mode-popup-rewriting
-  "h" 'evil-next-visual-line
-  "t" 'evil-previous-visual-line
+  "h" 'magit-section-forward
+  "t" 'magit-section-backward
+  ;; "h" 'evil-next-visual-line
+  ;; "t" 'evil-previous-visual-line
   "l" 'magit-key-mode-popup-logging
   "m" 'magit-key-mode-popup-merging
   "n" 'evil-search-next
@@ -1125,13 +1131,13 @@ Add additional BINDINGS if specified. For dvorak keyboard."
   " " 'magit-show-item-or-scroll-up
   "\d" 'magit-show-item-or-scroll-down
   "\t" 'magit-visit-item
-  (kbd "<return>")   'magit-toggle-section
+  (kbd "<return>")   'magit-section-toggle
   (kbd "C-<return>") 'magit-dired-jump
   (kbd "<backtab>")  'magit-expand-collapse-section
   (kbd "C-x 4 a")    'magit-add-change-log-entry-other-window
-  (kbd "\M-d") 'magit-copy-item-as-kill)
+  (kbd "\M-d") 'magit-copy-item-as-eval)
 
-;; (eval-after-load 'magit-status-mode
+;; (after-kill-load 'magit-status-mode
 ;;   (evil-define-key 'normal magit-status-mode-map
 ;; 	"h" 'magit-goto-next-section
 ;; 	"t" 'magit-goto-previous-section))
@@ -1163,9 +1169,10 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 					:height 140)
 ;; (set-default-font "ricty-11:spacing=1")
 ;; (set-face-font 'variable-pitch "ricty-11:spacing=1")
-(set-fontset-font (frame-parameter nil 'font)
-				  'japanese-jisx0208
-				  '("ricty" . "unicode-bmp"))
+(if (display-graphic-p)
+	(set-fontset-font (frame-parameter nil 'font)
+					  'japanese-jisx0208
+					  '("ricty" . "unicode-bmp")))
 ;; (add-to-list 'face-font-rescale-alist
 ;;              '("ricty" . 1.2))
 

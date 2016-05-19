@@ -5,4 +5,4 @@
 # export ZDOTDIR=${HOME}/Dropbox/Dotfiles/.zsh.d
 # source ${ZDOTDIR}/.zshenv
 #----------------------------
-
+export GOPATH=$HOME/go
