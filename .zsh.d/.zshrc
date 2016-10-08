@@ -99,7 +99,8 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 # プロンプトに色を付ける
 autoload -U colors; colors
 # 一般ユーザ時
-tmp_prompt="%{${fg[cyan]}%}%n%# %{${reset_color}%}"
+tmp_prompt="%{${fg[cyan]}%}%n%{${reset_color}%}@%{${fg[cyan]}%}%m%{${reset_color}%}# "
+#tmp_prompt='%M%f %n$ '
 tmp_prompt2="%{${fg[cyan]}%}%_> %{${reset_color}%}"
 tmp_rprompt="%{${fg[green]}%}[%~]%{${reset_color}%}"
 tmp_sprompt="%{${fg[yellow]}%}%r is correct? [Yes, No, Abort, Edit]:%{${reset_color}%}"
@@ -121,14 +122,14 @@ SPROMPT=$tmp_sprompt  # スペル訂正用プロンプト
 PROMPT="%{${fg[white]}%}${HOST%%.*} ${PROMPT}"
 ;
 
-### Title (user@hostname) ###
-case "${TERM}" in
-    kterm*|xterm*|)
-        precmd() {
-            echo -ne "\033]0;${USER}@${HOST%%.*}\007"
-        }
-        ;;
-esac
+#Title (user@hostname) ###
+#case "${TERM}" in
+#   kterm*|xterm*)
+        # precmd() {
+        #     echo -ne "\033]0;${USER}@${HOST%%.*}\007"
+        # }
+#        ;;
+#esac
 
 
 # ------------------------------
