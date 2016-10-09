@@ -201,10 +201,14 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
                ;; ("\C-/" . evil-normal-state)
 			   ;;("\C-c \C-b \C-b" . kill-other-buffers)
                ))
-     (evil-define-key nil my-keyjack-mode-map (kbd "C-/") 'evil-normal-state)
+    ; (evil-define-key nil my-keyjack-mode-map (kbd "C-/") 'evil-normal-state)
      (easy-mmode-define-minor-mode my-keyjack-mode "Grab keys"
                                    t " Keyjack" my-keyjack-mode-map)
      (my-keyjack-mode t)))
+
+(define-key evil-insert-state-map (kbd "C-/") 'evil-normal-state)
+(define-key evil-insert-state-map (kbd "C-_") 'evil-normal-state)
+
 
 ;;# Mode line setup
 ; based from: http://amitp.blogspot.jp/2011/08/emacs-custom-mode-line.html
@@ -937,6 +941,9 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 ;;# python
 (require 'python)
 (require 'jedi-core)
+(setq jedi:server-args
+      '("--sys-path" "/usr/local/lib/python3.4/dist-packages"
+		"--sys-path" "/usr/local/lib/python2.7/dist-packages"))
 (setq jedi:complete-on-dot t)
 (setq jedi:use-shortcuts t)
 (add-hook 'python-mode-hook 'jedi:setup)
@@ -1165,7 +1172,7 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 
 ;;# font
 (set-face-attribute 'default nil
-					:family "ricty"
+					;:family "ricty"
 					:height 140)
 ;; (set-default-font "ricty-11:spacing=1")
 ;; (set-face-font 'variable-pitch "ricty-11:spacing=1")
@@ -1187,6 +1194,7 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 (setq auto-mode-alist
       (cons (cons "\\.tex$" 'yatex-mode) auto-mode-alist))
 (autoload 'yatex-mode "yatex" "Yet Another LaTeX mode" t)
+(setq YaTeX-inhibit-prefix-letter t)
 (setq YaTeX-kanji-code 4)
 ; skk 対策
 (add-hook 'skk-mode-hook
