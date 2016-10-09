@@ -700,79 +700,79 @@ Add additional BINDINGS if specified. For dvorak keyboard."
                 (local-set-key (kbd "M-,") 'rtags-location-stack-back)))))
 (custom-set-variables '(rtags-use-helm t))
 
-(require 'dbus)
-(defun un-urlify (fname-or-url)
-  "A trivial function that replaces a prefix of file:/// with just /."
-  (if (string= (substring fname-or-url 0 8) "file:///")
-      (substring fname-or-url 7)
-    fname-or-url))
+;; (require 'dbus)
+;; (defun un-urlify (fname-or-url)
+;;   "A trivial function that replaces a prefix of file:/// with just /."
+;;   (if (string= (substring fname-or-url 0 8) "file:///")
+;;       (substring fname-or-url 7)
+;;     fname-or-url))
 
-(defun evince-inverse-search (file linecol &rest ignored)
-  (let* ((fname (un-urlify file))
-         (buf (find-file fname))
-         (line (car linecol))
-         (col (cadr linecol)))
-    (if (null buf)
-        (message "[Synctex]: %s is not opened..." fname)
-      (switch-to-buffer buf)
-      (goto-line (car linecol))
-      (unless (= col -1)
-        (move-to-column col)))))
+;; (defun evince-inverse-search (file linecol &rest ignored)
+;;   (let* ((fname (un-urlify file))
+;;          (buf (find-file fname))
+;;          (line (car linecol))
+;;          (col (cadr linecol)))
+;;     (if (null buf)
+;;         (message "[Synctex]: %s is not opened..." fname)
+;;       (switch-to-buffer buf)
+;;       (goto-line (car linecol))
+;;       (unless (= col -1)
+;;         (move-to-column col)))))
 
-(dbus-register-signal
- :session nil "/org/gnome/evince/Window/0"
- "org.gnome.evince.Window" "SyncSource"
- 'evince-inverse-search)
+;; (dbus-register-signal
+;;  :session nil "/org/gnome/evince/Window/0"
+;;  "org.gnome.evince.Window" "SyncSource"
+;;  'evince-inverse-search)
 
-(defun okular-forward-search ()
-  (interactive)
-  (progn
-    (process-kill-without-query
-     (start-process
-      "okular"
-      nil
-      "okular"
-      "--unique"
-      (concat (expand-file-name
-               (concat (file-name-sans-extension (or YaTeX-parent-file
-                                                     (save-excursion
-                                                       (YaTeX-visit-main t)
-                                                       buffer-file-name)))
-                       ".pdf"))
-              "#src:"
-              (number-to-string (save-restriction
-                                  (widen)
-                                  (count-lines (point-min) (point))))
-              (buffer-file-name))))))
+;; (defun okular-forward-search ()
+;;   (interactive)
+;;   (progn
+;;     (process-kill-without-query
+;;      (start-process
+;;       "okular"
+;;       nil
+;;       "okular"
+;;       "--unique"
+;;       (concat (expand-file-name
+;;                (concat (file-name-sans-extension (or YaTeX-parent-file
+;;                                                      (save-excursion
+;;                                                        (YaTeX-visit-main t)
+;;                                                        buffer-file-name)))
+;;                        ".pdf"))
+;;               "#src:"
+;;               (number-to-string (save-restriction
+;;                                   (widen)
+;;                                   (count-lines (point-min) (point))))
+;;               (buffer-file-name))))))
 
-(add-hook 'yatex-mode-hook
-          '(lambda ()
-             (define-key YaTeX-mode-map (kbd "C-c o") 'okular-forward-search)))
+;; (add-hook 'yatex-mode-hook
+;;           '(lambda ()
+;;              (define-key YaTeX-mode-map (kbd "C-c o") 'okular-forward-search)))
 
-(defun zathura-forward-search ()
-  (interactive)
-  (progn
-    (process-kill-without-query
-     (start-process
-      "zathura"
-      nil
-      "zathura"
-      "--synctex-forward"
-      (concat (number-to-string (save-restriction
-                                  (widen)
-                                  (count-lines (point-min) (point))))
-              ":0:"
-              (buffer-name))
-      (expand-file-name
-       (concat (file-name-sans-extension (or YaTeX-parent-file
-                                             (save-excursion
-                                               (YaTeX-visit-main t)
-                                               buffer-file-name)))
-               ".pdf"))))))
+;; (defun zathura-forward-search ()
+;;   (interactive)
+;;   (progn
+;;     (process-kill-without-query
+;;      (start-process
+;;       "zathura"
+;;       nil
+;;       "zathura"
+;;       "--synctex-forward"
+;;       (concat (number-to-string (save-restriction
+;;                                   (widen)
+;;                                   (count-lines (point-min) (point))))
+;;               ":0:"
+;;               (buffer-name))
+;;       (expand-file-name
+;;        (concat (file-name-sans-extension (or YaTeX-parent-file
+;;                                              (save-excursion
+;;                                                (YaTeX-visit-main t)
+;;                                                buffer-file-name)))
+;;                ".pdf"))))))
 
-(add-hook 'yatex-mode-hook
-          '(lambda ()
-             (define-key YaTeX-mode-map (kbd "C-c z") 'zathura-forward-search)))
+;; (add-hook 'yatex-mode-hook
+;;           '(lambda ()
+;;              (define-key YaTeX-mode-map (kbd "C-c z") 'zathura-forward-search)))
 
 (add-hook 'yatex-mode-hook
           '(lambda ()
