@@ -191,6 +191,18 @@ function sands(){
     xcape -e '#65=space'
 }
 
+# clipboard
+if which pbcopy >/dev/null 2>&1 ; then 
+    # Mac  
+    alias -g C='| pbcopy'
+elif which xsel >/dev/null 2>&1 ; then 
+    # Linux
+    alias -g C='| xsel --input --clipboard'
+elif which putclip >/dev/null 2>&1 ; then 
+    # Cygwin 
+    alias -g C='| putclip'
+fi
+
 
 # if [ -z $EMACS ];then
 #     PID=$(ps x | grep -v grep | grep "xcape" | grep "space" | awk '{ print $1 }')
