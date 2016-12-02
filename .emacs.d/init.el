@@ -35,6 +35,7 @@
 (el-get-bundle emacsfodder/emacs-slime-theme)
 (el-get-bundle markdown-mode)
 (el-get-bundle jedi-core)
+(el-get-bundle jedi)
 (el-get-bundle haskell-mode)
 (el-get-bundle magit)
 (el-get-bundle yasnippet)
