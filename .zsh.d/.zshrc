@@ -198,6 +198,7 @@ if which pbcopy >/dev/null 2>&1 ; then
 elif which xsel >/dev/null 2>&1 ; then 
     # Linux
     alias -g C='| xsel --input --clipboard'
+    alias -g P='xclip -out -sel clip'
 elif which putclip >/dev/null 2>&1 ; then 
     # Cygwin 
     alias -g C='| putclip'
