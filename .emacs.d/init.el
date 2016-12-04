@@ -397,7 +397,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 
 
 ;;# tramp
-(setq tramp-auto-save-directory "~/bak/emacs")
+(setq tramp-auto-save-directory "~/.bak/emacs")
 ;; root所有のファイルを一般ユーザから開くときに自動的にsudoするかどうかを尋ねる。
 (defun file-root-p (filename)
  "Return t if file FILENAME created by root."

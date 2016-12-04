@@ -11,8 +11,7 @@ export AUTOFEATURE=true  # autotestでfeatureを動かす
 export WAREHOUSE=192.168.0.7
 export WAREHOUSE_ADDR=40:16:7e:27:bd:83
  
-bindkey -v               # キーバインドをemacsモードに設定
-#bindkey -v              # キーバインドをviモードに設定
+bindkey -v               # キーバインドをviモードに設定
 bindkey '^B' vi-backward-delete-char
 bindkey "^T" history-beginning-search-backward-end
 bindkey "^H" history-beginning-search-forward-end
@@ -52,8 +51,8 @@ setopt nonomatch
 setopt HIST_IGNORE_SPACE
 
 ### Complement ###
-#autoload -U compinit; compinit # 補完機能を有効にする
-autoload -U compinit compinit
+autoload -U compinit; compinit # 補完機能を有効にする
+#autoload -U compinit compinit
 setopt auto_list               # 補完候補を一覧で表示する(d)
 setopt auto_menu               # 補完キー連打で補完候補を順に表示する(d)
 setopt list_packed             # 補完候補をできるだけ詰めて表示する

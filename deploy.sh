@@ -23,3 +23,13 @@ if [ -e ~/texmf ]; then
 	sudo mv ~/texmf ~/texmf.bak
 fi
 sudo ln -s $nh/texmf ~/texmf 
+
+if [ -e ~/.xmonad ]; then
+	mv ~/.xmonad ~/.xmonad.bak
+fi
+ln -s $nh/.xmonad ~/
+
+cd ~
+git clone https://github.com/gmmeyer/awesome-dangerzone
+mv ./awesome-dangerzone/icons ./.icons
+rm -rf ./awesome-dangerzone
