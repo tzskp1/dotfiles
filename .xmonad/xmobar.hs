@@ -9,7 +9,7 @@ Config { -- appearance
    -- layout
    , sepChar =  "%"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
-   -- , template = " %StdinReader% }{ %multicpu%%dynnetwork%%memory%%battery%<fc=#ece391>%date%</fc> " -- note PC
+   -- , template = " %StdinReader% }{ %multicpu%%dynnetwork%%memory%%battery%<fc=#ece391>%RJTT%%date%</fc> " -- note PC
    , template = " %StdinReader% }{ %multicpu% %coretemp% %dynnetwork% %memory% <fc=#ece391>%RJTT% %date%</fc> "
    -- , template = "%battery% | %multicpu% | %coretemp% | %memory% | %dynnetwork% }{ %RJTT% | %date% || %kbd% "
 
@@ -42,7 +42,7 @@ Config { -- appearance
 
 
         -- cpu core temperature monitor
-        , Run CoreTemp       [ "--template" , "<icon=/home/tk/.icons/sm4tik-icon-pack/xbm/net_down_03.xbm/> <core0>.<core1>.<core2>"
+        , Run CoreTemp       [ "--template" , "<icon=/home/tk/.icons/sm4tik-icon-pack/xbm/temp.xbm/> <core0>.<core1>.<core2>"
                              , "--Low"      , "70"        -- units: °C
                              , "--High"     , "80"        -- units: °C
                              , "--low"      , "darkgreen"
