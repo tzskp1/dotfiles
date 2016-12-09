@@ -10,6 +10,7 @@ import XMonad.Layout.NoBorders
 import XMonad.Layout.Spiral
 import XMonad.Layout.Tabbed
 import XMonad.Layout.ThreeColumns
+import XMonad.Config.Desktop
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.EZConfig(additionalKeys)
 import Graphics.X11.ExtraTypes.XF86
@@ -62,9 +63,9 @@ myWorkspaces = ["1:term","2:web","3:code","4:vm","5:media"] ++ map show [6..9]
 -- 'className' and 'resource' are used below.
 --
 myManageHook = composeAll
-    [ className =? "Chromium"       --> doShift "2:web"
-    , className =? "Google-chrome"  --> doShift "2:web"
-    , resource  =? "desktop_window" --> doIgnore
+    [ --className =? "Chromium"       --> doShift "2:web"
+    --, className =? "Google-chrome"  --> doShift "2:web"
+      resource  =? "desktop_window" --> doIgnore
     , className =? "Galculator"     --> doFloat
     , className =? "Steam"          --> doFloat
     , className =? "Gimp"           --> doFloat
@@ -249,11 +250,11 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
      windows W.swapUp    )
 
   -- Shrink the master area.
-  , ((modMask, xK_n),
+  , ((modMask, xK_d),
      sendMessage Shrink)
 
   -- Expand the master area.
-  , ((modMask, xK_d),
+  , ((modMask, xK_n),
      sendMessage Expand)
 
   -- Push window back into tiling.
@@ -355,7 +356,7 @@ main = do
           , ppSep = "   "
       }
       , manageHook = manageDocks <+> myManageHook
-      , startupHook = setWMName "LG3D"
+      -- , startupHook = setWMName "LG3D" -- for java
   }
 
 
@@ -367,7 +368,7 @@ main = do
 --
 -- No need to modify this.
 --
-defaults = def{
+defaults = desktopConfig{
     -- simple stuff
     terminal           = myTerminal,
     focusFollowsMouse  = myFocusFollowsMouse,

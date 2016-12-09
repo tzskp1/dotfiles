@@ -7,4 +7,4 @@
 #----------------------------
 export GOPATH=$HOME/go
 export GOROOT=/usr/local/go
-export PATH=$GOROOT/bin:$PATH
+export PATH=$HOME/.cabal/bin:$GOROOT/bin:$PATH
