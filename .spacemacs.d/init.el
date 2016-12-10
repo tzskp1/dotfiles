@@ -40,21 +40,27 @@ values."
      auto-completion
      better-defaults
      emacs-lisp
-     git
-     markdown
-     org
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
      spell-checking
      syntax-checking
      version-control
+
+	 python
+     git
+     markdown
+     org
+	 c-c++
+	 haskell
+
+	 my-keyboard-layout
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(evil helm)
+   dotspacemacs-additional-packages '(evil helm ddskk yatex undohist)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -317,6 +323,18 @@ you should place your code here."
   (setq-default indent-tabs-mode t)
   (setq auto-save-default t)
 
+  (defun interrupt-and-recompile ()
+    "Interrupt old compilation, if any, and recompile."
+    (interactive)
+    (ignore-errors
+      (process-kill-without-query
+       (get-buffer-process
+        (get-buffer "*compilation*"))))
+    (ignore-errors
+      (kill-buffer "*compilation*"))
+    (recompile)
+    )
+
   ;;# バックアップファイルを~/.bakに集める
   (setq make-backup-files t)
   (setq backup-directory "~/.bak")
@@ -349,25 +367,6 @@ you should place your code here."
           (def2 (lookup-key map key2)))
       (define-key map key1 def2)
       (define-key map key2 def1)))
-  (evil-swap-key evil-motion-state-map "j" "gj")
-  (evil-swap-key evil-motion-state-map "k" "gk")
-
-  ;for dvorak
-  ;use dhtn as hjkl for dvorak keyboard
-  (dolist (keys-assoc '(("d" . "h") ("h" . "j") ("t" . "k") ("n" . "l")))
-    (dolist (state '(normal motion visual))
-      (evil-global-set-key state
-                           (car keys-assoc)
-                           (lookup-key
-                            (symbol-value
-                             (intern (concat "evil-" (symbol-name state) "-state-map")))
-                            (cdr keys-assoc)))))
-
-  (evil-global-set-key 'insert "\C-d" 'backward-char)
-  (evil-global-set-key 'insert "\C-n" 'forward-char)
-  (evil-global-set-key 'insert "\C-t" 'previous-line)
-  (evil-global-set-key 'insert "\C-h" 'next-line)
-  (define-key evil-ex-search-keymap "\C-b" 'backward-delete-char-untabify)
 
   (defmacro evil-add-dhtn-bindings (keymap &optional state &rest bindings)
     "Add \"d\", \"h\", \"t\", \"n\" bindings to KEYMAP in STATE.
@@ -380,6 +379,34 @@ Add additional BINDINGS if specified. For dvorak keyboard."
        "n" (lookup-key evil-motion-state-map "n")
        ":" (lookup-key evil-motion-state-map ":")
        ,@bindings))
+
+  ;for dvorak
+  ;use dhtn as hjkl for dvorak keyboard
+  ;; (dolist (keys-assoc '(("d" . "h") ("h" . "j") ("t" . "k") ("n" . "l")))
+  ;;   (dolist (state '(normal motion visual))
+  ;;     (evil-global-set-key state
+  ;;                          (car keys-assoc)
+  ;;                          (lookup-key
+  ;;                           (symbol-value
+  ;;                            (intern (concat "evil-" (symbol-name state) "-state-map")))
+  ;;                           (cdr keys-assoc)))))
+
+  ;; or
+
+  (let ((map '("d" evil-backward-char)))
+    (apply 'define-key evil-normal-state-map map)
+    (apply 'define-key evil-visual-state-map map)
+    (apply 'define-key evil-motion-state-map map))
+
+  ;;
+
+  (evil-swap-key evil-motion-state-map "j" "gj")
+  (evil-swap-key evil-motion-state-map "k" "gk")
+  (evil-global-set-key 'insert "\C-d" 'backward-char)
+  (evil-global-set-key 'insert "\C-n" 'forward-char)
+  (evil-global-set-key 'insert "\C-t" 'previous-line)
+  (evil-global-set-key 'insert "\C-h" 'next-line)
+  (define-key evil-ex-search-keymap "\C-b" 'backward-delete-char-untabify)
 
   ; 'k' for deletion
   (let ((map '("k" evil-delete)))
@@ -395,7 +422,6 @@ Add additional BINDINGS if specified. For dvorak keyboard."
   (define-key evil-normal-state-map "l" 'evil-search-next)
   (define-key evil-normal-state-map "L" 'evil-search-previous)
 
-  ;;(evil-ex-search-previous &optional COUNT)
   ;; Prevent quit command from exit Emacs
   (defun my-kill-current-butffer ()
     :repeat nil
@@ -438,16 +464,15 @@ Add additional BINDINGS if specified. For dvorak keyboard."
   (require 'helm-config)
   (require 'helm-buffers)
   (require 'helm-files)
-  (define-key helm-buffer-map "\C-t" 'helm-previous-line)
-  (define-key helm-buffer-map "\C-h" 'helm-next-line)
-  (define-key helm-moccur-map "\C-h" 'helm-next-line)
-  (define-key helm-moccur-map "\C-t" 'helm-previous-line)
-  (define-key helm-command-map "\C-t" 'helm-previous-line)
-  (define-key helm-command-map "\C-h" 'helm-next-line)
-  (define-key helm-map "\C-t" 'helm-previous-line)
-  (define-key helm-map "\C-h" 'helm-next-line)
+  ;; (define-key helm-buffer-map "\C-t" 'helm-previous-line)
+  ;; (define-key helm-buffer-map "\C-h" 'helm-next-line)
+  ;; (define-key helm-moccur-map "\C-h" 'helm-next-line)
+  ;; (define-key helm-moccur-map "\C-t" 'helm-previous-line)
+  ;; (define-key helm-command-map "\C-t" 'helm-previous-line)
+  ;; (define-key helm-command-map "\C-h" 'helm-next-line)
+  ;; (define-key helm-map "\C-t" 'helm-previous-line)
+  ;; (define-key helm-map "\C-h" 'helm-next-line)
   (global-set-key (kbd "C-x C-b") 'helm-mini)
-  (global-set-key (kbd "M-x") 'helm-M-x)
 
   (setq helm-display-function (lambda (buf)
                                 (split-window-vertically)
@@ -456,30 +481,14 @@ Add additional BINDINGS if specified. For dvorak keyboard."
   (helm-descbinds-mode t)
   ;; For helm-find-files etc.
   (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
-  (define-key helm-find-files-map "\C-t" 'helm-previous-line)
-  (define-key helm-find-files-map "\C-h" 'helm-next-line)
-  (define-key helm-find-files-map "\C-b" 'backward-delete-char-untabify)
   (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
-  (define-key helm-read-file-map "\C-t" 'helm-previous-line)
-  (define-key helm-read-file-map "\C-h" 'helm-next-line)
-  (define-key helm-read-file-map "\C-b" 'backward-delete-char-untabify)
 
   ;;# key binding
-  (defun interrupt-and-recompile ()
-    "Interrupt old compilation, if any, and recompile."
-    (interactive)
-    (ignore-errors
-      (process-kill-without-query
-       (get-buffer-process
-        (get-buffer "*compilation*"))))
-    (ignore-errors
-      (kill-buffer "*compilation*"))
-    (recompile)
-    )
   (global-set-key (kbd "C-h C-h") 'interrupt-and-recompile)
   (global-unset-key (kbd "C-x h")) ; helpうぜえ
-  ;; (global-set-key (kbd "C-M-f") 'find-grep)
   (global-set-key (kbd "C-c C-c") 'comment-or-uncomment-region)
+  (define-key evil-insert-state-map (kbd "C-/") 'evil-normal-state)
+  (define-key evil-insert-state-map (kbd "C-_") 'evil-normal-state)
 
   (eval-after-load 'evil
     '(progn
@@ -489,23 +498,44 @@ Add additional BINDINGS if specified. For dvorak keyboard."
                  (global-set-key (car x) (cdr x)))
                '(
                  ("\C-b" . backward-delete-char-untabify)
-                 ;;("\C-m" . newline-and-indent)
-                 ;;("\C-z" . undo)
-                 ;;("\M-u" . evil-ret)
                  ("\C-xh" . nil)
                  ("\C-xm" . browse-url-at-point)
                  ("\C-x." . find-file-at-point)
                  ([C-tab] . other-window)
-                 ;; ("\C-/" . evil-normal-state)
-                 ;;("\C-c \C-b \C-b" . kill-other-buffers)
                  ))
-                                        ; (evil-define-key nil my-keyjack-mode-map (kbd "C-/") 'evil-normal-state)
        (easy-mmode-define-minor-mode my-keyjack-mode "Grab keys"
                                      t " Keyjack" my-keyjack-mode-map)
        (my-keyjack-mode t)))
 
-  (define-key evil-insert-state-map (kbd "C-/") 'evil-normal-state)
-  (define-key evil-insert-state-map (kbd "C-_") 'evil-normal-state)
+  ;;# skk
+  (require 'skk)
+  (when (require 'dired-x nil t)
+	(global-set-key "\C-x\C-j" 'skk-mode))
+  ; (setq skk-kakutei-key "C-m")
+  ;; 変換候補がひとつしかない場合は確定する
+  (setq skk-kakutei-when-unique-candidate t)
+  ;;モードで RET を入力したときに確定のみ行い、改行はしない
+  (setq skk-egg-like-newline t)
+  ;; (setq skk-kuten-touten-alist
+  ;;   '(
+  ;;     (jp . ("." . "," ))
+  ;;     (en . ("." . ","))
+  ;;     ))
+  ;; (setq-default skk-kutouten-type 'en)
+
+  ;;# YaTeX
+  (setq auto-mode-alist
+		(cons (cons "\\.tex$" 'yatex-mode) auto-mode-alist))
+  (autoload 'yatex-mode "yatex" "Yet Another LaTeX mode" t)
+  (setq YaTeX-inhibit-prefix-letter t)
+  (setq YaTeX-kanji-code 4)
+
+  ;;# undohist
+  (require 'undohist)
+  (undohist-initialize)
+  ;永続化を無視するファイル名の正規表現
+  (setq undohist-ignored-files
+		'("/tmp/"))
   ;; ----------------------myconfig----------------------
   )
 
@@ -518,7 +548,7 @@ Add additional BINDINGS if specified. For dvorak keyboard."
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (xterm-color shell-pop org-projectile org-present org-pomodoro alert log4e gntp org-download multi-term htmlize gnuplot eshell-z eshell-prompt-extras esh-help smeargle orgit org mwim magit-gitflow helm-gitignore helm-company helm-c-yasnippet gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor diff-hl company-statistics company auto-yasnippet yasnippet auto-dictionary ac-ispell auto-complete mmm-mode markdown-toc markdown-mode gh-md ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-theme))))
+    (undohist yatex yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode intero hy-mode hlint-refactor hindent helm-pydoc helm-hoogle haskell-snippets flycheck-haskell disaster ddskk cdb ccc cython-mode company-ghci company-ghc ghc haskell-mode company-cabal company-c-headers company-anaconda cmm-mode cmake-mode clang-format anaconda-mode pythonic xterm-color shell-pop org-projectile org-present org-pomodoro alert log4e gntp org-download multi-term htmlize gnuplot eshell-z eshell-prompt-extras esh-help smeargle orgit org mwim magit-gitflow helm-gitignore helm-company helm-c-yasnippet gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit magit-popup git-commit with-editor diff-hl company-statistics company auto-yasnippet yasnippet auto-dictionary ac-ispell auto-complete mmm-mode markdown-toc markdown-mode gh-md ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
