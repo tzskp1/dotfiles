@@ -54,7 +54,7 @@ values."
 	 c-c++
 	 haskell
 
-	 my-keyboard-layout
+	 ;my-keyboard-layout
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -382,23 +382,14 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 
   ;for dvorak
   ;use dhtn as hjkl for dvorak keyboard
-  ;; (dolist (keys-assoc '(("d" . "h") ("h" . "j") ("t" . "k") ("n" . "l")))
-  ;;   (dolist (state '(normal motion visual))
-  ;;     (evil-global-set-key state
-  ;;                          (car keys-assoc)
-  ;;                          (lookup-key
-  ;;                           (symbol-value
-  ;;                            (intern (concat "evil-" (symbol-name state) "-state-map")))
-  ;;                           (cdr keys-assoc)))))
-
-  ;; or
-
-  (let ((map '("d" evil-backward-char)))
-    (apply 'define-key evil-normal-state-map map)
-    (apply 'define-key evil-visual-state-map map)
-    (apply 'define-key evil-motion-state-map map))
-
-  ;;
+  (dolist (keys-assoc '(("d" . "h") ("h" . "j") ("t" . "k") ("n" . "l")))
+    (dolist (state '(normal motion visual))
+      (evil-global-set-key state
+                           (car keys-assoc)
+                           (lookup-key
+                            (symbol-value
+                             (intern (concat "evil-" (symbol-name state) "-state-map")))
+                            (cdr keys-assoc)))))
 
   (evil-swap-key evil-motion-state-map "j" "gj")
   (evil-swap-key evil-motion-state-map "k" "gk")
@@ -464,14 +455,14 @@ Add additional BINDINGS if specified. For dvorak keyboard."
   (require 'helm-config)
   (require 'helm-buffers)
   (require 'helm-files)
-  ;; (define-key helm-buffer-map "\C-t" 'helm-previous-line)
-  ;; (define-key helm-buffer-map "\C-h" 'helm-next-line)
-  ;; (define-key helm-moccur-map "\C-h" 'helm-next-line)
-  ;; (define-key helm-moccur-map "\C-t" 'helm-previous-line)
-  ;; (define-key helm-command-map "\C-t" 'helm-previous-line)
-  ;; (define-key helm-command-map "\C-h" 'helm-next-line)
-  ;; (define-key helm-map "\C-t" 'helm-previous-line)
-  ;; (define-key helm-map "\C-h" 'helm-next-line)
+  (define-key helm-buffer-map "\C-t" 'helm-previous-line)
+  (define-key helm-buffer-map "\C-h" 'helm-next-line)
+  (define-key helm-moccur-map "\C-h" 'helm-next-line)
+  (define-key helm-moccur-map "\C-t" 'helm-previous-line)
+  (define-key helm-command-map "\C-t" 'helm-previous-line)
+  (define-key helm-command-map "\C-h" 'helm-next-line)
+  (define-key helm-map "\C-t" 'helm-previous-line)
+  (define-key helm-map "\C-h" 'helm-next-line)
   (global-set-key (kbd "C-x C-b") 'helm-mini)
 
   (setq helm-display-function (lambda (buf)
@@ -481,7 +472,13 @@ Add additional BINDINGS if specified. For dvorak keyboard."
   (helm-descbinds-mode t)
   ;; For helm-find-files etc.
   (define-key helm-find-files-map (kbd "TAB") 'helm-execute-persistent-action)
+  (define-key helm-find-files-map "\C-t" 'helm-previous-line)
+  (define-key helm-find-files-map "\C-h" 'helm-next-line)
+  (define-key helm-find-files-map "\C-b" 'backward-delete-char-untabify)
   (define-key helm-read-file-map (kbd "TAB") 'helm-execute-persistent-action)
+  (define-key helm-read-file-map "\C-t" 'helm-previous-line)
+  (define-key helm-read-file-map "\C-h" 'helm-next-line)
+  (define-key helm-read-file-map "\C-b" 'backward-delete-char-untabify)
 
   ;;# key binding
   (global-set-key (kbd "C-h C-h") 'interrupt-and-recompile)
