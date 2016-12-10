@@ -9,6 +9,13 @@
 ;; cmake
 ;; python-virtualenv
 ;; rtags
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
 (when load-file-name
   (setq user-emacs-directory (file-name-directory load-file-name)))
 (add-to-list 'load-path (locate-user-emacs-file "el-get/el-get"))
@@ -73,6 +80,9 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
     (setq exec-path (split-string path-from-shell path-separator))))
 (set-exec-path-from-shell-PATH)
 
+;;# 右から左に読む言語に対応させないことで描画高速化
+(setq-default bidi-display-reordering nil)
+
 ;;# クリップボード
 (setq x-select-enable-primary t)
 
@@ -94,6 +104,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (setq auto-save-default t)
 (global-font-lock-mode t)
 (tool-bar-mode -1)
+(menu-bar-mode -1)
 (line-number-mode t)
 (column-number-mode t)
 (custom-set-variables
