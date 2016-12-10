@@ -60,7 +60,6 @@
 (el-get-bundle cmake-mode)
 (el-get-bundle popup)
 
-
 ;;# Theme
 (require 'slime-theme)
 (add-to-list 'default-frame-alist '(alpha . 95))
