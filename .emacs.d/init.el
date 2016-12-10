@@ -44,7 +44,6 @@
 (el-get-bundle jedi-core)
 (el-get-bundle jedi)
 (el-get-bundle haskell-mode)
-(el-get-bundle magit)
 (el-get-bundle yasnippet)
 (el-get-bundle git-gutter)
 (el-get-bundle yaml-mode)
@@ -173,7 +172,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 
 ;;# dired
 (load "dired-x")
-(require 'wdired)
+(autoload 'wdired "wdired" nil t)
 (define-key dired-mode-map "p" 'wdired-change-to-wdired-mode)
 
 ;;# key binding
@@ -437,7 +436,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 
 
 ;;# flycheck
-(require 'flycheck)
+;(require 'flycheck)
 (when (require 'flycheck nil 'noerror)
   (custom-set-variables
    ;; エラーをポップアップで表示
@@ -712,92 +711,6 @@ Add additional BINDINGS if specified. For dvorak keyboard."
                 (local-set-key (kbd "M-,") 'rtags-location-stack-back)))))
 (custom-set-variables '(rtags-use-helm t))
 
-;; (require 'dbus)
-;; (defun un-urlify (fname-or-url)
-;;   "A trivial function that replaces a prefix of file:/// with just /."
-;;   (if (string= (substring fname-or-url 0 8) "file:///")
-;;       (substring fname-or-url 7)
-;;     fname-or-url))
-
-;; (defun evince-inverse-search (file linecol &rest ignored)
-;;   (let* ((fname (un-urlify file))
-;;          (buf (find-file fname))
-;;          (line (car linecol))
-;;          (col (cadr linecol)))
-;;     (if (null buf)
-;;         (message "[Synctex]: %s is not opened..." fname)
-;;       (switch-to-buffer buf)
-;;       (goto-line (car linecol))
-;;       (unless (= col -1)
-;;         (move-to-column col)))))
-
-;; (dbus-register-signal
-;;  :session nil "/org/gnome/evince/Window/0"
-;;  "org.gnome.evince.Window" "SyncSource"
-;;  'evince-inverse-search)
-
-;; (defun okular-forward-search ()
-;;   (interactive)
-;;   (progn
-;;     (process-kill-without-query
-;;      (start-process
-;;       "okular"
-;;       nil
-;;       "okular"
-;;       "--unique"
-;;       (concat (expand-file-name
-;;                (concat (file-name-sans-extension (or YaTeX-parent-file
-;;                                                      (save-excursion
-;;                                                        (YaTeX-visit-main t)
-;;                                                        buffer-file-name)))
-;;                        ".pdf"))
-;;               "#src:"
-;;               (number-to-string (save-restriction
-;;                                   (widen)
-;;                                   (count-lines (point-min) (point))))
-;;               (buffer-file-name))))))
-
-;; (add-hook 'yatex-mode-hook
-;;           '(lambda ()
-;;              (define-key YaTeX-mode-map (kbd "C-c o") 'okular-forward-search)))
-
-;; (defun zathura-forward-search ()
-;;   (interactive)
-;;   (progn
-;;     (process-kill-without-query
-;;      (start-process
-;;       "zathura"
-;;       nil
-;;       "zathura"
-;;       "--synctex-forward"
-;;       (concat (number-to-string (save-restriction
-;;                                   (widen)
-;;                                   (count-lines (point-min) (point))))
-;;               ":0:"
-;;               (buffer-name))
-;;       (expand-file-name
-;;        (concat (file-name-sans-extension (or YaTeX-parent-file
-;;                                              (save-excursion
-;;                                                (YaTeX-visit-main t)
-;;                                                buffer-file-name)))
-;;                ".pdf"))))))
-
-;; (add-hook 'yatex-mode-hook
-;;           '(lambda ()
-;;              (define-key YaTeX-mode-map (kbd "C-c z") 'zathura-forward-search)))
-
-(add-hook 'yatex-mode-hook
-          '(lambda ()
-             (auto-fill-mode -2)))
-
-;;# RefTeX with YaTeX
-;(add-hook 'yatex-mode-hook 'turn-on-reftex)
-(add-hook 'yatex-mode-hook
-          '(lambda ()
-             (reftex-mode 1)
-             (define-key reftex-mode-map (concat YaTeX-prefix ">") 'YaTeX-comment-region)
-             (define-key reftex-mode-map (concat YaTeX-prefix "<") 'YaTeX-uncomment-region)))
-
 ;;# skk
 (require 'skk)
 (when (require 'dired-x nil t)
@@ -944,9 +857,6 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 (put 'with-signal-handlers 'scheme-indent-function 1)
 (put 'with-locking-mutex 'scheme-indent-function 1)
 (put 'guard 'scheme-indent-function 1)
-;; (add-to-list 'load-path
-;;              "~/.emacs.d/elisp/emacs-w3m/share/emacs/site-lisp/w3m")
-;; (setq w3m-home-page "http://www.google.co.jp/")
 (setq geiser-racket-binary "/home/tk/racket/bin/racket")
 (setq geiser-active-implementations '(racket))
 
@@ -960,210 +870,12 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 (setq jedi:use-shortcuts t)
 (add-hook 'python-mode-hook 'jedi:setup)
 (add-to-list 'company-backends 'company-jedi) ; backendに追加
-;; (require 'auto-complete-config)
-;; (require 'jedi)
-;; (add-hook 'python-mode-hook 'jedi:setup)
-;; (setq jedi:complete-on-dot t)
-;;(setq jedi:setup-keys t)
-;; (define-key python-mode-map (kbd "<tab>") 'jedi:complete)
 
 ;;# haskell
 (require 'haskell-mode)
 (setq haskell-program-name "/usr/bin/ghci")
 (custom-set-variables
  '(haskell-mode-hook '(turn-on-haskell-indentation)))
-
-;;# magit
-(require 'magit)
-;; (defadvice magit-status (around magit-fullscreen activate)
-;;   (window-configuration-to-register :magit-fullscreen)
-;;   ad-do-it
-;;   (delete-other-windows)
-;;   )
-
-;; (defun magit-quit-session ()
-;;   "Restores the previous window configuration and kills the magit buffer"
-;;   (interactive)
-;;   (kill-buffer)
-;;   (jump-to-register :magit-fullscreen))
-
-(defun magit-toggle-whitespace ()
-  (interactive)
-  (if (member "-w" magit-diff-options)
-      (magit-dont-ignore-whitespace)
-    (magit-ignore-whitespace)))
-
-(defun magit-ignore-whitespace ()
-  (interactive)
-  (add-to-list 'magit-diff-options "-w")
-  (magit-refresh))
-
-(defun magit-dont-ignore-whitespace ()
-  (interactive)
-  (setq magit-diff-options (remove "-w" magit-diff-options))
-  (magit-refresh))
-
-;;;;;;;;;;;;;;;;;;;
-;; evil key bindings
-;;;;;;;;;;;;;;;;;;;
-
-(evil-set-initial-state 'magit-log-edit-mode 'insert)
-(evil-set-initial-state 'git-commit-mode 'insert)
-(evil-set-initial-state 'magit-commit-mode 'motion)
-(evil-set-initial-state 'magit-status-mode 'motion)
-(evil-set-initial-state 'magit-log-mode 'motion)
-(evil-set-initial-state 'magit-wassup-mode 'motion)
-(evil-set-initial-state 'magit-mode 'motion)
-(evil-set-initial-state 'git-rebase-mode 'motion)
-
-(evil-define-key 'motion git-rebase-mode-map
-  "c" 'git-rebase-pick
-  "r" 'git-rebase-reword
-  "s" 'git-rebase-squash
-  "e" 'git-rebase-edit
-  "f" 'git-rebase-fixup
-  "y" 'git-rebase-insert
-  "d" 'git-rebase-kill-line
-  "u" 'git-rebase-undo
-  "x" 'git-rebase-exec
-  (kbd "<return>") 'git-rebase-show-commit
-  "\M-n" 'git-rebase-move-line-down
-  "\M-p" 'git-rebase-move-line-up)
-
-(evil-define-key 'motion magit-commit-mode-map
-  "\C-c\C-b" 'magit-show-commit-backward
-  "\C-c\C-f" 'magit-show-commit-forward)
-
-(evil-define-key 'motion magit-status-mode-map
-  "\C-f" 'evil-scroll-page-down
-  "\C-b" 'evil-scroll-page-up
-  "." 'magit-mark-item
-  "=" 'magit-diff-with-mark
-  "C" 'magit-add-log
-  "I" 'magit-ignore-item-locally
-  "S" 'magit-stage-all
-  "U" 'magit-unstage-all
-  "W" 'magit-toggle-whitespace
-  "X" 'magit-reset-working-tree
-  "d" 'magit-discard-item
-  "i" 'magit-ignore-item
-  "s" 'magit-stage-item
-  "u" 'magit-unstage-item
-  "z" 'magit-key-mode-popup-stashing)
-
-(evil-define-key 'motion magit-log-mode-map
-  "." 'magit-mark-item
-  "=" 'magit-diff-with-mark
-  "e" 'magit-log-show-more-entries)
-
-(evil-define-key 'motion magit-wazzup-mode-map
-  "." 'magit-mark-item
-  "=" 'magit-diff-with-mark
-  "i" 'magit-ignore-item)
-
-(evil-set-initial-state 'magit-branch-manager-mode 'motion)
-(evil-define-key 'motion magit-branch-manager-mode-map
-  "a" 'magit-add-remote
-  "c" 'magit-rename-item
-  "d" 'magit-discard-item
-  "o" 'magit-create-branch
-  "v" 'magit-show-branches
-  "T" 'magit-change-what-branch-tracks)
-
-(evil-define-key 'motion magit-mode-map
-  "\M-1" 'magit-show-level-1-all
-  "\M-2" 'magit-show-level-2-all
-  "\M-3" 'magit-show-level-3-all
-  "\M-4" 'magit-show-level-4-all
-  "\M-H" 'magit-show-only-files-all
-  "\M-S" 'magit-show-level-4-all
-  "\M-h" 'magit-show-only-files
-  "\M-s" 'magit-show-level-4
-  "!" 'magit-key-mode-popup-running
-  "$" 'magit-process
-  "+" 'magit-diff-larger-hunks
-  "-" 'magit-diff-smaller-hunks
-  "=" 'magit-diff-default-hunks
-  "/" 'evil-search-forward
-  ":" 'evil-ex
-  ";" 'magit-git-command
-  "?" 'evil-search-backward
-  "<" 'magit-key-mode-popup-stashing
-  "A" 'magit-cherry-pick-item
-  "B" 'magit-key-mode-popup-bisecting
-  "D" 'magit-revert-item
-  "E" 'magit-ediff
-  "F" 'magit-key-mode-popup-pulling
-  "G" 'evil-goto-line
-  "H" 'magit-rebase-step
-  "J" 'magit-key-mode-popup-apply-mailbox
-  "K" 'magit-key-mode-popup-dispatch
-  "L" 'magit-add-change-log-entry
-  "M" 'magit-key-mode-popup-remoting
-  "N" 'evil-search-previous
-  "P" 'magit-key-mode-popup-pushing
-  "Q" 'magit-quit-session
-  "R" 'magit-refresh-all
-  "S" 'magit-stage-all
-  "U" 'magit-unstage-all
-  "W" 'magit-diff-working-tree
-  "X" 'magit-reset-working-tree
-  "Y" 'magit-interactive-rebase
-  "Z" 'magit-key-mode-popup-stashing
-  "a" 'magit-apply-item
-  "b" 'magit-key-mode-popup-branching
-  "c" 'magit-key-mode-popup-committing
-  "e" 'magit-diff
-  "f" 'magit-key-mode-popup-fetching
-  "g?" 'magit-describe-item
-  "g$" 'evil-end-of-visual-line
-  "g0" 'evil-beginning-of-visual-line
-  "gE" 'evil-backward-WORD-end
-  "g^" 'evil-first-non-blank-of-visual-line
-  "g_" 'evil-last-non-blank
-  "gd" 'evil-goto-definition
-  "ge" 'evil-backward-word-end
-  "gg" 'evil-goto-first-line
-  "gh" 'magit-goto-next-section
-  "gt" 'magit-goto-previous-section
-  ;; "gh" 'evil-next-visual-line
-  ;; "gt" 'evil-previous-visual-line
-  "gm" 'evil-middle-of-visual-line
-  "k" 'magit-key-mode-popup-rewriting
-  "h" 'magit-section-forward
-  "t" 'magit-section-backward
-  ;; "h" 'evil-next-visual-line
-  ;; "t" 'evil-previous-visual-line
-  "l" 'magit-key-mode-popup-logging
-  "m" 'magit-key-mode-popup-merging
-  "n" 'evil-search-next
-  "o" 'magit-key-mode-popup-submodule
-  "p" 'magit-cherry
-  "q" 'magit-mode-quit-window
-  "r" 'magit-refresh
-  "j" 'magit-key-mode-popup-tagging
-  "v" 'magit-revert-item
-  "w" 'magit-wazzup
-  "x" 'magit-reset-head
-  "y" 'magit-copy-item-as-kill
-  ;z  position current line
-  " " 'magit-show-item-or-scroll-up
-  "\d" 'magit-show-item-or-scroll-down
-  "\t" 'magit-visit-item
-  (kbd "<return>")   'magit-section-toggle
-  (kbd "C-<return>") 'magit-dired-jump
-  (kbd "<backtab>")  'magit-expand-collapse-section
-  (kbd "C-x 4 a")    'magit-add-change-log-entry-other-window
-  (kbd "\M-d") 'magit-copy-item-as-eval)
-
-;; (after-kill-load 'magit-status-mode
-;;   (evil-define-key 'normal magit-status-mode-map
-;; 	"h" 'magit-goto-next-section
-;; 	"t" 'magit-goto-previous-section))
-;; (define-key global-map [(super g)] 'magit-status)
-;; (add-to-load-path "vendor/magit-plugins")
-;; (require 'magit-flow)
-;; (add-hook 'magit-mode-hook 'turn-on-magit-flow)
 
 ;;# git-gutter
 (require 'git-gutter)
@@ -1217,6 +929,18 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 		  (define-key skk-j-mode-map "$" 'YaTeX-insert-dollar)
 		  ))
 	    ))
+
+(add-hook 'yatex-mode-hook
+          '(lambda ()
+             (auto-fill-mode -2)))
+
+;;# RefTeX with YaTeX
+;(add-hook 'yatex-mode-hook 'turn-on-reftex)
+(add-hook 'yatex-mode-hook
+          '(lambda ()
+             (reftex-mode 1)
+             (define-key reftex-mode-map (concat YaTeX-prefix ">") 'YaTeX-comment-region)
+             (define-key reftex-mode-map (concat YaTeX-prefix "<") 'YaTeX-uncomment-region)))
 
 ;;# CMake
 (require 'cmake-mode)
