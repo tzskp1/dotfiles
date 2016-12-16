@@ -45,7 +45,7 @@ myLauncher = "dmenu_run -fn 'Migu 1M:size=20'"
 -- Workspaces
 -- The default number of workspaces (virtual screens) and their names.
 --
-myWorkspaces = ["1:term","2:web","3:code","4:vm","5:media"] ++ map show [6..9]
+myWorkspaces = ["1:term","2:web","3:code","4:media","5:vm"] ++ map show [6..9]
 
 
 ------------------------------------------------------------------------
@@ -63,9 +63,10 @@ myWorkspaces = ["1:term","2:web","3:code","4:vm","5:media"] ++ map show [6..9]
 -- 'className' and 'resource' are used below.
 --
 myManageHook = composeAll
-    [ --className =? "Chromium"       --> doShift "2:web"
-    --, className =? "Google-chrome"  --> doShift "2:web"
-      resource  =? "desktop_window" --> doIgnore
+    [ className =? "Chromium"       --> doShift "2:web"
+    , className =? "Google-chrome"  --> doShift "2:web"
+    , className =? "Emacs"          --> doShift "3:code"
+    , resource  =? "desktop_window" --> doIgnore
     , className =? "Galculator"     --> doFloat
     , className =? "Steam"          --> doFloat
     , className =? "Gimp"           --> doFloat
