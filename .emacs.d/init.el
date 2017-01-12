@@ -152,18 +152,11 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 
 ;;# バックアップファイルを~/.bakに集める
 (setq make-backup-files t)
-(setq backup-directory "~/.bak")
-(if (and (boundp 'backup-directory)
-         (not (fboundp 'make-backup-file-name-original)))
-    (progn
-      (fset 'make-backup-file-name-original
-            (symbol-function 'make-backup-file-name))
-      (defun make-backup-file-name (filename)
-        (if (and (file-exists-p (expand-file-name backup-directory))
-                 (file-directory-p (expand-file-name backup-directory)))
-            (concat (expand-file-name backup-directory) 
-                    "/" (file-name-nondirectory filename))
-          (make-backup-file-name-original filename)))))
+(setq backup-directory-alist
+	  (cons (cons ".*" (expand-file-name "~/.bak"))
+        backup-directory-alist))
+(setq auto-save-file-name-transforms
+  `((".*", (expand-file-name "~/.emacs.d/backup/") t)))
 
 ;;# Arduino mode
 (setq auto-mode-alist (cons '("\\.\\(pde\\|ino\\)$" . arduino-mode) auto-mode-alist))
