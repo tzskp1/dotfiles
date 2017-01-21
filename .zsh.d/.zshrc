@@ -4,13 +4,13 @@
 # ------------------------------
 # General Settings
 # ------------------------------
-export EDITOR=vim        # エディタをvimに設定
 export LANG=ja_JP.UTF-8  # 文字コードをUTF-8に設定
 export KCODE=u           # KCODEにUTF-8を設定
 export AUTOFEATURE=true  # autotestでfeatureを動かす
-export WAREHOUSE=192.168.0.7
-export WAREHOUSE_ADDR=40:16:7e:27:bd:83
- 
+
+autoload -U edit-command-line
+zle -N edit-command-line
+
 bindkey -v               # キーバインドをviモードに設定
 bindkey '^B' vi-backward-delete-char
 bindkey "^T" history-beginning-search-backward-end
@@ -23,6 +23,8 @@ bindkey "^[OH" vi-beginning-of-line
 bindkey "^G" send-break
 bindkey "^N" forward-char
 bindkey "^D" backward-char
+bindkey "^X^E" edit-command-line
+
 
 show_buffer_stack() {
   POSTDISPLAY="

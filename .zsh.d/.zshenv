@@ -8,3 +8,7 @@
 export GOPATH=$HOME/go
 export GOROOT=/usr/local/go
 export PATH=$HOME/.cabal/bin:$GOROOT/bin:$PATH
+export EDITOR="${ZDOTDIR}/em@csclient.sh"
+#export EDITOR="emacsclient"  # until zsh 5.2
+export WAREHOUSE=192.168.0.7
+export WAREHOUSE_ADDR=40:16:7e:27:bd:83

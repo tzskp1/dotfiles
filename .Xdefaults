@@ -1,0 +1,23 @@
+urxvt.geometry: 72x24
+urxvt.saveLines: 1024
+urxvt.scrollBar: false
+urxvt.termName: rxvt
+
+urxvt.font: xft:Ricty:size=16:antialias=true
+
+! color
+urxvt.depth: 32
+urxvt.foreground: rgba:ffff/ffff/ffff/ffff
+urxvt.background: rgba:0000/0000/0000/cccc
+
+! blue
+! from http://blog.asial.co.jp/262
+urxvt.color4: #5566ff
+urxvt.color12: #7799ff
+
+! fadeout urxvt if outfocus
+urxvt.fading: 30
+
+! input with IM at cursor position
+urxvt.preeditType: OverTheSpot
+URxvt.letterSpace: -1
