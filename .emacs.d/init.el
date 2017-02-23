@@ -56,7 +56,8 @@
 (el-get-bundle company-irony)
 (el-get-bundle flycheck-irony)
 (el-get-bundle company-jedi)
-(el-get-bundle rtags)
+;(el-get-bundle rtags)
+(el-get-bundle helm-gtags)
 (el-get-bundle cmake-mode)
 (el-get-bundle popup)
 
@@ -672,6 +673,13 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 (yas/load-directory "~/.emacs.d/el-get/yasnippet/snippets")
 (yas/load-directory "~/.emacs.d/snippets")
 
+;;# auto-complete
+(require 'auto-complete)
+(require 'auto-complete-config)
+(define-key ac-complete-mode-map (kbd "C-h") 'ac-next)
+(define-key ac-complete-mode-map (kbd "C-t") 'ac-previous)
+(global-auto-complete-mode -1)
+
 ;;# company
 (require 'company)
 (global-company-mode) ; 全バッファで有効にする 
@@ -692,16 +700,33 @@ Add additional BINDINGS if specified. For dvorak keyboard."
   '(add-to-list 'company-backends 'company-irony))
 
 ;;# rtags
-(when (require 'rtags nil 'noerror)
-  (add-hook 'c-mode-common-hook
-            (lambda ()
-              (when (rtags-is-indexed)
-				(define-key evil-normal-state-local-map (kbd "<return>") 'rtags-find-symbol-at-point)
-                (local-set-key (kbd "M-.") 'rtags-find-symbol-at-point)
-                (local-set-key (kbd "M-;") 'rtags-find-symbol)
-                (local-set-key (kbd "M-@") 'rtags-find-references)
-                (local-set-key (kbd "M-,") 'rtags-location-stack-back)))))
-(custom-set-variables '(rtags-use-helm t))
+;; (when (require 'rtags nil 'noerror)
+;;   (add-hook 'c-mode-common-hook
+;;             (lambda ()
+;;               (when (rtags-is-indexed)
+;; 				(define-key evil-normal-state-local-map (kbd "<return>") 'rtags-find-symbol-at-point)
+;; 				(define-key evil-normal-state-local-map (kbd "RET") 'rtags-find-symbol-at-point)
+;;                 (local-set-key (kbd "M-.") 'rtags-find-symbol-at-point)
+;;                 (local-set-key (kbd "M-;") 'rtags-find-symbol)
+;;                 (local-set-key (kbd "M-@") 'rtags-find-references)
+;;                 (local-set-key (kbd "M-,") 'rtags-location-stack-back)))))
+;; (custom-set-variables '(rtags-use-helm t))
+
+;;# gtags
+(require 'helm-config)
+(require 'helm-gtags)
+
+(add-hook 'c-mode-common-hook 'helm-gtags-mode)
+
+;; key bindings
+(add-hook 'helm-gtags-mode-hook
+          '(lambda ()
+			 (define-key evil-normal-state-local-map (kbd "<return>") 'helm-gtags-find-tag)
+			 (define-key evil-normal-state-local-map (kbd "RET") 'helm-gtags-find-tag)
+			 (local-set-key (kbd "M-t") 'helm-gtags-find-tag)
+			 (local-set-key (kbd "M-r") 'helm-gtags-find-rtag)
+			 (local-set-key (kbd "M-s") 'helm-gtags-find-symbol)
+			 (local-set-key (kbd "C-t") 'helm-gtags-pop-stack)))
 
 ;;# skk
 (require 'skk)
@@ -752,7 +777,7 @@ Add additional BINDINGS if specified. For dvorak keyboard."
           (lambda ()
             (setq c-default-style "bsd") ;; bsd style
             (setq indent-tabs-mode nil)  ;; タブは利用しない
-            (setq c-basic-offset 2)      ;; indent は 2 スペース
+            (setq c-basic-offset 4)      ;; indent は 4 スペース
             ))
 (eval-after-load "cc-mode"
   '(progn
