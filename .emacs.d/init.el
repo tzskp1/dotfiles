@@ -100,15 +100,40 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (setq inhibit-startup-screen t)
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode t)
-(setq auto-save-default t)
 (global-font-lock-mode t)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (line-number-mode t)
 (column-number-mode t)
 (custom-set-variables
- '(split-width-threshold 70)
-)
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(anything-samewindow nil)
+ '(display-buffer-function (quote popwin:display-buffer))
+ '(flycheck-display-errors-delay 0.5)
+ '(flycheck-display-errors-function
+   (lambda
+	 (errors)
+	 (let
+		 ((messages
+		   (mapcar
+			(function flycheck-error-message)
+			errors)))
+	   (popup-tip
+		(mapconcat
+		 (quote identity)
+		 messages "
+")))))
+ '(haskell-mode-hook (quote (turn-on-haskell-indentation)))
+ '(helm-ff-auto-update-initial-value nil)
+ '(irony-additional-clang-options (quote ("-std=c++11")))
+ '(package-selected-packages (quote (rainbow-mode edit-server)))
+ '(popwin:adjust-other-windows nil)
+ '(popwin:popup-window-height 15)
+ '(popwin:popup-window-position (quote bottom))
+ '(split-width-threshold 70))
 
 (setq vc-follow-symlinks t)
 (setq auto-revert-check-vc-info t)
@@ -153,11 +178,12 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 
 ;;# バックアップファイルを~/.bakに集める
 (setq make-backup-files t)
+(setq auto-save-default t)
 (setq backup-directory-alist
 	  (cons (cons ".*" (expand-file-name "~/.bak"))
         backup-directory-alist))
 (setq auto-save-file-name-transforms
-  `((".*", (expand-file-name "~/.emacs.d/backup/") t)))
+  `((".*", (expand-file-name "~/.bak") t)))
 
 ;;# Arduino mode
 (setq auto-mode-alist (cons '("\\.\\(pde\\|ino\\)$" . arduino-mode) auto-mode-alist))
@@ -183,7 +209,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 (global-set-key (kbd "C-h C-h") 'interrupt-and-recompile)
 (global-unset-key (kbd "C-x h")) ; helpうぜえ
 ;; (global-set-key (kbd "C-M-f") 'find-grep)
-(global-set-key (kbd "C-c C-c") 'comment-or-uncomment-region)
+(global-set-key (kbd "C-w") 'comment-or-uncomment-region)
 
 ;;# url
 ;;# https://pqrs.org/emacs/doc/keyjack-mode/
@@ -210,8 +236,8 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
                                    t " Keyjack" my-keyjack-mode-map)
      (my-keyjack-mode t)))
 
-(define-key evil-insert-state-map (kbd "C-/") 'evil-normal-state)
-(define-key evil-insert-state-map (kbd "C-_") 'evil-normal-state)
+(define-key evil-insert-state-map (kbd "C-c") 'evil-normal-state)
+(define-key evil-insert-state-map (kbd "C-c") 'evil-normal-state)
 
 
 ;;# Mode line setup
@@ -359,12 +385,7 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 
 ;; popwin.el
 (require 'popwin)
-(custom-set-variables
- '(popwin:popup-window-position 'bottom)
- '(popwin:popup-window-height 15)
- '(popwin:adjust-other-windows nil)
- '(display-buffer-function 'popwin:display-buffer)
- '(anything-samewindow nil))
+
 (push '("^\\*helm" :regexp t :width 60 :position :right) popwin:special-display-config)
 (push '("*Help*" :width 80 :position :right :noselect t :stick t) popwin:special-display-config)
 (push '("*ri*" :width 70 :position :right :noselect t :stick t) popwin:special-display-config)
@@ -429,18 +450,18 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
 
 
 ;;# flycheck
-;(require 'flycheck)
 (when (require 'flycheck nil 'noerror)
   (custom-set-variables
-   ;; エラーをポップアップで表示
-   '(flycheck-display-errors-function
-     (lambda (errors)
-       (let ((messages (mapcar #'flycheck-error-message errors)))
-         (popup-tip (mapconcat 'identity messages "\n")))))
    '(flycheck-display-errors-delay 0.5))
   (define-key flycheck-mode-map (kbd "C-M-h") 'flycheck-next-error)
   (define-key flycheck-mode-map (kbd "C-M-t") 'flycheck-previous-error)
-  (add-hook 'c-mode-common-hook 'flycheck-mode))
+  (add-hook 'c-mode-common-hook 'flycheck-mode)
+  (add-hook 'c-mode-common-hook 
+			(lambda () (progn (flycheck-select-checker 'c/c++-clang)
+							  (setq flycheck-clang-include-path
+									(list "/usr/local/include/eigen3"))
+							  (setq flycheck-clang-args
+									(list "-std=c++11"))))))
 (eval-after-load "irony"
   '(progn
      (when (locate-library "flycheck-irony")
@@ -517,10 +538,10 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 ; 'Q' for hide buffer
 (define-key evil-normal-state-map "Q" 'quit-window)
 
-; 'L' for search next
+; 'M' for search next
 (define-key evil-normal-state-map "N" 'evil-search-next)
-(define-key evil-normal-state-map "l" 'evil-search-next)
-(define-key evil-normal-state-map "L" 'evil-search-previous)
+(define-key evil-normal-state-map "m" 'evil-search-next)
+(define-key evil-normal-state-map "M" 'evil-search-previous)
 
 ;;(evil-ex-search-previous &optional COUNT)
 ;; Prevent quit command from exit Emacs
@@ -649,7 +670,7 @@ Add additional BINDINGS if specified. For dvorak keyboard."
                              (switch-to-buffer buf)
                              ))
 ; 自動補完を無効
-(custom-set-variables '(helm-ff-auto-update-initial-value nil))
+
 ;; ;; C-hでバックスペースと同じように文字を削除  
 ;; (define-key helm-c-read-file-map (kbd "C-b") 'delete-backward-char)
 ;; ;; TABで任意補完。選択肢が出てきたらC-nやC-pで上下移動してから決定することも可能
@@ -743,6 +764,7 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 ;;     (en . ("." . ","))
 ;;     ))
 ;; (setq-default skk-kutouten-type 'en)
+(setq skk-user-directory "~/skk")
 
 ;;# markdown
 (require 'markdown-mode)
@@ -779,9 +801,9 @@ Add additional BINDINGS if specified. For dvorak keyboard."
             (setq indent-tabs-mode nil)  ;; タブは利用しない
             (setq c-basic-offset 4)      ;; indent は 4 スペース
             ))
-(eval-after-load "cc-mode"
-  '(progn
-     (define-key c-mode-base-map (kbd "C-c C-c") 'nil)))
+;; (eval-after-load "cc-mode"
+;;   '(progn
+;;      (define-key c-mode-base-map (kbd "C-c C-c") 'nil)))
 
 ;;# gauche(scheme)
 (put 'downcase-region 'disabled nil)
@@ -891,8 +913,6 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 ;;# haskell
 (require 'haskell-mode)
 (setq haskell-program-name "/usr/bin/ghci")
-(custom-set-variables
- '(haskell-mode-hook '(turn-on-haskell-indentation)))
 
 ;;# git-gutter
 (require 'git-gutter)
@@ -966,3 +986,9 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 	   '(("CMakeLists\\.txt\\'" . cmake-mode))
 	   '(("\\.cmake\\'" . cmake-mode))
 	   auto-mode-alist))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
