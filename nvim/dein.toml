@@ -3,13 +3,6 @@
 repo = 'Shougo/dein.vim'
 
 [[plugins]]
-repo = 'tyru/eskk.vim'
-hook_add = '''
-	let g:eskk#dictionary = {'path': '~/skk/.skk-jisyo.L','sorted': 1,'encoding': 'utf-8',}
-	let g:eskk#large_dictionary = {'path': '~/skk/SKK-JISYO.L','sorted': 1,'encoding': 'utf-8',}
-	'''
-
-[[plugins]]
 repo = 'Shougo/denite.nvim'
 hook_post_source = '''
 	call denite#custom#var('file_rec', 'command', ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
@@ -25,9 +18,10 @@ hook_add = '''
 	call denite#custom#map('normal',"h",'<denite:move_to_next_line>','noremap')
 	call denite#custom#map('normal',"t",'<denite:move_to_previuos_line>','noremap')
 	'''
-
+     
 [[plugins]]
 repo = 'tomasr/molokai'
-hook_post_source = '''
+hook_add = '''
 	let g:rehash256 = 1
+    colorscheme molokai
 	'''

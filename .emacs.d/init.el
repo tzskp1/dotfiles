@@ -237,7 +237,6 @@ This is particularly useful under Mac OSX, where GUI apps are not started from a
      (my-keyjack-mode t)))
 
 (define-key evil-insert-state-map (kbd "C-c") 'evil-normal-state)
-(define-key evil-insert-state-map (kbd "C-c") 'evil-normal-state)
 
 
 ;;# Mode line setup
@@ -534,14 +533,15 @@ Add additional BINDINGS if specified. For dvorak keyboard."
   (apply 'define-key evil-normal-state-map map)
   (apply 'define-key evil-visual-state-map map)
   (apply 'define-key evil-motion-state-map map))
+(define-key evil-normal-state-map "K" 'evil-delete-line)
 
 ; 'Q' for hide buffer
 (define-key evil-normal-state-map "Q" 'quit-window)
 
 ; 'M' for search next
-(define-key evil-normal-state-map "N" 'evil-search-next)
-(define-key evil-normal-state-map "m" 'evil-search-next)
 (define-key evil-normal-state-map "M" 'evil-search-previous)
+(define-key evil-normal-state-map "N" 'evil-search-previous)
+(define-key evil-normal-state-map "m" 'evil-search-next)
 
 ;;(evil-ex-search-previous &optional COUNT)
 ;; Prevent quit command from exit Emacs
@@ -573,8 +573,8 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 ;; (require 'surround)
 ;; (global-surround-mode 1)
 
-(require 'evil-operator-moccur)
-(global-evil-operator-moccur-mode 1)
+;;(require 'evil-operator-moccur)
+;;(global-evil-operator-moccur-mode 1)
 
 ;; integration
 ;; Dired
