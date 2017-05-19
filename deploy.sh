@@ -34,4 +34,5 @@ git clone https://github.com/gmmeyer/awesome-dangerzone
 mv ./awesome-dangerzone/icons ./.icons
 rm -rf ./awesome-dangerzone
 
-ln -s $nh/nvim ~/.config
+mkdir ~/.config
+ln -s $nh/nvim ~/.config/nvim
