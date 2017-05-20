@@ -33,6 +33,7 @@
 (el-get-bundle evil-numbers)
 (el-get-bundle tarao/evil-plugins)
 (el-get-bundle color-moccur)
+(el-get-bundle async)
 (el-get-bundle helm)
 (el-get-bundle emacs-helm/helm-descbinds)
 (el-get-bundle helm-ag)
