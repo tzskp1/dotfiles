@@ -25,3 +25,18 @@ hook_add = '''
 	let g:rehash256 = 1
     colorscheme molokai
 	'''
+
+[[plugins]]
+repo = 'Valloric/YouCompleteMe'
+hook_post_update = '''
+    let cmd = 'mkdir ycm_build && cd ycm_build && cmake -G "Unix Makefiles" -DUSE_SYSTEM_LIBCLANG="ON" . ../third_party/ycmd/cpp && make'
+    let g:dein#plugin.build = cmd
+    '''
+hook_add = '''
+    let g:ycm_global_ycm_extra_conf = g:dein#_base_path . '/repos/github.com/Valloric/YouCompleteMe/third_party/ycmd/cpp/ycm/.ycm_extra_conf.py'
+    let g:ycm_server_python_interpreter = '/usr/bin/python2'
+    let g:ycm_autoclose_preview_window_after_completion = 1
+	'''
+
+[[plugins]]
+repo = 'critiqjo/lldb.nvim'

@@ -341,7 +341,9 @@ myMouseBindings (XConfig {XMonad.modMask = modMask}) = M.fromList $
 -- per-workspace layout choices.
 --
 -- By default, do nothing.
-myStartupHook = return ()
+myStartupHook = do
+                spawn "redshift -l 35.18:136.90 -t 3700:3700"
+--myStartupHook = return ()
 
 
 ------------------------------------------------------------------------

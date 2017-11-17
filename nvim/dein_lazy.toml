@@ -12,3 +12,4 @@ hook_source = '''
 
 [[plugins]]
 repo = 'lyuts/vim-rtags'
+

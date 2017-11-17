@@ -47,8 +47,12 @@ set expandtab
 set tabstop=4
 set shiftwidth=4
 set autoindent
+set mouse=a
+
 
 if (has("nvim"))
+    tnoremap <silent> <ESC> <C-\><C-n>
 	let g:python3_host_prog = '/usr/bin/python3'
+	let g:python2_host_prog = '/usr/bin/python2'
     runtime ./dein_load.vim
 endif

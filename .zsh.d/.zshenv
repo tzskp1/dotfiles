@@ -6,7 +6,6 @@
 # source ${ZDOTDIR}/.zshenv
 #----------------------------
 export GOPATH=$HOME/go
-export GOROOT=/usr/local/go
 export PATH=$HOME/.cabal/bin:$GOROOT/bin:$PATH
 export EDITOR="${ZDOTDIR}/em@csclient.sh"
 #export EDITOR="emacsclient"  # until zsh 5.2
