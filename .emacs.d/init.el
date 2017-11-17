@@ -31,6 +31,7 @@
 (el-get-bundle rainbow-delimiters)
 (el-get-bundle evil)
 (el-get-bundle evil-numbers)
+(el-get-bundle evil-leader)
 (el-get-bundle tarao/evil-plugins)
 (el-get-bundle color-moccur)
 (el-get-bundle async)
@@ -61,6 +62,7 @@
 (el-get-bundle helm-gtags)
 (el-get-bundle cmake-mode)
 (el-get-bundle popup)
+(el-get-bundle tuareg)
 
 ;;# Theme
 (require 'slime-theme)
@@ -560,6 +562,7 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 (evil-ex-define-cmd "q[uit]" 'my-kill-current-butffer)
 (evil-ex-define-cmd "wq" 'my-save-kill-current-butffer)
 
+
 ;; dont care shift key
 ;; (evil-ex-define-cmd "W" 'save-buffer)
 ;; (evil-ex-define-cmd "Wq" 'my-save-kill-current-butffer)
@@ -569,6 +572,15 @@ Add additional BINDINGS if specified. For dvorak keyboard."
 (require 'evil-numbers)
 (define-key evil-normal-state-map "+" 'evil-numbers/inc-at-pt)
 (define-key evil-normal-state-map "-" 'evil-numbers/dec-at-pt)
+
+;; leader key
+(require 'evil-leader)
+(global-evil-leader-mode)
+(evil-leader/set-leader "<SPC>")
+(evil-leader/set-key
+ "q" #'kill-this-buffer
+ "w" #'save-buffer
+ "b" #'switch-to-buffer)
 
 ;; (add-to-load-path "vendor/evil-plugins")
 ;; (require 'surround)
