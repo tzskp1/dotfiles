@@ -13,60 +13,21 @@
 ;; rtags
 
 (package-initialize)
-(require 'cl-lib)
+(setq package-archives
+      '(("gnu" . "http://elpa.gnu.org/packages/")
+        ("melpa" . "http://melpa.org/packages/")
+        ("org" . "http://orgmode.org/elpa/")))
 
-(when load-file-name
-  (setq user-emacs-directory (file-name-directory load-file-name)))
-(add-to-list 'load-path (locate-user-emacs-file "el-get/el-get"))
-(unless (require 'el-get nil 'noerror)
-  (with-current-buffer
-      (url-retrieve-synchronously
-       "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el")
-    (goto-char (point-max))
-    (eval-print-last-sexp)))
+(eval-when-compile
+  ;; Following line is not needed if use-package.el is in ~/.emacs.d
+  (add-to-list 'load-path "~/.emacs.d/use-package")
+  (require 'use-package))
 
-;;# installing packages
-(el-get-bundle elpa:edit-server)
-(el-get-bundle rainbow-delimiters)
-(el-get-bundle evil)
-(el-get-bundle evil-numbers)
-(el-get-bundle evil-leader)
-(el-get-bundle tarao/evil-plugins)
-(el-get-bundle color-moccur)
-(el-get-bundle async)
-(el-get-bundle helm)
-(el-get-bundle emacs-helm/helm-descbinds)
-(el-get-bundle helm-ag)
-(el-get-bundle popwin)
-(el-get-bundle yatex)
-(el-get-bundle ddskk)
-(el-get-bundle emacsfodder/emacs-slime-theme)
-(el-get-bundle markdown-mode)
-(el-get-bundle jedi-core)
-(el-get-bundle jedi)
-(el-get-bundle haskell-mode)
-(el-get-bundle yasnippet)
-(el-get-bundle git-gutter)
-(el-get-bundle yaml-mode)
-(el-get-bundle rainbow-mode)
-(el-get-bundle flycheck)
-(el-get-bundle eldoc-extension)
-(el-get-bundle undohist)
-(el-get-bundle company-mode/company-mode)
-(el-get-bundle irony-mode)
-(el-get-bundle company-irony)
-(el-get-bundle flycheck-irony)
-(el-get-bundle company-jedi)
-(el-get-bundle helm-gtags)
-(el-get-bundle cmake-mode)
-(el-get-bundle popup)
-(el-get-bundle tuareg)
-(el-get-bundle use-package)
-(el-get-bundle key-chord)
-(el-get-bundle linum-relative)
+(use-package cl-lib)
 
 ;;# 行の表示
 (use-package linum-relative
+  :ensure t
   :config
   (setq linum-format "%5d")
   (linum-relative-on)
@@ -144,6 +105,7 @@
 
 ;;# undohist
 (use-package undohist
+  :ensure t
   :init
   (setq undohist-ignored-files
 		'("/tmp/"))
@@ -156,70 +118,71 @@
 		   ("C-b" . isearch-delete-char)
 		   ("C-m" . ret))
 (bind-keys :map minibuffer-local-map
-		   ("C-b" . backward-delete-char-untabify))
-
-;; popwin.el
-(require 'popwin)
-(push '("^\\*helm" :regexp t :width 60 :position :right) popwin:special-display-config)
+		   ("C-b" . backward-delete-char-untabify)
+		   ("C-h" . next-line-or-history-element)
+		   ("C-t" . previous-line-or-history-element))
 
 ;;# evil
 (use-package evil
+  :ensure t
   :init
   (setq evil-search-module 'evil-search)
   (setq-default evil-shift-width 2)
-  :bind (:map evil-insert-state-map
-		("C-d" . backward-char)
-		("C-n" . forward-char)
-		("C-t" . previous-line)
-		("C-b" . backward-delete-char-untabify)
-		("C-h" . next-line)
-		:map evil-normal-state-map
-		("h" . evil-next-visual-line)
-		("t" . evil-previous-visual-line)
-		("n" . evil-forward-char)
-		("d" . evil-backward-char)
-		("k" . evil-delete)
-		("K" . evil-delete-line)
-		("M" . evil-search-previous)
-		("N" . evil-search-previous)
-		("C-w" . comment-or-uncomment-region)
-		("m" . evil-search-next)
-		:map evil-motion-state-map
-		("h" . evil-next-visual-line)
-		("t" . evil-previous-visual-line)
-		("n" . evil-forward-char)
-		("d" . evil-backward-char)
-		("k" . evil-delete)
-		("K" . evil-delete-line)
-		("M" . evil-search-previous)
-		("N" . evil-search-previous)
-		("C-w" . comment-or-uncomment-region)
-		("m" . evil-search-next)
-		:map evil-visual-state-map
-		("h" . evil-next-visual-line)
-		("t" . evil-previous-visual-line)
-		("n" . evil-forward-char)
-		("d" . evil-backward-char)
-		("k" . evil-delete)
-		("K" . evil-delete-line)
-		("M" . evil-search-previous)
-		("N" . evil-search-previous)
-		("C-w" . comment-or-uncomment-region)
-		("m" . evil-search-next)
-		:map evil-ex-search-keymap
-		("C-b" . backward-delete-char-untabify))
-  :config
   (evil-mode 1)
+  :config
+  (bind-keys :map evil-ex-search-keymap ("C-b" . backward-delete-char-untabify))
+  (bind-keys :map evil-visual-state-map
+			 ("h" . evil-next-visual-line)
+			 ("t" . evil-previous-visual-line)
+			 ("n" . evil-forward-char)
+			 ("d" . evil-backward-char)
+			 ("k" . evil-delete)
+			 ("K" . evil-delete-line)
+			 ("M" . evil-search-previous)
+			 ("N" . evil-search-previous)
+			 ("C-w" . comment-or-uncomment-region)
+			 ("m" . evil-search-next))
+  (bind-keys :map evil-motion-state-map
+			 ("h" . evil-next-visual-line)
+			 ("t" . evil-previous-visual-line)
+			 ("n" . evil-forward-char)
+			 ("d" . evil-backward-char)
+			 ("k" . evil-delete)
+			 ("K" . evil-delete-line)
+			 ("M" . evil-search-previous)
+			 ("N" . evil-search-previous)
+			 ("C-w" . comment-or-uncomment-region)
+			 ("m" . evil-search-next))
+  (bind-keys :map evil-normal-state-map
+			 ("h" . evil-next-visual-line)
+			 ("t" . evil-previous-visual-line)
+			 ("n" . evil-forward-char)
+			 ("d" . evil-backward-char)
+			 ("k" . evil-delete)
+			 ("K" . evil-delete-line)
+			 ("M" . evil-search-previous)
+			 ("N" . evil-search-previous)
+			 ("C-w" . comment-or-uncomment-region)
+			 ("m" . evil-search-next))
+  (bind-keys :map evil-insert-state-map
+			 ("C-d" . backward-char)
+			 ("C-n" . forward-char)
+			 ("C-t" . previous-line)
+			 ("C-b" . backward-delete-char-untabify)
+			 ("C-h" . next-line))
   (use-package key-chord
+    :ensure t
 	:custom (key-chord-two-keys-delay 0.01)
 	:config
 	(key-chord-mode t)
 	(key-chord-define evil-insert-state-map "hh" 'evil-normal-state))
   (use-package evil-numbers
+    :ensure t
 	:config
 	(bind-key "+" 'evil-numbers/inc-at-pt evil-normal-state-map)
 	(bind-key "-" 'evil-numbers/dec-at-pt evil-normal-state-map))
   (use-package evil-leader
+    :ensure t
 	:config
 	(global-evil-leader-mode)
 	(evil-leader/set-leader "<SPC>")
@@ -229,6 +192,8 @@
 	  "b" 'helm-mini)))
 
 ;;# helm
+(use-package helm :ensure t)
+
 (use-package helm-config
   :bind (("C-x C-b" . helm-mini)
 		 ("M-x" . helm-M-x)
@@ -257,6 +222,7 @@
   (helm-mode 1)
   (add-to-list 'helm-completing-read-handlers-alist '(find-file . nil))
   (use-package helm-ag
+    :ensure t
 	:bind (("M-g ," . helm-ag-pop-stack)
 		   ("C-M-s" . helm-ag-this-file)
 		   ("C-M-f" . helm-ag))
@@ -265,6 +231,7 @@
 
 ;;# yasnippet
 (use-package yasnippet
+  :ensure t
   :config
   ;; (setq yas/trigger-key (kbd "C-c m"))
   (yas/initialize)
@@ -282,17 +249,19 @@
 
 ;;# company
 (use-package company
-  :bind (:map company-active-map
-			  ("C-h" . company-select-next)
-			  ("C-t" . company-select-previous))
+  :ensure t
   :init
   (setq company-idle-delay 0)
   (setq company-minimum-prefix-length 4)
   (setq company-selection-wrap-around t)
   :config
+  (bind-keys :map company-active-map
+			 ("C-h" . company-select-next)
+			 ("C-t" . company-select-previous))
   (global-company-mode))
 
 ;;# skk
+(use-package ddskk)
 (use-package skk
   :bind (("C-x C-j" . skk-mode))
   :init
@@ -309,11 +278,52 @@
 
 ;;# git-gutter
 (use-package git-gutter
+  :ensure t
   :config
   (global-git-gutter-mode t))
 
+;;# dired
+(use-package dired
+  :commands (dired-mode)
+  :after (evil)
+  :config
+  (evil-make-overriding-map dired-mode-map 'normal)
+  (defun keu-dired-down-directory ()
+	"[Dired command] Go down to the directory."
+	(interactive)
+	(condition-case err
+		(let ((path (dired-get-file-for-visit)))
+		  (if (f-directory? path)
+			  (dired-find-file)
+			(message "This is not directory!")))
+	  (error (message "%s" (cadr err)))))
+  (evil-define-key 'normal dired-mode-map
+	";" (lookup-key evil-motion-state-map ";")
+	"t" 'dired-previous-line
+	"h" 'dired-next-line
+	"d" 'dired-up-directory
+	"n" 'keu-dired-down-directory
+	"m" (lookup-key evil-normal-state-map "m")
+	"w" (lookup-key evil-normal-state-map "w")
+	(kbd "SPC")   (lookup-key dired-mode-map "m")
+	(kbd "S-SPC") (lookup-key dired-mode-map "d")))
+
+;;# http://d.hatena.ne.jp/murase_syuka/20140815/1408061850
+(use-package rainbow-delimiters
+  :ensure t
+  :config
+  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+  (use-package color
+	:config
+	(cl-loop
+	 for index from 1 to rainbow-delimiters-max-face-count
+	 do
+	 (let ((face (intern (format "rainbow-delimiters-depth-%d-face" index))))
+	   (cl-callf color-saturate-name (face-foreground face) 30)))))
+
 ;;# Theme
-(use-package slime-theme)
+(use-package slime-theme
+  :ensure t)
 
 ;;# flycheck
 (use-package flycheck
@@ -348,44 +358,6 @@
   (unless (server-running-p)
 	(server-start)))
 
-;;# dired
-(use-package dired
-  :commands (dired-mode)
-  ;; :after (evil)
-  :config
-  (evil-make-overriding-map dired-mode-map 'normal)
-  (defun keu-dired-down-directory ()
-	"[Dired command] Go down to the directory."
-	(interactive)
-	(condition-case err
-		(let ((path (dired-get-file-for-visit)))
-		  (if (f-directory? path)
-			  (dired-find-file)
-			(message "This is not directory!")))
-	  (error (message "%s" (cadr err)))))
-  (evil-define-key 'normal dired-mode-map
-	";" (lookup-key evil-motion-state-map ";")
-	"t" 'dired-previous-line                    ; 人差し指
-	"h" 'dired-next-line                        ; 中指
-	"d" 'dired-up-directory                     ; 人差し指の左
-	"n" 'keu-dired-down-directory               ; 薬指
-	"m" (lookup-key evil-normal-state-map "m")
-	"w" (lookup-key evil-normal-state-map "w")
-	(kbd "SPC")   (lookup-key dired-mode-map "m")
-	(kbd "S-SPC") (lookup-key dired-mode-map "d")))
-
-;;# http://d.hatena.ne.jp/murase_syuka/20140815/1408061850
-(use-package rainbow-delimiters
-  :config
-  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-  (use-package color
-	:config
-	(cl-loop
-	 for index from 1 to rainbow-delimiters-max-face-count
-	 do
-	 (let ((face (intern (format "rainbow-delimiters-depth-%d-face" index))))
-	   (cl-callf color-saturate-name (face-foreground face) 30)))))
-
 ;;# irony
 (use-package irony
   :commands (company-irony irony-mode-hook irony-cdb-autosetup-compile-options irony-mode)
@@ -417,17 +389,16 @@
 		 ("\\.howm\\'" . markdown-mode))
   :init
   (setq markdown-command "redcarpet")
+  :hook ((markdown-mode . (lambda ()
+							(setq imenu-create-index-function 'outline-imenu-create-index)
+							(auto-fill-mode))))
   :config
   (defun outline-imenu-create-index ()
 	(let (index)
 	  (goto-char (point-min))
 	  (while (re-search-forward "^\*\s*\\(.+\\)" (point-max) t)
 		(push (cons (match-string 1) (match-beginning 1)) index))
-	  (nreverse index)))
-  (add-hook 'markdown-mode
-			(lambda ()
-			  (setq imenu-create-index-function 'outline-imenu-create-index)
-			  (auto-fill-mode))))
+	  (nreverse index))))
 
 ;;# c
 (use-package cc-mode
@@ -499,28 +470,24 @@
   (setq YaTeX-kanji-code 4))
 
 ;;# tuareg
-(require 'tuareg)
-(add-hook 'tuareg-mode-hook 
-           (lambda()
-             (local-unset-key (kbd "C-c"))))
-(add-hook 'tuareg-mode-hook
-          (lambda()
-            (local-unset-key (kbd "<ESC>"))))
-;; -- opam and utop setup --------------------------------
-;; Setup environment variables using opam
-(dolist
-   (var (car (read-from-string
-	       (shell-command-to-string "opam config env --sexp"))))
- (setenv (car var) (cadr var)))
-;; Update the emacs path
-(setq exec-path (split-string (getenv "PATH") path-separator))
-;; Update the emacs load path
-(push (concat (getenv "OCAML_TOPLEVEL_PATH")
-	      "/../../share/emacs/site-lisp") load-path)
-;; Automatically load utop.el
-(autoload 'utop "utop" "Toplevel for OCaml" t)
-(autoload 'utop-minor-mode "utop" "Minor mode for utop" t)
-(add-hook 'tuareg-mode-hook 'utop-minor-mode)
+(use-package tuareg
+  :hook (tuareg-mode-hook . (lambda()
+							  (local-unset-key (kbd "<ESC>"))))
+  :init
+  ;; -- opam and utop setup --------------------------------
+  ;; Setup environment variables using opam
+  (dolist
+	  (var (car (read-from-string
+				 (shell-command-to-string "opam config env --sexp"))))
+	(setenv (car var) (cadr var)))
+  ;; Update the emacs path
+  (setq exec-path (split-string (getenv "PATH") path-separator))
+  ;; Update the emacs load path
+  (push (concat (getenv "OCAML_TOPLEVEL_PATH")
+				"/../../share/emacs/site-lisp") load-path)
+  (use-package utop
+	:commands (utop utop-minor-mode)
+	:hook (tuareg-mode-hook . utop-minor-mode)))
 
 ;;# CMake
 (use-package cmake-mode
@@ -531,3 +498,17 @@
 (use-package arduino-mode
   :config
   (setq auto-mode-alist (cons '("\\.\\(pde\\|ino\\)$" . arduino-mode) auto-mode-alist)))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+	(ddskk evil-leader evil-numbers key-chord slime-theme rainbow-delimiters dired git-gutter skk company yasnippet helm-config helm evil undohist linum-relative tuareg shackle rainbow-mode edit-server async arduino-mode))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
