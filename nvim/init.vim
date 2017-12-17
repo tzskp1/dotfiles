@@ -2,6 +2,7 @@ noremap d h
 noremap h gj
 noremap t gk
 noremap n l
+inoremap <silent> hh <ESC>
 
 inoremap <C-c> <ESC>
 noremap! <C-g> <C-c>
