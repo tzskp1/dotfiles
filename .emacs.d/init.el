@@ -991,6 +991,29 @@ Add additional BINDINGS if specified. For dvorak keyboard."
              (reftex-mode 1)
              (define-key reftex-mode-map (concat YaTeX-prefix ">") 'YaTeX-comment-region)
              (define-key reftex-mode-map (concat YaTeX-prefix "<") 'YaTeX-uncomment-region)))
+;;# tuareg
+(require 'tuareg)
+(add-hook 'tuareg-mode-hook 
+           (lambda()
+             (local-unset-key (kbd "C-c"))))
+(add-hook 'tuareg-mode-hook
+          (lambda()
+            (local-unset-key (kbd "<ESC>"))))
+;; -- opam and utop setup --------------------------------
+;; Setup environment variables using opam
+(dolist
+   (var (car (read-from-string
+	       (shell-command-to-string "opam config env --sexp"))))
+ (setenv (car var) (cadr var)))
+;; Update the emacs path
+(setq exec-path (split-string (getenv "PATH") path-separator))
+;; Update the emacs load path
+(push (concat (getenv "OCAML_TOPLEVEL_PATH")
+	      "/../../share/emacs/site-lisp") load-path)
+;; Automatically load utop.el
+(autoload 'utop "utop" "Toplevel for OCaml" t)
+(autoload 'utop-minor-mode "utop" "Minor mode for utop" t)
+(add-hook 'tuareg-mode-hook 'utop-minor-mode)
 
 ;;# CMake
 (require 'cmake-mode)
