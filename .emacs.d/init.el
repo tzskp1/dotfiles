@@ -18,6 +18,11 @@
   (when (not (package-installed-p 'use-package))
 	(package-install 'use-package)))
 
+;; kill custom
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 (require 'use-package)
 
 ;;# 行の表示
@@ -132,8 +137,8 @@
 		 ("d" . evil-backward-char)
 		 ("k" . evil-delete)
 		 ("K" . evil-delete-line)
-		 ("M" . evil-search-previous)
-		 ("N" . evil-search-previous)
+		 ("M" . evil-ex-search-previous)
+		 ("N" . evil-ex-search-previous)
 		 ("C-w" . comment-or-uncomment-region)
 		 ("m" . evil-ex-search-next)
 		 :map evil-motion-state-map
@@ -143,8 +148,8 @@
 		 ("d" . evil-backward-char)
 		 ("k" . evil-delete)
 		 ("K" . evil-delete-line)
-		 ("M" . evil-search-previous)
-		 ("N" . evil-search-previous)
+		 ("M" . evil-ex-search-previous)
+		 ("N" . evil-ex-search-previous)
 		 ("C-w" . comment-or-uncomment-region)
 		 ("m" . evil-ex-search-next)
 		 :map evil-normal-state-map
@@ -154,8 +159,8 @@
 		 ("d" . evil-backward-char)
 		 ("k" . evil-delete)
 		 ("K" . evil-delete-line)
-		 ("M" . evil-search-previous)
-		 ("N" . evil-search-previous)
+		 ("M" . evil-ex-search-previous)
+		 ("N" . evil-ex-search-previous)
 		 ("C-w" . comment-or-uncomment-region)
 		 ("m" . evil-ex-search-next)
 		 :map evil-insert-state-map
@@ -317,6 +322,21 @@
         (let ((face (intern (format "rainbow-delimiters-depth-%d-face" index))))
           (cl-callf color-saturate-name (face-foreground face) 30)))))
 
+(use-package golden-ratio
+  :ensure t
+  :init
+  (golden-ratio-mode 1)
+  ;; 条件に応じてウィンドウの大きさを変更しない
+  ;; ウィンドウの大きさを変更しないメジャーモード
+  (setq golden-ratio-exclude-modes '(calendar-mode))
+  ;; ウィンドウの大きさを変更しないバッファ名
+  (setq golden-ratio-exclude-buffer-names '(" *Org tags*" " *Org todo*"))
+  ;; ウィンドウの大きさを変更しないバッファ名の正規表現
+  (setq golden-ratio-exclude-buffer-regexp '("\\*anything" "\\*helm"))
+  ;; ウィンドウ選択系のコマンドで作用させる
+  (setq golden-ratio-extra-commands
+		'(windmove-left windmove-right windmove-down windmove-up)))
+
 ;;# Theme
 (use-package slime-theme :ensure t)
 
@@ -423,3 +443,17 @@
   :commands (utop-minor-mode)
   :init 
   (add-hook 'tuareg-mode-hook 'utop-minor-mode t))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+	(popwin yatex yasnippet window-purpose utop use-package undohist tuareg slime-theme shackle rainbow-delimiters markdown-mode linum-relative key-chord helm-ag git-gutter evil-numbers evil-leader esup eldoc-extension ddskk company))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
