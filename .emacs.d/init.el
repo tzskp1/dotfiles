@@ -257,14 +257,14 @@
 ;;# company
 (use-package company
   :ensure t
+  :bind
+  (:map company-active-map
+		("C-h" . company-select-next)
+		("C-t" . company-select-previous))
   :init
   (setq company-idle-delay 0)
   (setq company-minimum-prefix-length 4)
   (setq company-selection-wrap-around t)
-  :config
-  (bind-keys :map company-active-map
-			 ("C-h" . company-select-next)
-			 ("C-t" . company-select-previous))
   (global-company-mode))
 
 ;;# skk
@@ -398,23 +398,38 @@
   (setq YaTeX-inhibit-prefix-letter t)
   (setq YaTeX-kanji-code 4))
 
-;;# tuareg
+;;# OCaml
 (use-package tuareg
   :ensure t
-  :hook (tuareg-mode-hook . (lambda()
-							  (local-unset-key (kbd "<ESC>"))))
-  :init
-  ;; -- opam and utop setup --------------------------------
-  ;; Setup environment variables using opam
-  (dolist
-	  (var (car (read-from-string
-				 (shell-command-to-string "opam config env --sexp"))))
-	(setenv (car var) (cadr var)))
-  ;; Update the emacs path
-  (setq exec-path (split-string (getenv "PATH") path-separator))
-  ;; Update the emacs load path
-  (push (concat (getenv "OCAML_TOPLEVEL_PATH")
-				"/../../share/emacs/site-lisp") load-path)
-  (use-package utop
-	:commands (utop utop-minor-mode)
-	:hook (tuareg-mode-hook . utop-minor-mode)))
+  :commands (tuareg-mode)
+  :mode (("\\.ml\\'" . tuareg-mode)
+		 ("\\.mli\\'" . tuareg-mode)))
+
+;; opam init
+;; opam install merlin utop core
+;; -- opam and utop setup --------------------------------
+;; Setup environment variables using opam
+(dolist
+	(var (car (read-from-string
+			   (shell-command-to-string "opam config env --sexp"))))
+  (setenv (car var) (cadr var)))
+;; Update the emacs path
+(setq exec-path (split-string (getenv "PATH") path-separator))
+;; Update the emacs load path
+(add-to-list 'load-path (concat (getenv "OCAML_TOPLEVEL_PATH")
+								"/../../share/emacs/site-lisp"))
+
+(use-package merlin
+  :after (tuareg company)
+  :commands (merlin-mode)
+  :init 
+  (add-hook 'tuareg-mode-hook 'merlin-mode t)
+  :config
+  (add-to-list 'company-backends 'merlin-company-backend)
+  (setq merlin-command 'opam))
+
+(use-package utop
+  :after (tuareg)
+  :commands (utop-minor-mode)
+  :init 
+  (add-hook 'tuareg-mode-hook 'utop-minor-mode t))

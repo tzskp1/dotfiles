@@ -221,3 +221,5 @@ fi
 #     emacs &
 # fi
 
+# for opam
+source ~/.zshrc
