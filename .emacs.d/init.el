@@ -279,10 +279,8 @@
   (setq skk-kakutei-when-unique-candidate t)
   (setq skk-egg-like-newline t)
   (setq skk-kuten-touten-alist
-		'(
-		  (jp . ("." . "," ))
-		  (en . ("." . ","))
-		  ))
+		'((jp . ("." . "," ))
+		  (en . ("." . ","))))
   (setq-default skk-kutouten-type 'en)
   (setq skk-user-directory "~/skk"))
 
@@ -334,62 +332,11 @@
 ;;# Theme
 (use-package slime-theme :ensure t)
 
-;;# flycheck
-(use-package flycheck
-  :commands (flycheck-mode)
-  :custom
-  (flycheck-display-errors-function (lambda (errors)
-									  (let ((messages
-											 (mapcar
-											  (function flycheck-error-message)
-											  errors)))
-										(popup-tip
-										 (mapconcat
-										  (quote identity)
-										  messages " ")))))
-  (flycheck-display-errors-delay 0.5)
-  :bind (:map flycheck-mode-map
-			  ("C-M-h" . flycheck-next-error)
-			  ("C-M-t" . flycheck-previous-error))
-  :hook ((c-mode-common-hook . flycheck-mode)
-		 (c-mode-common-hook . (lambda () (progn (flycheck-select-checker 'c/c++-clang)
-												 (setq flycheck-clang-include-path
-													   (list "/usr/local/include/eigen3"))
-												 (setq flycheck-clang-args
-													   (list "-std=c++11"))))))
-  :config
-	(when (locate-library "flycheck-irony")
-	  (flycheck-irony-setup)))
-
 ;;# start server
 (use-package server
   :config
   (unless (server-running-p)
 	(server-start)))
-
-;;# irony
-(use-package irony
-  :commands (company-irony irony-mode-hook irony-cdb-autosetup-compile-options irony-mode)
-  :custom (irony-additional-clang-options '("-std=c++11"))
-  :after (company)
-  :hook ((irony-mode-hook . irony-cdb-autosetup-compile-options)
-		 (c-mode-common-hook . irony-mode))
-  :config
-  (add-to-list 'company-backends 'company-irony))
-
-;;# gtags
-(use-package helm-gtags
-  :commands (helm-gtags-mode)
-  :after (evil)
-  :bind (:map evil-normal-state-local-map
-			  ("<return>" . helm-gtags-find-tag)
-			  ("RET" . helm-gtags-find-tag))
-  :hook ((c-mode-common-hook . helm-gtags-mode)
-		 (helm-gtags-mode-hook . (lambda ()
-								   (local-set-key (kbd "M-t") 'helm-gtags-find-tag)
-								   (local-set-key (kbd "M-r") 'helm-gtags-find-rtag)
-								   (local-set-key (kbd "M-s") 'helm-gtags-find-symbol)
-								   (local-set-key (kbd "C-t") 'helm-gtags-pop-stack)))))
 
 ;;# markdown
 (use-package markdown-mode
@@ -423,33 +370,6 @@
   :config
   (c-set-offset (quote cpp-macro) 0 nil))
 
-;;# python
-(use-package python
-  :commands (python-mode-hook)
-  :after (company)
-  :config
-  (use-package jedi-core
-	:init
-	(setq jedi:server-args
-		  '("--sys-path" "/usr/local/lib/python3.4/dist-packages"
-			"--sys-path" "/usr/local/lib/python2.7/dist-packages"))
-	(setq jedi:complete-on-dot t)
-	(setq jedi:use-shortcuts t)
-	:config
-	(add-hook 'python-mode-hook 'jedi:setup)
-	(add-to-list 'company-backends 'company-jedi)))
-
-;;# haskell
-(use-package haskell-mode
-  :mode "\\.hs\\'"
-  :custom (haskell-mode-hook 'turn-on-haskell-indentation)
-  :init
-  (setq haskell-program-name "/bin/ghci"))
-
-;;# others
-(use-package yaml-mode)
-(use-package rainbow-mode)
-
 ;;# eldoc
 (use-package eldoc-extension
   :ensure t
@@ -480,6 +400,7 @@
 
 ;;# tuareg
 (use-package tuareg
+  :ensure t
   :hook (tuareg-mode-hook . (lambda()
 							  (local-unset-key (kbd "<ESC>"))))
   :init
@@ -497,13 +418,3 @@
   (use-package utop
 	:commands (utop utop-minor-mode)
 	:hook (tuareg-mode-hook . utop-minor-mode)))
-
-;;# CMake
-(use-package cmake-mode
-  :mode (("CMakeLists\\.txt\\'" . cmake-mode)
-		 ("\\.cmake\\'" . cmake-mode)))
-
-;;# Arduino
-(use-package arduino-mode
-  :config
-  (setq auto-mode-alist (cons '("\\.\\(pde\\|ino\\)$" . arduino-mode) auto-mode-alist)))
