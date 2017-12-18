@@ -12,16 +12,21 @@
 ;; python-virtualenv
 ;; rtags
 
-(package-initialize)
 (setq package-archives
       '(("gnu" . "http://elpa.gnu.org/packages/")
         ("melpa" . "http://melpa.org/packages/")
         ("org" . "http://orgmode.org/elpa/")))
 
+(package-initialize)
+
+(unless package-archive-contents
+  (package-refresh-contents))
+
 (eval-when-compile
-  ;; Following line is not needed if use-package.el is in ~/.emacs.d
-  (add-to-list 'load-path "~/.emacs.d/use-package")
-  (require 'use-package))
+  (when (not (package-installed-p 'use-package))
+	(package-install 'use-package)))
+;;   (require 'use-package))
+(require 'use-package)
 
 (use-package cl-lib)
 
@@ -49,8 +54,7 @@
 (setq frame-title-format
       '("emacs@" system-name ":"
         (:eval (or (buffer-file-name)
-                   default-directory))
-        ))
+                   default-directory))))
 ;;# ミニバッファを複数起動
 (setq enable-recursive-minibuffers t)
 ;;# 右から左に読む言語に対応させないことで描画高速化
@@ -129,67 +133,71 @@
   (setq evil-search-module 'evil-search)
   (setq-default evil-shift-width 2)
   (evil-mode 1)
+  :bind (:map evil-ex-search-keymap
+		("C-b" . backward-delete-char-untabify)
+		 :map evil-visual-state-map
+		 ("h" . evil-next-visual-line)
+		 ("t" . evil-previous-visual-line)
+		 ("n" . evil-forward-char)
+		 ("d" . evil-backward-char)
+		 ("k" . evil-delete)
+		 ("K" . evil-delete-line)
+		 ("M" . evil-search-previous)
+		 ("N" . evil-search-previous)
+		 ("C-w" . comment-or-uncomment-region)
+		 ("m" . evil-ex-search-next)
+		 :map evil-motion-state-map
+		 ("h" . evil-next-visual-line)
+		 ("t" . evil-previous-visual-line)
+		 ("n" . evil-forward-char)
+		 ("d" . evil-backward-char)
+		 ("k" . evil-delete)
+		 ("K" . evil-delete-line)
+		 ("M" . evil-search-previous)
+		 ("N" . evil-search-previous)
+		 ("C-w" . comment-or-uncomment-region)
+		 ("m" . evil-ex-search-next)
+		 :map evil-normal-state-map
+		 ("h" . evil-next-visual-line)
+		 ("t" . evil-previous-visual-line)
+		 ("n" . evil-forward-char)
+		 ("d" . evil-backward-char)
+		 ("k" . evil-delete)
+		 ("K" . evil-delete-line)
+		 ("M" . evil-search-previous)
+		 ("N" . evil-search-previous)
+		 ("C-w" . comment-or-uncomment-region)
+		 ("m" . evil-ex-search-next)
+		 :map evil-insert-state-map
+		 ("C-d" . backward-char)
+		 ("C-n" . forward-char)
+		 ("C-t" . previous-line)
+		 ("C-b" . backward-delete-char-untabify)
+		 ("C-h" . next-line)))
+
+(use-package key-chord
+  :ensure t
+  :after (evil)
+  :custom (key-chord-two-keys-delay 0.01)
   :config
-  (bind-keys :map evil-ex-search-keymap ("C-b" . backward-delete-char-untabify))
-  (bind-keys :map evil-visual-state-map
-			 ("h" . evil-next-visual-line)
-			 ("t" . evil-previous-visual-line)
-			 ("n" . evil-forward-char)
-			 ("d" . evil-backward-char)
-			 ("k" . evil-delete)
-			 ("K" . evil-delete-line)
-			 ("M" . evil-search-previous)
-			 ("N" . evil-search-previous)
-			 ("C-w" . comment-or-uncomment-region)
-			 ("m" . evil-search-next))
-  (bind-keys :map evil-motion-state-map
-			 ("h" . evil-next-visual-line)
-			 ("t" . evil-previous-visual-line)
-			 ("n" . evil-forward-char)
-			 ("d" . evil-backward-char)
-			 ("k" . evil-delete)
-			 ("K" . evil-delete-line)
-			 ("M" . evil-search-previous)
-			 ("N" . evil-search-previous)
-			 ("C-w" . comment-or-uncomment-region)
-			 ("m" . evil-search-next))
-  (bind-keys :map evil-normal-state-map
-			 ("h" . evil-next-visual-line)
-			 ("t" . evil-previous-visual-line)
-			 ("n" . evil-forward-char)
-			 ("d" . evil-backward-char)
-			 ("k" . evil-delete)
-			 ("K" . evil-delete-line)
-			 ("M" . evil-search-previous)
-			 ("N" . evil-search-previous)
-			 ("C-w" . comment-or-uncomment-region)
-			 ("m" . evil-search-next))
-  (bind-keys :map evil-insert-state-map
-			 ("C-d" . backward-char)
-			 ("C-n" . forward-char)
-			 ("C-t" . previous-line)
-			 ("C-b" . backward-delete-char-untabify)
-			 ("C-h" . next-line))
-  (use-package key-chord
-    :ensure t
-	:custom (key-chord-two-keys-delay 0.01)
-	:config
-	(key-chord-mode t)
-	(key-chord-define evil-insert-state-map "hh" 'evil-normal-state))
-  (use-package evil-numbers
-    :ensure t
-	:config
-	(bind-key "+" 'evil-numbers/inc-at-pt evil-normal-state-map)
-	(bind-key "-" 'evil-numbers/dec-at-pt evil-normal-state-map))
-  (use-package evil-leader
-    :ensure t
-	:config
-	(global-evil-leader-mode)
-	(evil-leader/set-leader "<SPC>")
-	(evil-leader/set-key
-	  "q" 'kill-this-buffer
-	  "w" 'save-buffer
-	  "b" 'helm-mini)))
+  (key-chord-mode t)
+  (key-chord-define evil-insert-state-map "hh" 'evil-normal-state))
+(use-package evil-numbers
+  :ensure t
+  :after (evil)
+  :config
+  (bind-key "+" 'evil-numbers/inc-at-pt evil-normal-state-map)
+  (bind-key "-" 'evil-numbers/dec-at-pt evil-normal-state-map))
+(use-package evil-leader
+  :ensure t
+  :after (evil)
+  :config
+  (global-evil-leader-mode)
+  (evil-leader/set-leader "<SPC>")
+  (evil-leader/set-key
+	"q" 'kill-this-buffer
+	"w" 'save-buffer
+	"b" 'helm-mini))
 
 ;;# helm
 (use-package helm :ensure t)
@@ -220,23 +228,24 @@
   :config
   (helm-descbinds-mode t)
   (helm-mode 1)
-  (add-to-list 'helm-completing-read-handlers-alist '(find-file . nil))
-  (use-package helm-ag
-    :ensure t
-	:bind (("M-g ," . helm-ag-pop-stack)
-		   ("C-M-s" . helm-ag-this-file)
-		   ("C-M-f" . helm-ag))
-	:init
-	(setq helm-ag-base-command "ag --nocolor --nogrou")))
+  (add-to-list 'helm-completing-read-handlers-alist '(find-file . nil)))
+
+(use-package helm-ag
+  :ensure t
+  :after (helm)
+  :bind (("M-g ," . helm-ag-pop-stack)
+		 ("C-M-s" . helm-ag-this-file)
+		 ("C-M-f" . helm-ag))
+  :init
+  (setq helm-ag-base-command "ag --nocolor --nogrou"))
 
 ;;# yasnippet
 (use-package yasnippet
   :ensure t
   :config
   ;; (setq yas/trigger-key (kbd "C-c m"))
-  (yas/initialize)
-  (yas/load-directory "~/.emacs.d/el-get/yasnippet/snippets")
-  (yas/load-directory "~/.emacs.d/snippets"))
+  (yas-initialize)
+  (yas-load-directory "~/.emacs.d/snippets"))
 
 ;;# auto-complete
 (use-package auto-complete-config
@@ -261,9 +270,10 @@
   (global-company-mode))
 
 ;;# skk
-(use-package ddskk)
-(use-package skk
+(use-package ddskk
+  :defer t
   :bind (("C-x C-j" . skk-mode))
+  :ensure t
   :init
   ;; (setq skk-kakutei-key "C-m")
   (setq skk-kakutei-when-unique-candidate t)
@@ -322,8 +332,7 @@
 	   (cl-callf color-saturate-name (face-foreground face) 30)))))
 
 ;;# Theme
-(use-package slime-theme
-  :ensure t)
+(use-package slime-theme :ensure t)
 
 ;;# flycheck
 (use-package flycheck
@@ -443,6 +452,7 @@
 
 ;;# eldoc
 (use-package eldoc-extension
+  :ensure t
   :hook ((emacs-lisp-mode-hook lisp-interaction-mode-hook ielm-mode-hook) .turn-on-eldoc-mode)
   :after (company)
   :init
@@ -450,19 +460,18 @@
   (setq eldoc-echo-area-use-multiline-p t))
 
 ;;# YaTeX
-(use-package yatex-mode
-  :mode "\\.tex$"
+(use-package yatex
+  :ensure t
   :commands (yatex-mode)
+  :mode ("\\.tex\\'" . yatex-mode)
   :hook ((skk-mode-hook . (lambda ()
 							(if (eq major-mode 'yatex-mode)
 								(progn
 								  (define-key skk-j-mode-map "\\" 'self-insert-command)
-								  (define-key skk-j-mode-map "$" 'YaTeX-insert-dollar)
-								  ))))
-		 (yatex-mode-hook . (lambda ()
-							  (auto-fill-mode -2)))
+								  (define-key skk-j-mode-map "$" 'YaTeX-insert-dollar)))))
 		 (yatex-mode-hook . (lambda ()
 							  (reftex-mode 1)
+							  (auto-fill-mode -2)
 							  (define-key reftex-mode-map (concat YaTeX-prefix ">") 'YaTeX-comment-region)
 							  (define-key reftex-mode-map (concat YaTeX-prefix "<") 'YaTeX-uncomment-region))))
   :init
@@ -498,17 +507,3 @@
 (use-package arduino-mode
   :config
   (setq auto-mode-alist (cons '("\\.\\(pde\\|ino\\)$" . arduino-mode) auto-mode-alist)))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-	(ddskk evil-leader evil-numbers key-chord slime-theme rainbow-delimiters dired git-gutter skk company yasnippet helm-config helm evil undohist linum-relative tuareg shackle rainbow-mode edit-server async arduino-mode))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
