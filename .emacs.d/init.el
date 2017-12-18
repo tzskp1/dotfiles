@@ -1,16 +1,8 @@
 ;; -*- lexical-binding: t -*- 
 
 ;; package requirement
-;; llvm
-;; llvm-dev
-;; libclang-dev
 ;; silversearcher-ag
-;; mercurial
-;; git
-;; ddskk
-;; cmake
-;; python-virtualenv
-;; rtags
+;; opam
 
 (setq package-archives
       '(("gnu" . "http://elpa.gnu.org/packages/")
@@ -241,7 +233,6 @@
 (use-package yasnippet
   :ensure t
   :config
-  ;; (setq yas/trigger-key (kbd "C-c m"))
   (yas-initialize)
   (yas-load-directory "~/.emacs.d/snippets"))
 
@@ -273,7 +264,6 @@
   :bind (("C-x C-j" . skk-mode))
   :ensure t
   :init
-  ;; (setq skk-kakutei-key "C-m")
   (setq skk-kakutei-when-unique-candidate t)
   (setq skk-egg-like-newline t)
   (setq skk-kuten-touten-alist
