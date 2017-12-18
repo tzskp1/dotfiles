@@ -176,8 +176,7 @@
 (use-package key-chord
   :ensure t
   :after (evil)
-  :init
-  (setq key-chord-two-keys-delay 0.01)
+  :custom (key-chord-two-keys-delay 0.01)
   :config
   (key-chord-mode t)
   (key-chord-define evil-insert-state-map "hh" 'evil-normal-state))
@@ -216,8 +215,8 @@
 		 :map helm-map
 		 ("C-t" . helm-previous-line)
 		 ("C-h" . helm-next-line))
+  :custom (helm-ff-auto-update-initial-value nil)
   :init
-  (setq helm-ff-auto-update-initial-value nil)
   (setq helm-idle-delay 0.3) 
   (setq helm-input-idle-delay 0.2) 
   (setq helm-candidate-number-limit 50)
