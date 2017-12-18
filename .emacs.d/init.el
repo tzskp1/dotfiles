@@ -25,10 +25,8 @@
 (eval-when-compile
   (when (not (package-installed-p 'use-package))
 	(package-install 'use-package)))
-;;   (require 'use-package))
-(require 'use-package)
 
-(use-package cl-lib)
+(require 'use-package)
 
 ;;# 行の表示
 (use-package linum-relative
@@ -178,7 +176,8 @@
 (use-package key-chord
   :ensure t
   :after (evil)
-  :custom (key-chord-two-keys-delay 0.01)
+  :init
+  (setq key-chord-two-keys-delay 0.01)
   :config
   (key-chord-mode t)
   (key-chord-define evil-insert-state-map "hh" 'evil-normal-state))
@@ -217,8 +216,8 @@
 		 :map helm-map
 		 ("C-t" . helm-previous-line)
 		 ("C-h" . helm-next-line))
-  :custom (helm-ff-auto-update-initial-value nil)
   :init
+  (setq helm-ff-auto-update-initial-value nil)
   (setq helm-idle-delay 0.3) 
   (setq helm-input-idle-delay 0.2) 
   (setq helm-candidate-number-limit 50)
@@ -311,7 +310,6 @@
 	"h" 'dired-next-line
 	"d" 'dired-up-directory
 	"n" 'keu-dired-down-directory
-	"m" (lookup-key evil-normal-state-map "m")
 	"w" (lookup-key evil-normal-state-map "w")
 	(kbd "SPC")   (lookup-key dired-mode-map "m")
 	(kbd "S-SPC") (lookup-key dired-mode-map "d")))
@@ -320,14 +318,15 @@
 (use-package rainbow-delimiters
   :ensure t
   :config
-  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
   (use-package color
-	:config
-	(cl-loop
-	 for index from 1 to rainbow-delimiters-max-face-count
-	 do
-	 (let ((face (intern (format "rainbow-delimiters-depth-%d-face" index))))
-	   (cl-callf color-saturate-name (face-foreground face) 30)))))
+       :config
+	   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+	   (use-package cl-lib)
+       (cl-loop
+        for index from 1 to rainbow-delimiters-max-face-count
+        do
+        (let ((face (intern (format "rainbow-delimiters-depth-%d-face" index))))
+          (cl-callf color-saturate-name (face-foreground face) 30)))))
 
 ;;# Theme
 (use-package slime-theme :ensure t)
@@ -340,25 +339,27 @@
 
 ;;# markdown
 (use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode)
   :mode (("\\.md" . markdown-mode)
 		 ("\\.md.erb\\'" . markdown-mode)
 		 ("\\.howm\\'" . markdown-mode))
   :init
   (setq markdown-command "redcarpet")
-  :hook ((markdown-mode . (lambda ()
-							(setq imenu-create-index-function 'outline-imenu-create-index)
-							(auto-fill-mode))))
   :config
   (defun outline-imenu-create-index ()
 	(let (index)
 	  (goto-char (point-min))
 	  (while (re-search-forward "^\*\s*\\(.+\\)" (point-max) t)
 		(push (cons (match-string 1) (match-beginning 1)) index))
-	  (nreverse index))))
+	  (nreverse index)))
+  (add-hook 'markdown-mode '(lambda ()
+							(setq imenu-create-index-function 'outline-imenu-create-index)
+							(auto-fill-mode))))
 
 ;;# c
 (use-package cc-mode
-  :commands (c-mode-common-hook)
+  :commands (c++-mode)
   :mode (("\\.c\\'" . c++-mode)
 		 ("\\.cpp\\'" . c++-mode)
 		 ("\\.cc\\'" . c++-mode)
@@ -368,7 +369,7 @@
 								(setq indent-tabs-mode nil)
 								(setq c-basic-offset 4)))
   :config
-  (c-set-offset (quote cpp-macro) 0 nil))
+  (c-set-offset 'cpp-macro 0 nil))
 
 ;;# eldoc
 (use-package eldoc-extension
