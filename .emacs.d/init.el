@@ -4,24 +4,18 @@
 ;; silversearcher-ag
 ;; opam
 
-(setq package-archives
-      '(("gnu" . "http://elpa.gnu.org/packages/")
-        ("melpa" . "http://melpa.org/packages/")
-        ("org" . "http://orgmode.org/elpa/")))
+(setq gc-cons-threshold 100000000)
 
 (package-initialize)
-
-(unless package-archive-contents
-  (package-refresh-contents))
+(setq package-archives
+      '(("gnu" . "https://elpa.gnu.org/packages/")
+        ("melpa" . "https://melpa.org/packages/")
+        ("org" . "https://orgmode.org/elpa/")))
+(unless package-archive-contents (package-refresh-contents))
 
 (eval-when-compile
   (when (not (package-installed-p 'use-package))
-	(package-install 'use-package)))
-
-;; kill custom
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(when (file-exists-p custom-file)
-  (load custom-file))
+    (package-install 'use-package)))
 
 (require 'use-package)
 
@@ -37,7 +31,7 @@
 (setq initial-major-mode 'lisp-interaction-mode)
 (setq inhibit-startup-screen t)
 (setq-default tab-width 4)
-(setq-default indent-tabs-mode t)
+(setq-default indent-tabs-mode nil)
 (global-font-lock-mode t)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
@@ -45,7 +39,6 @@
 (column-number-mode t)
 (setq vc-follow-symlinks t)
 (setq auto-revert-check-vc-info t)
-(setq gc-cons-threshold 40960000)
 (setq frame-title-format
       '("emacs@" system-name ":"
         (:eval (or (buffer-file-name)
@@ -76,29 +69,28 @@
 (setq ring-bell-function 'ignore) ; No Beeps
 ;;# Don't ask
 (add-hook 'find-file-not-found-hooks
-		  '(lambda () (make-directory (file-name-directory buffer-file-name) t)))
+          '(lambda () (make-directory (file-name-directory buffer-file-name) t)))
 ;; 自動分割を抑制
 (setq split-height-threshold nil)
 (setq split-width-threshold nil)
-
 ;;# バックアップファイルを~/.bakに集める
 (setq make-backup-files t)
 (setq auto-save-default t)
 (setq backup-directory-alist
-	  (cons (cons ".*" (expand-file-name "~/.bak"))
-        backup-directory-alist))
+      (cons (cons ".*" (expand-file-name "~/.bak"))
+            backup-directory-alist))
 (setq auto-save-file-name-transforms
-  `((".*", (expand-file-name "~/.bak") t)))
+      `((".*", (expand-file-name "~/.bak") t)))
 ;;# tramp
 (setq tramp-auto-save-directory "~/.bak/emacs")
 
 ;;# font
 (set-face-attribute 'default nil
-					:height 140)
+                    :height 140)
 (if (display-graphic-p)
-	(set-fontset-font (frame-parameter nil 'font)
-					  'japanese-jisx0208
-					  '("ricty" . "unicode-bmp")))
+    (set-fontset-font (frame-parameter nil 'font)
+                      'japanese-jisx0208
+                      '("ricty" . "unicode-bmp")))
 
 (add-to-list 'default-frame-alist '(alpha . 95))
 
@@ -107,19 +99,19 @@
   :ensure t
   :init
   (setq undohist-ignored-files
-		'("/tmp/"))
+        '("/tmp/"))
   :config
   (undohist-initialize))
 
 ;;# key binding
 (bind-key "C-x h" nil) ; delete help
 (bind-keys :map isearch-mode-map
-		   ("C-b" . isearch-delete-char)
-		   ("C-m" . ret))
+           ("C-b" . isearch-delete-char)
+           ("C-m" . ret))
 (bind-keys :map minibuffer-local-map
-		   ("C-b" . backward-delete-char-untabify)
-		   ("C-h" . next-line-or-history-element)
-		   ("C-t" . previous-line-or-history-element))
+           ("C-b" . backward-delete-char-untabify)
+           ("C-h" . next-line-or-history-element)
+           ("C-t" . previous-line-or-history-element))
 
 ;;# evil
 (use-package evil
@@ -129,46 +121,46 @@
   (setq-default evil-shift-width 2)
   (evil-mode 1)
   :bind (:map evil-ex-search-keymap
-		("C-b" . backward-delete-char-untabify)
-		 :map evil-visual-state-map
-		 ("h" . evil-next-visual-line)
-		 ("t" . evil-previous-visual-line)
-		 ("n" . evil-forward-char)
-		 ("d" . evil-backward-char)
-		 ("k" . evil-delete)
-		 ("K" . evil-delete-line)
-		 ("M" . evil-ex-search-previous)
-		 ("N" . evil-ex-search-previous)
-		 ("C-w" . comment-or-uncomment-region)
-		 ("m" . evil-ex-search-next)
-		 :map evil-motion-state-map
-		 ("h" . evil-next-visual-line)
-		 ("t" . evil-previous-visual-line)
-		 ("n" . evil-forward-char)
-		 ("d" . evil-backward-char)
-		 ("k" . evil-delete)
-		 ("K" . evil-delete-line)
-		 ("M" . evil-ex-search-previous)
-		 ("N" . evil-ex-search-previous)
-		 ("C-w" . comment-or-uncomment-region)
-		 ("m" . evil-ex-search-next)
-		 :map evil-normal-state-map
-		 ("h" . evil-next-visual-line)
-		 ("t" . evil-previous-visual-line)
-		 ("n" . evil-forward-char)
-		 ("d" . evil-backward-char)
-		 ("k" . evil-delete)
-		 ("K" . evil-delete-line)
-		 ("M" . evil-ex-search-previous)
-		 ("N" . evil-ex-search-previous)
-		 ("C-w" . comment-or-uncomment-region)
-		 ("m" . evil-ex-search-next)
-		 :map evil-insert-state-map
-		 ("C-d" . backward-char)
-		 ("C-n" . forward-char)
-		 ("C-t" . previous-line)
-		 ("C-b" . backward-delete-char-untabify)
-		 ("C-h" . next-line)))
+              ("C-b" . backward-delete-char-untabify)
+              :map evil-visual-state-map
+              ("h" . evil-next-visual-line)
+              ("t" . evil-previous-visual-line)
+              ("n" . evil-forward-char)
+              ("d" . evil-backward-char)
+              ("k" . evil-delete)
+              ("K" . evil-delete-line)
+              ("M" . evil-ex-search-previous)
+              ("N" . evil-ex-search-previous)
+              ("C-w" . comment-or-uncomment-region)
+              ("m" . evil-ex-search-next)
+              :map evil-motion-state-map
+              ("h" . evil-next-visual-line)
+              ("t" . evil-previous-visual-line)
+              ("n" . evil-forward-char)
+              ("d" . evil-backward-char)
+              ("k" . evil-delete)
+              ("K" . evil-delete-line)
+              ("M" . evil-ex-search-previous)
+              ("N" . evil-ex-search-previous)
+              ("C-w" . comment-or-uncomment-region)
+              ("m" . evil-ex-search-next)
+              :map evil-normal-state-map
+              ("h" . evil-next-visual-line)
+              ("t" . evil-previous-visual-line)
+              ("n" . evil-forward-char)
+              ("d" . evil-backward-char)
+              ("k" . evil-delete)
+              ("K" . evil-delete-line)
+              ("M" . evil-ex-search-previous)
+              ("N" . evil-ex-search-previous)
+              ("C-w" . comment-or-uncomment-region)
+              ("m" . evil-ex-search-next)
+              :map evil-insert-state-map
+              ("C-d" . backward-char)
+              ("C-n" . forward-char)
+              ("C-t" . previous-line)
+              ("C-b" . backward-delete-char-untabify)
+              ("C-h" . next-line)))
 
 (use-package key-chord
   :ensure t
@@ -177,12 +169,14 @@
   :config
   (key-chord-mode t)
   (key-chord-define evil-insert-state-map "hh" 'evil-normal-state))
+
 (use-package evil-numbers
   :ensure t
   :after (evil)
   :config
   (bind-key "+" 'evil-numbers/inc-at-pt evil-normal-state-map)
   (bind-key "-" 'evil-numbers/dec-at-pt evil-normal-state-map))
+
 (use-package evil-leader
   :ensure t
   :after (evil)
@@ -190,36 +184,36 @@
   (global-evil-leader-mode)
   (evil-leader/set-leader "<SPC>")
   (evil-leader/set-key
-	"q" 'kill-this-buffer
-	"w" 'save-buffer
-	"b" 'helm-mini))
+    "q" 'kill-this-buffer
+    "w" 'save-buffer
+    "b" 'helm-mini))
 
 ;;# helm
 (use-package helm :ensure t)
 
 (use-package helm-config
   :bind (("C-x C-b" . helm-mini)
-		 ("M-x" . helm-M-x)
-		 :map helm-buffer-map
-		 ("C-t" . helm-previous-line)
-		 ("C-h" . helm-next-line)
-		 :map helm-moccur-map
-		 ("C-h" . helm-next-line)
-		 ("C-t" . helm-previous-line)
-		 :map helm-command-map
-		 ("C-t" . helm-previous-line)
-		 ("C-h" . helm-next-line)
-		 :map helm-map
-		 ("C-t" . helm-previous-line)
-		 ("C-h" . helm-next-line))
+         ("M-x" . helm-M-x)
+         :map helm-buffer-map
+         ("C-t" . helm-previous-line)
+         ("C-h" . helm-next-line)
+         :map helm-moccur-map
+         ("C-h" . helm-next-line)
+         ("C-t" . helm-previous-line)
+         :map helm-command-map
+         ("C-t" . helm-previous-line)
+         ("C-h" . helm-next-line)
+         :map helm-map
+         ("C-t" . helm-previous-line)
+         ("C-h" . helm-next-line))
   :custom (helm-ff-auto-update-initial-value nil)
   :init
   (setq helm-idle-delay 0.3) 
   (setq helm-input-idle-delay 0.2) 
   (setq helm-candidate-number-limit 50)
   (setq helm-display-function (lambda (buf)
-								(split-window-vertically)
-								(switch-to-buffer buf)))
+                                (split-window-vertically)
+                                (switch-to-buffer buf)))
   :config
   (helm-descbinds-mode t)
   (helm-mode 1)
@@ -229,8 +223,8 @@
   :ensure t
   :after (helm)
   :bind (("M-g ," . helm-ag-pop-stack)
-		 ("C-M-s" . helm-ag-this-file)
-		 ("C-M-f" . helm-ag))
+         ("C-M-s" . helm-ag-this-file)
+         ("C-M-f" . helm-ag))
   :init
   (setq helm-ag-base-command "ag --nocolor --nogrou"))
 
@@ -246,8 +240,8 @@
   :commands (auto-complete-mode)
   :config
   (bind-keys :map ac-complete-mode-map
-			 ("C-h" . ac-next)
-			 ("C-t" . ac-previous))
+             ("C-h" . ac-next)
+             ("C-t" . ac-previous))
   (global-auto-complete-mode -1))
 
 ;;# company
@@ -255,8 +249,8 @@
   :ensure t
   :bind
   (:map company-active-map
-		("C-h" . company-select-next)
-		("C-t" . company-select-previous))
+        ("C-h" . company-select-next)
+        ("C-t" . company-select-previous))
   :init
   (setq company-idle-delay 0)
   (setq company-minimum-prefix-length 4)
@@ -272,8 +266,8 @@
   (setq skk-kakutei-when-unique-candidate t)
   (setq skk-egg-like-newline t)
   (setq skk-kuten-touten-alist
-		'((jp . ("." . "," ))
-		  (en . ("." . ","))))
+        '((jp . ("." . "," ))
+          (en . ("." . ","))))
   (setq-default skk-kutouten-type 'en)
   (setq skk-user-directory "~/skk"))
 
@@ -290,37 +284,37 @@
   :config
   (evil-make-overriding-map dired-mode-map 'normal)
   (defun keu-dired-down-directory ()
-	"[Dired command] Go down to the directory."
-	(interactive)
-	(condition-case err
-		(let ((path (dired-get-file-for-visit)))
-		  (if (f-directory? path)
-			  (dired-find-file)
-			(message "This is not directory!")))
-	  (error (message "%s" (cadr err)))))
+    "[Dired command] Go down to the directory."
+    (interactive)
+    (condition-case err
+        (let ((path (dired-get-file-for-visit)))
+          (if (f-directory? path)
+              (dired-find-file)
+            (message "This is not directory!")))
+      (error (message "%s" (cadr err)))))
   (evil-define-key 'normal dired-mode-map
-	";" (lookup-key evil-motion-state-map ";")
-	"t" 'dired-previous-line
-	"h" 'dired-next-line
-	"d" 'dired-up-directory
-	"n" 'keu-dired-down-directory
-	"w" (lookup-key evil-normal-state-map "w")
-	(kbd "SPC")   (lookup-key dired-mode-map "m")
-	(kbd "S-SPC") (lookup-key dired-mode-map "d")))
+    ";" (lookup-key evil-motion-state-map ";")
+    "t" 'dired-previous-line
+    "h" 'dired-next-line
+    "d" 'dired-up-directory
+    "n" 'keu-dired-down-directory
+    "w" (lookup-key evil-normal-state-map "w")
+    (kbd "SPC")   (lookup-key dired-mode-map "m")
+    (kbd "S-SPC") (lookup-key dired-mode-map "d")))
 
 ;;# http://d.hatena.ne.jp/murase_syuka/20140815/1408061850
 (use-package rainbow-delimiters
   :ensure t
   :config
   (use-package color
-       :config
-	   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-	   (use-package cl-lib)
-       (cl-loop
-        for index from 1 to rainbow-delimiters-max-face-count
-        do
-        (let ((face (intern (format "rainbow-delimiters-depth-%d-face" index))))
-          (cl-callf color-saturate-name (face-foreground face) 30)))))
+    :config
+    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+    (use-package cl-lib)
+    (cl-loop
+     for index from 1 to rainbow-delimiters-max-face-count
+     do
+     (let ((face (intern (format "rainbow-delimiters-depth-%d-face" index))))
+       (cl-callf color-saturate-name (face-foreground face) 30)))))
 
 (use-package golden-ratio
   :ensure t
@@ -335,48 +329,50 @@
   (setq golden-ratio-exclude-buffer-regexp '("\\*anything" "\\*helm"))
   ;; ウィンドウ選択系のコマンドで作用させる
   (setq golden-ratio-extra-commands
-		'(windmove-left windmove-right windmove-down windmove-up)))
+        '(windmove-left windmove-right windmove-down windmove-up)))
 
 ;;# Theme
-(use-package slime-theme :ensure t)
+(use-package madhat2r-theme :ensure t
+  :config
+  (load-theme 'madhat2r t))
 
 ;;# start server
 (use-package server
   :config
   (unless (server-running-p)
-	(server-start)))
+    (server-start)))
 
 ;;# markdown
 (use-package markdown-mode
   :ensure t
   :commands (markdown-mode)
   :mode (("\\.md" . markdown-mode)
-		 ("\\.md.erb\\'" . markdown-mode)
-		 ("\\.howm\\'" . markdown-mode))
+         ("\\.md.erb\\'" . markdown-mode)
+         ("\\.howm\\'" . markdown-mode))
   :init
   (setq markdown-command "redcarpet")
   :config
   (defun outline-imenu-create-index ()
-	(let (index)
-	  (goto-char (point-min))
-	  (while (re-search-forward "^\*\s*\\(.+\\)" (point-max) t)
-		(push (cons (match-string 1) (match-beginning 1)) index))
-	  (nreverse index)))
+    (let (index)
+      (goto-char (point-min))
+      (while (re-search-forward "^\*\s*\\(.+\\)" (point-max) t)
+        (push (cons (match-string 1) (match-beginning 1)) index))
+      (nreverse index)))
   (add-hook 'markdown-mode '(lambda ()
-							(setq imenu-create-index-function 'outline-imenu-create-index)
-							(auto-fill-mode))))
+                              (setq imenu-create-index-function 'outline-imenu-create-index)
+                              (auto-fill-mode))))
 
 ;;# c
 (use-package cc-mode
   :commands (c++-mode)
   :mode (("\\.c\\'" . c++-mode)
-		 ("\\.cpp\\'" . c++-mode)
-		 ("\\.cc\\'" . c++-mode)
-		 ("\\.h\\'" . c++-mode))
+         ("\\.cpp\\'" . c++-mode)
+         ("\\.cc\\'" . c++-mode)
+         ("\\.h\\'" . c++-mode))
   :hook (c-mode-common-hook . (lambda ()
-								(setq c-default-style "bsd")
-								(setq indent-tabs-mode nil)
-								(setq c-basic-offset 4)))
+                                (setq c-default-style "bsd")
+                                (setq indent-tabs-mode nil)
+                                (setq c-basic-offset 4)))
   :config
   (c-set-offset 'cpp-macro 0 nil))
 
@@ -395,15 +391,15 @@
   :commands (yatex-mode)
   :mode ("\\.tex\\'" . yatex-mode)
   :hook ((skk-mode-hook . (lambda ()
-							(if (eq major-mode 'yatex-mode)
-								(progn
-								  (define-key skk-j-mode-map "\\" 'self-insert-command)
-								  (define-key skk-j-mode-map "$" 'YaTeX-insert-dollar)))))
-		 (yatex-mode-hook . (lambda ()
-							  (reftex-mode 1)
-							  (auto-fill-mode -2)
-							  (define-key reftex-mode-map (concat YaTeX-prefix ">") 'YaTeX-comment-region)
-							  (define-key reftex-mode-map (concat YaTeX-prefix "<") 'YaTeX-uncomment-region))))
+                            (if (eq major-mode 'yatex-mode)
+                                (progn
+                                  (define-key skk-j-mode-map "\\" 'self-insert-command)
+                                  (define-key skk-j-mode-map "$" 'YaTeX-insert-dollar)))))
+         (yatex-mode-hook . (lambda ()
+                              (reftex-mode 1)
+                              (auto-fill-mode -2)
+                              (define-key reftex-mode-map (concat YaTeX-prefix ">") 'YaTeX-comment-region)
+                              (define-key reftex-mode-map (concat YaTeX-prefix "<") 'YaTeX-uncomment-region))))
   :init
   (setq YaTeX-inhibit-prefix-letter t)
   (setq YaTeX-kanji-code 4))
@@ -413,21 +409,25 @@
   :ensure t
   :commands (tuareg-mode)
   :mode (("\\.ml\\'" . tuareg-mode)
-		 ("\\.mli\\'" . tuareg-mode)))
+         ("\\.mli\\'" . tuareg-mode))
+  :config
+  ;; work around
+  (defun tuareg-abbrev-hook () nil))
 
 ;; opam init
 ;; opam install merlin utop core
 ;; -- opam and utop setup --------------------------------
 ;; Setup environment variables using opam
-(dolist
-	(var (car (read-from-string
-			   (shell-command-to-string "opam config env --sexp"))))
-  (setenv (car var) (cadr var)))
-;; Update the emacs path
-(setq exec-path (split-string (getenv "PATH") path-separator))
-;; Update the emacs load path
-(add-to-list 'load-path (concat (getenv "OCAML_TOPLEVEL_PATH")
-								"/../../share/emacs/site-lisp"))
+(when (executable-find "opam")
+  (dolist
+      (var (car (read-from-string
+                 (shell-command-to-string "opam config env --sexp"))))
+    (setenv (car var) (cadr var)))
+  ;; Update the emacs path
+  (setq exec-path (split-string (getenv "PATH") path-separator))
+  ;; Update the emacs load path
+  (add-to-list 'load-path (concat (getenv "OCAML_TOPLEVEL_PATH")
+                                  "/../../share/emacs/site-lisp")))
 
 (use-package merlin
   :after (tuareg company)
@@ -443,3 +443,8 @@
   :commands (utop-minor-mode)
   :init 
   (add-hook 'tuareg-mode-hook 'utop-minor-mode t))
+
+;; kill custom
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (file-exists-p custom-file)
+  (load custom-file))
