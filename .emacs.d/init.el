@@ -20,8 +20,7 @@
 (require 'use-package)
 
 ;;# 行の表示
-(use-package linum-relative
-  :ensure t
+(use-package linum-relative :ensure t
   :config
   (setq linum-format "%5d")
   (linum-relative-on)
@@ -94,14 +93,19 @@
 
 (add-to-list 'default-frame-alist '(alpha . 95))
 
+(use-package diminish :ensure t)
+
 ;;# undohist
-(use-package undohist
-  :ensure t
+(use-package undohist :ensure t
   :init
-  (setq undohist-ignored-files
-        '("/tmp/"))
+  (setq undohist-ignored-files '("/tmp/"))
   :config
   (undohist-initialize))
+
+(use-package undo-tree :diminish ""
+  :bind (:map undo-tree-visualizer-mode-map
+              ("C-t" . undo-tree-visualize-undo)
+              ("C-h" . undo-tree-visualize-redo)))
 
 ;;# key binding
 (bind-key "C-x h" nil) ; delete help
@@ -114,8 +118,7 @@
            ("C-t" . previous-line-or-history-element))
 
 ;;# evil
-(use-package evil
-  :ensure t
+(use-package evil :ensure t
   :init
   (setq evil-search-module 'evil-search)
   (setq-default evil-shift-width 2)
@@ -131,8 +134,9 @@
               ("K" . evil-delete-line)
               ("M" . evil-ex-search-previous)
               ("N" . evil-ex-search-previous)
-              ("C-w" . comment-or-uncomment-region)
               ("m" . evil-ex-search-next)
+              ("C-w" . comment-or-uncomment-region)
+              ("C-c C-l" . xref-find-definitions)
               :map evil-motion-state-map
               ("h" . evil-next-visual-line)
               ("t" . evil-previous-visual-line)
@@ -142,8 +146,9 @@
               ("K" . evil-delete-line)
               ("M" . evil-ex-search-previous)
               ("N" . evil-ex-search-previous)
-              ("C-w" . comment-or-uncomment-region)
               ("m" . evil-ex-search-next)
+              ("C-w" . comment-or-uncomment-region)
+              ("C-c C-l" . xref-find-definitions)
               :map evil-normal-state-map
               ("h" . evil-next-visual-line)
               ("t" . evil-previous-visual-line)
@@ -153,8 +158,9 @@
               ("K" . evil-delete-line)
               ("M" . evil-ex-search-previous)
               ("N" . evil-ex-search-previous)
-              ("C-w" . comment-or-uncomment-region)
               ("m" . evil-ex-search-next)
+              ("C-w" . comment-or-uncomment-region)
+              ("C-c C-l" . xref-find-definitions)
               :map evil-insert-state-map
               ("C-d" . backward-char)
               ("C-n" . forward-char)
@@ -162,23 +168,20 @@
               ("C-b" . backward-delete-char-untabify)
               ("C-h" . next-line)))
 
-(use-package key-chord
-  :ensure t
+(use-package key-chord :ensure t
   :after (evil)
-  :custom (key-chord-two-keys-delay 0.01)
+  :custom (key-chord-two-keys-delay 0.02)
   :config
   (key-chord-mode t)
   (key-chord-define evil-insert-state-map "hh" 'evil-normal-state))
 
-(use-package evil-numbers
-  :ensure t
+(use-package evil-numbers :ensure t
   :after (evil)
   :config
   (bind-key "+" 'evil-numbers/inc-at-pt evil-normal-state-map)
   (bind-key "-" 'evil-numbers/dec-at-pt evil-normal-state-map))
 
-(use-package evil-leader
-  :ensure t
+(use-package evil-leader :ensure t
   :after (evil)
   :config
   (global-evil-leader-mode)
@@ -219,8 +222,7 @@
   (helm-mode 1)
   (add-to-list 'helm-completing-read-handlers-alist '(find-file . nil)))
 
-(use-package helm-ag
-  :ensure t
+(use-package helm-ag :ensure t
   :after (helm)
   :bind (("M-g ," . helm-ag-pop-stack)
          ("C-M-s" . helm-ag-this-file)
@@ -228,9 +230,7 @@
   :init
   (setq helm-ag-base-command "ag --nocolor --nogrou"))
 
-;;# yasnippet
-(use-package yasnippet
-  :ensure t
+(use-package yasnippet :ensure t :diminish yas-minor-mode
   :config
   (yas-initialize)
   (yas-load-directory "~/.emacs.d/snippets"))
@@ -244,9 +244,7 @@
              ("C-t" . ac-previous))
   (global-auto-complete-mode -1))
 
-;;# company
-(use-package company
-  :ensure t
+(use-package company :ensure t :diminish ""
   :bind
   (:map company-active-map
         ("C-h" . company-select-next)
@@ -258,10 +256,8 @@
   (global-company-mode))
 
 ;;# skk
-(use-package ddskk
-  :defer t
+(use-package ddskk :defer t :ensure t
   :bind (("C-x C-j" . skk-mode))
-  :ensure t
   :init
   (setq skk-kakutei-when-unique-candidate t)
   (setq skk-egg-like-newline t)
@@ -272,8 +268,7 @@
   (setq skk-user-directory "~/skk"))
 
 ;;# git-gutter
-(use-package git-gutter
-  :ensure t
+(use-package git-gutter :ensure t :diminish ""
   :config
   (global-git-gutter-mode t))
 
@@ -303,8 +298,7 @@
     (kbd "S-SPC") (lookup-key dired-mode-map "d")))
 
 ;;# http://d.hatena.ne.jp/murase_syuka/20140815/1408061850
-(use-package rainbow-delimiters
-  :ensure t
+(use-package rainbow-delimiters :ensure t
   :config
   (use-package color
     :config
@@ -316,20 +310,31 @@
      (let ((face (intern (format "rainbow-delimiters-depth-%d-face" index))))
        (cl-callf color-saturate-name (face-foreground face) 30)))))
 
-(use-package golden-ratio
-  :ensure t
+(use-package golden-ratio :ensure t :diminish ""
   :init
   (golden-ratio-mode 1)
   ;; 条件に応じてウィンドウの大きさを変更しない
   ;; ウィンドウの大きさを変更しないメジャーモード
   (setq golden-ratio-exclude-modes '(calendar-mode))
-  ;; ウィンドウの大きさを変更しないバッファ名
-  (setq golden-ratio-exclude-buffer-names '(" *Org tags*" " *Org todo*"))
+  ;; ;; ウィンドウの大きさを変更しないバッファ名
+  ;; (setq golden-ratio-exclude-buffer-names '(" *Org tags*" " *Org todo*"))
   ;; ウィンドウの大きさを変更しないバッファ名の正規表現
   (setq golden-ratio-exclude-buffer-regexp '("\\*anything" "\\*helm"))
   ;; ウィンドウ選択系のコマンドで作用させる
   (setq golden-ratio-extra-commands
         '(windmove-left windmove-right windmove-down windmove-up)))
+
+(use-package magit :ensure t
+  :commands (magit-status)
+  :after (evil)
+  :bind (("C-c C-g" . magit-status)
+         :map magit-mode-map
+         ("t" . magit-section-backward)
+         ("h" . magit-section-forward)
+         ("T" . magit-section-backward-sibling)
+         ("H" . magit-section-forward-sibling))
+  :config
+  (evil-make-overriding-map dired-mode-map 'normal))
 
 ;;# Theme
 (use-package madhat2r-theme :ensure t
@@ -377,8 +382,7 @@
   (c-set-offset 'cpp-macro 0 nil))
 
 ;;# eldoc
-(use-package eldoc-extension
-  :ensure t
+(use-package eldoc-extension :ensure t
   :hook ((emacs-lisp-mode-hook lisp-interaction-mode-hook ielm-mode-hook) .turn-on-eldoc-mode)
   :after (company)
   :init
@@ -386,8 +390,7 @@
   (setq eldoc-echo-area-use-multiline-p t))
 
 ;;# YaTeX
-(use-package yatex
-  :ensure t
+(use-package yatex :ensure t
   :commands (yatex-mode)
   :mode ("\\.tex\\'" . yatex-mode)
   :hook ((skk-mode-hook . (lambda ()
@@ -405,8 +408,7 @@
   (setq YaTeX-kanji-code 4))
 
 ;;# OCaml
-(use-package tuareg
-  :ensure t
+(use-package tuareg :ensure t
   :commands (tuareg-mode)
   :mode (("\\.ml\\'" . tuareg-mode)
          ("\\.mli\\'" . tuareg-mode))
@@ -435,6 +437,7 @@
   :init 
   (add-hook 'tuareg-mode-hook 'merlin-mode t)
   :config
+  (evil-make-overriding-map merlin-mode-map 'normal)
   (add-to-list 'company-backends 'merlin-company-backend)
   (setq merlin-command 'opam))
 
