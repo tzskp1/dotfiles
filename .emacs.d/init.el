@@ -5,10 +5,12 @@
 ;; opam
 
 (eval-when-compile
+  (require 'package)
   (package-initialize)
   (setq package-archives
         '(("gnu" . "https://elpa.gnu.org/packages/")
           ("melpa" . "https://melpa.org/packages/")))
+  (unless package-archive-contents (package-refresh-contents))
   (when (not (package-installed-p 'use-package))
     (package-install 'use-package))
   (load (expand-file-name "packages.el" user-emacs-directory)))
@@ -16,8 +18,6 @@
 (setq gc-cons-threshold 100000000)
 
 (package-initialize)
-
-(unless package-archive-contents (package-refresh-contents))
 
 (require 'use-package)
 

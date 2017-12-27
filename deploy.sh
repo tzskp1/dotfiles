@@ -20,9 +20,9 @@ fi
 ln -s $nh/.emacs.d ~/
 
 if [ -e ~/texmf ]; then
-	sudo mv ~/texmf ~/texmf.bak
+	mv ~/texmf ~/texmf.bak
 fi
-sudo ln -s $nh/texmf ~/texmf 
+ln -s $nh/texmf ~/texmf 
 
 if [ -e ~/.xmonad ]; then
 	mv ~/.xmonad ~/.xmonad.bak
