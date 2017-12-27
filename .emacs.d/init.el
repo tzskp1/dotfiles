@@ -5,7 +5,6 @@
 ;; opam
 
 (eval-when-compile
-  (require 'package)
   (package-initialize)
   (setq package-archives
         '(("gnu" . "https://elpa.gnu.org/packages/")
