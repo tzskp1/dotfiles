@@ -451,8 +451,8 @@
 ;;# F#
 (use-package fsharp-mode
   :config
-  (setq inferior-fsharp-program "/home/tk/docker_test/bin/fsharpi --readline-")
-  (setq fsharp-compiler "/home/tk/docker_test/bin/fsharpc"))
+  (setq inferior-fsharp-program "~/Dotfiles/bin/fsharpi --readline-")
+  (setq fsharp-compiler "~/Dotfiles/bin/fsharpc"))
 
 ;; kill custom
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
