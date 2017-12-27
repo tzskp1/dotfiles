@@ -4,7 +4,6 @@
     tuareg
     markdown-mode
     ddskk
-    fsharp-mode
     )
   "packages to be installed")
 

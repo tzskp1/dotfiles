@@ -9,11 +9,12 @@ up_container_with: up_container_with.in
 	m4 -P --define=HOST_USER=$(user) up_container_with.in > up_container_with
 	chmod 775 up_container_with
 	mkdir -p $(curdir)/../bin
-	ln -s $(curdir)/up_container_with $(curdir)/../bin/bash
 	ln -s $(curdir)/up_container_with $(curdir)/../bin/dotnet
-	ln -s $(curdir)/up_container_with $(curdir)/../bin/mono
+	ln -s $(curdir)/up_container_with $(curdir)/../bin/yo
 	ln -s $(curdir)/up_container_with $(curdir)/../bin/fsharpi
 	ln -s $(curdir)/up_container_with $(curdir)/../bin/fsharpc
+	ln -s $(curdir)/up_container_with $(curdir)/emacs
+	ln -s $(curdir)/up_container_with $(curdir)/bash
 
 build: Dockerfile packages.el
 	mkdir -p $(curdir)/.emacs.d

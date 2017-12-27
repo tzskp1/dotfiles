@@ -449,10 +449,7 @@
   (add-hook 'tuareg-mode-hook 'utop-minor-mode t))
 
 ;;# F#
-(use-package fsharp-mode
-  :config
-  (setq inferior-fsharp-program "~/Dotfiles/bin/fsharpi --readline-")
-  (setq fsharp-compiler "~/Dotfiles/bin/fsharpc"))
+(use-package fsharp-mode)
 
 ;; kill custom
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))

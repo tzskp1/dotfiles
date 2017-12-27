@@ -1,8 +1,6 @@
 FROM ubuntu:16.04
 
-ENV HOSTNAME "FSHARP"
-RUN echo "FSHARP" >> /etc/hostname \
-    && apt-get update \
+RUN apt-get update \
     && apt-get install -y apt-transport-https curl software-properties-common \
     && add-apt-repository ppa:kelleyk/emacs \
     && curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg \
@@ -25,12 +23,16 @@ RUN echo "FSHARP" >> /etc/hostname \
         fsharp \
         emacs25 \
         git \
-        sudo \
+        nodejs \
         silversearcher-ag \
         dotnet-sdk-2.0.0 \
+        npm \
    && rm -rf /var/lib/apt/lists/* \
    && useradd HOST_USER \
-   && mkdir -p /home/HOST_USER/sources
+   && mkdir -p /home/HOST_USER/sources \
+   && ln -s /usr/bin/nodejs /usr/bin/node \
+   && npm install -g yo \
+   && npm install -g generator-fsharp
 
 ADD .emacs.d /home/HOST_USER/.emacs.d/
 RUN chown -R HOST_USER /home/HOST_USER
