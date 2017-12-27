@@ -448,13 +448,13 @@
   :init 
   (add-hook 'tuareg-mode-hook 'utop-minor-mode t))
 
+;;# F#
+(use-package fsharp-mode
+  :config
+  (setq inferior-fsharp-program "/home/tk/docker_test/bin/fsharpi --readline-")
+  (setq fsharp-compiler "/home/tk/docker_test/bin/fsharpc"))
+
 ;; kill custom
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file))
-
-;;# F#
-(use-package fsharp-mode
-  :config
-  (setq inferior-fsharp-program "/usr/bin/fsharpi --readline-")
-  (setq fsharp-compiler "usr/bin/fsharpc"))

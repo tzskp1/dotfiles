@@ -6,16 +6,9 @@
 # source ${ZDOTDIR}/.zshenv
 #----------------------------
 export GOPATH=$HOME/go
-export PATH=$HOME/.cabal/bin:$GOROOT/bin:$PATH
-export EDITOR="$nvim"
-#export EDITOR="emacsclient"  # until zsh 5.2
-export WAREHOUSE=192.168.0.7
-export WAREHOUSE_ADDR=40:16:7e:27:bd:83
+export PATH=$HOME/Dotfiles/bin:$HOME/.cabal/bin:$GOROOT/bin:$PATH
+export EDITOR="nvim"
 export TERM="xterm-256color"
-export LANG=ja_JP.UTF-8  # 文字コードをUTF-8に設定
-export KCODE=u           # KCODEにUTF-8を設定
-export AUTOFEATURE=true  # autotestでfeatureを動かす
-if [ $(hostname) = "garden" ]; then
-	export VAGRANT_HOME=/mnt/warehouse/.vagrant.d
-fi
+export LANG=ja_JP.UTF-8
+export KCODE=u  
 

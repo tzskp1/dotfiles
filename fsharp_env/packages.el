@@ -1,9 +1,6 @@
 (defvar package-list
   '(
-    yatex
-    tuareg
-    markdown-mode
-    ddskk
+    auto-complete
     fsharp-mode
     )
   "packages to be installed")
