@@ -4,18 +4,20 @@
 ;; silversearcher-ag
 ;; opam
 
+(eval-when-compile
+  (package-initialize)
+  (setq package-archives
+        '(("gnu" . "https://elpa.gnu.org/packages/")
+          ("melpa" . "https://melpa.org/packages/")))
+  (when (not (package-installed-p 'use-package))
+    (package-install 'use-package))
+  (load (expand-file-name "packages.el" user-emacs-directory)))
+
 (setq gc-cons-threshold 100000000)
 
 (package-initialize)
-(setq package-archives
-      '(("gnu" . "https://elpa.gnu.org/packages/")
-        ("melpa" . "https://melpa.org/packages/")
-        ("org" . "https://orgmode.org/elpa/")))
-(unless package-archive-contents (package-refresh-contents))
 
-(eval-when-compile
-  (when (not (package-installed-p 'use-package))
-    (package-install 'use-package)))
+(unless package-archive-contents (package-refresh-contents))
 
 (require 'use-package)
 
@@ -170,7 +172,7 @@
 
 (use-package key-chord :ensure t
   :after (evil)
-  :custom (key-chord-two-keys-delay 0.02)
+  :custom (key-chord-two-keys-delay 0.05)
   :config
   (key-chord-mode t)
   (key-chord-define evil-insert-state-map "hh" 'evil-normal-state))
@@ -256,7 +258,7 @@
   (global-company-mode))
 
 ;;# skk
-(use-package ddskk :defer t :ensure t
+(use-package ddskk :defer t 
   :bind (("C-x C-j" . skk-mode))
   :init
   (setq skk-kakutei-when-unique-candidate t)
@@ -339,7 +341,7 @@
 
 ;;# Theme
 (use-package madhat2r-theme :ensure t
-  :config
+ :config
   (load-theme 'madhat2r t))
 
 ;;# start server
@@ -350,7 +352,6 @@
 
 ;;# markdown
 (use-package markdown-mode
-  :ensure t
   :commands (markdown-mode)
   :mode (("\\.md" . markdown-mode)
          ("\\.md.erb\\'" . markdown-mode)
@@ -391,7 +392,7 @@
   (setq eldoc-echo-area-use-multiline-p t))
 
 ;;# YaTeX
-(use-package yatex :ensure t
+(use-package yatex
   :commands (yatex-mode)
   :mode ("\\.tex\\'" . yatex-mode)
   :hook ((skk-mode-hook . (lambda ()
@@ -409,7 +410,7 @@
   (setq YaTeX-kanji-code 4))
 
 ;;# OCaml
-(use-package tuareg :ensure t
+(use-package tuareg
   :commands (tuareg-mode)
   :mode (("\\.ml\\'" . tuareg-mode)
          ("\\.mli\\'" . tuareg-mode))
@@ -452,3 +453,9 @@
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file))
+
+;;# F#
+(use-package fsharp-mode
+  :config
+  (setq inferior-fsharp-program "/usr/bin/fsharpi --readline-")
+  (setq fsharp-compiler "usr/bin/fsharpc"))
