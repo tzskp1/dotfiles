@@ -1,25 +1,55 @@
-all: build up_container_with
-curdir := $(CURDIR)
-user := $(USER)
+USER ?= dotnet
+commands := yo dotnet fsharpi fsharpc
+mask_commands := bash emacs
+VPATH := $(CURDIR)/../bin
 
-Dockerfile: Dockerfile.in
-	m4 -P --define=HOST_USER=$(user) Dockerfile.in > Dockerfile 
+.PHONY: all force clean
 
-up_container_with: up_container_with.in 
-	m4 -P --define=HOST_USER=$(user) up_container_with.in > up_container_with
-	chmod 775 up_container_with
-	mkdir -p $(curdir)/../bin
-	ln -s $(curdir)/up_container_with $(curdir)/../bin/dotnet
-	ln -s $(curdir)/up_container_with $(curdir)/../bin/yo
-	ln -s $(curdir)/up_container_with $(curdir)/../bin/fsharpi
-	ln -s $(curdir)/up_container_with $(curdir)/../bin/fsharpc
-	ln -s $(curdir)/up_container_with $(curdir)/emacs
-	ln -s $(curdir)/up_container_with $(curdir)/bash
+all: $(commands) $(mask_commands) 
 
-build: Dockerfile packages.el
-	mkdir -p $(curdir)/.emacs.d
-	cp ~/.emacs.d/init.el $(curdir)/.emacs.d/
-	cp ~/.emacs.d/custom.el $(curdir)/.emacs.d/
-	cp -RH ~/.emacs.d/snippets $(curdir)/.emacs.d/
-	cp ./packages.el $(curdir)/.emacs.d/
-	docker build -t dotnet_core $(curdir)
+%: %.m4
+	m4 -P --define=HOST_USER=$(USER) $< > $@
+
+define make_symlink
+	@echo "Creating symlink of "$@" ..."
+	@mkdir -p $(CURDIR)/../bin
+	@$(RM) $(CURDIR)/../bin/$@
+	@ln -s $(CURDIR)/$< $(CURDIR)/../bin/$@
+endef
+
+define make_symlink_at_local
+	@echo "Creating symlink of "$@" ..."
+	@$(RM) $(CURDIR)/$@
+	@ln -s $(CURDIR)/$< $(CURDIR)/$@
+endef
+
+define copy_emacs_settings
+	mkdir -p $(CURDIR)/.emacs.d
+	cp ~/.emacs.d/init.el $(CURDIR)/.emacs.d/
+	cp ~/.emacs.d/custom.el $(CURDIR)/.emacs.d/
+	cp -RH ~/.emacs.d/snippets $(CURDIR)/.emacs.d/
+	cp ./packages.el $(CURDIR)/.emacs.d/
+endef
+
+build: Dockerfile packages.el 
+	@mkdir -p $(CURDIR)/../bin
+	@mkdir -p $(HOME)/sources
+	@$(copy_emacs_settings)
+	docker build -t dotnet_core $(CURDIR)
+	touch build
+
+up_container_with: % : %.m4 build 
+	m4 -P --define=HOST_USER=$(USER) $< > $@
+	chmod +x $@
+
+$(commands): % : up_container_with 
+	$(make_symlink)
+
+$(mask_commands): % : up_container_with 
+	$(make_symlink_at_local)
+
+force:
+
+clean:
+	$(RM) $(CURDIR)/build
+	$(RM) $(CURDIR)/Dockerfile

@@ -124,6 +124,7 @@
   (setq evil-search-module 'evil-search)
   (setq-default evil-shift-width 2)
   (evil-mode 1)
+  :custom (evil-ex-substitute-case 'smart)
   :bind (:map evil-ex-search-keymap
               ("C-b" . backward-delete-char-untabify)
               :map evil-visual-state-map
@@ -450,6 +451,9 @@
 
 ;;# F#
 (use-package fsharp-mode)
+
+;;# Haskell 
+(use-package haskell-mode :ensure t)
 
 ;; kill custom
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
