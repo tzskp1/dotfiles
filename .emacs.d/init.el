@@ -191,7 +191,7 @@
   (evil-leader/set-key
     "q" 'kill-this-buffer
     "w" 'save-buffer
-    "b" 'helm-mini))
+    "<SPC>" 'helm-mini))
 
 ;;# helm
 (use-package helm :ensure t)

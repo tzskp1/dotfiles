@@ -7,7 +7,7 @@ RUN apt-get update \
     && apt-key add Release.key \
     && apt-add-repository https://dl.winehq.org/wine-builds/ubuntu/ \
     && apt-get update \
-    && apt-get install -y --install-recommends winehq-stable wine-gecko winetricks mono-devel libasound2-dev libesd0 alsa-utils \
+    && apt-get install -y --install-recommends winehq-stable wine-gecko winetricks mono-devel libasound2-dev libesd0 alsa-utils winbind libpam-winbind libnss-winbind unrar unar \
     && apt-get remove -y apt-transport-https software-properties-common \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
@@ -24,3 +24,4 @@ RUN apt-get update \
 USER wine
 WORKDIR /home/wine
 ENV HOME /home/wine
+
