@@ -85,12 +85,8 @@
 (setq tramp-auto-save-directory "~/.bak/emacs")
 
 ;;# font
-(set-face-attribute 'default nil
-                    :height 140)
-(if (display-graphic-p)
-    (set-fontset-font (frame-parameter nil 'font)
-                      'japanese-jisx0208
-                      '("ricty" . "unicode-bmp")))
+(set-default-font "Ricty")
+(set-face-attribute 'default nil :height 150)
 
 (add-to-list 'default-frame-alist '(alpha . 95))
 

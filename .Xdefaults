@@ -21,3 +21,9 @@ urxvt.fading: 30
 ! input with IM at cursor position
 urxvt.preeditType: OverTheSpot
 URxvt.letterSpace: -1
+
+Xft.dpi:        102
+Xft.antialias:  true
+Xft.rgba:       rgb
+Xft.hinting:    true
+Xft.hintstyle:  hintslight
