@@ -85,8 +85,8 @@
 (setq tramp-auto-save-directory "~/.bak/emacs")
 
 ;;# font
-(set-default-font "Ricty")
-(set-face-attribute 'default nil :height 150)
+(set-default-font "Source Han Code JP N")
+(set-face-attribute 'default nil :height 122)
 
 (add-to-list 'default-frame-alist '(alpha . 95))
 
