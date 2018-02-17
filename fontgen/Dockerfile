@@ -10,7 +10,7 @@ ENV LC_ALL ja_JP.UTF-8
 ENV FC_LANG ja
 
 RUN apt-get update \
-    && apt-get install -y wget curl fontconfig python-pip python git unzip sudo lib32z1 \
+    && apt-get install -y wget fontconfig python-pip python git unzip lib32z1 \
     && fc-cache -fv \
     && pip install fonttools \
     && apt-get clean \
