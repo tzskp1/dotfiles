@@ -11,3 +11,6 @@
 /emacs/.python-environments/*
 /emacs/undohist/*
 *.elc
+*.o
+*.errors
+*.hi

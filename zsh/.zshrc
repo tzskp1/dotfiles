@@ -87,9 +87,7 @@ bindkey "^S" history-incremental-search-forward
 # Look And Feel Settings
 # ------------------------------
 ### Ls Color ###
-if type -p dircolors >/dev/null ; then
-  eval $(dircolors $HOME/.dir_colors)
-fi
+eval $(dircolors $HOME/.dir_colors)
 # 補完候補に色を付ける
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
