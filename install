@@ -14,6 +14,11 @@ EOF
 
 ln -sfn $cud/dircolors ~/.dir_colors
 
+go get github.com/peco/peco/cmd/peco
+
+cd ~
+curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh| zsh
+
 ln -sfn $cud/emacs ~/.emacs.d
 
 ln -sfn $cud/texmf ~/texmf 

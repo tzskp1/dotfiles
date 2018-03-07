@@ -1,12 +1,10 @@
-# Created by newuser for 5.0.0
-# (d) is default on
-
 # ------------------------------
 # General Settings
 # ------------------------------
 
 autoload -U edit-command-line
 zle -N edit-command-line
+bindkey "^X^E" edit-command-line
 
 bindkey -v               # キーバインドをviモードに設定
 bindkey '^B' vi-backward-delete-char
@@ -20,33 +18,17 @@ bindkey "^[OH" vi-beginning-of-line
 bindkey "^G" send-break
 bindkey "^N" forward-char
 bindkey "^D" backward-char
-bindkey "^X^E" edit-command-line
-
-show_buffer_stack() {
-  POSTDISPLAY="
-stack: $LBUFFER"
-  zle push-line-or-edit
-}
-
-zle -N show_buffer_stack
-setopt noflowcontrol
-bindkey '^Q' show_buffer_stack
-
 zle -A .backward-kill-word vi-backward-kill-word
 zle -A .backward-delete-char vi-backward-delete-char
-umask 002
 
+umask 002
 setopt no_beep           # ビープ音を鳴らさないようにする
 setopt auto_cd           # ディレクトリ名の入力のみで移動する 
-setopt auto_pushd        # cd時にディレクトリスタックにpushdする
 setopt correct           # コマンドのスペルを訂正する
 setopt magic_equal_subst # =以降も補完する(--prefix=/usrなど)
 setopt prompt_subst      # プロンプト定義内で変数置換やコマンド置換を扱う
 setopt notify            # バックグラウンドジョブの状態変化を即時報告する
 setopt equals            # =commandを`which command`と同じ処理にする
-setopt EXTENDED_GLOB
-setopt nonomatch
-setopt HIST_IGNORE_SPACE
 
 ### Complement ###
 autoload -U compinit; compinit # 補完機能を有効にする
@@ -87,52 +69,22 @@ zle -N peco-history-selection
 bindkey '^R' peco-history-selection
 
 # ------------------------------
-# Look And Feel Settings
+# Other Settings
 # ------------------------------
+
 ### Ls Color ###
 eval $(dircolors $HOME/.dir_colors)
 # 補完候補に色を付ける
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-
-### Prompt ###
-# プロンプトに色を付ける
-autoload -U colors; colors
-# 一般ユーザ時
-tmp_prompt="%{${fg[cyan]}%}%n%{${reset_color}%}@%{${fg[cyan]}%}%m%{${reset_color}%}# "
-tmp_prompt2="%{${fg[cyan]}%}%_> %{${reset_color}%}"
-tmp_rprompt="%{${fg[green]}%}[%~]%{${reset_color}%}"
-tmp_sprompt="%{${fg[yellow]}%}%r is correct? [Yes, No, Abort, Edit]:%{${reset_color}%}"
-
-# rootユーザ時(太字にし、アンダーバーをつける)
-if [ ${UID} -eq 0 ]; then
-    tmp_prompt="%B%U${tmp_prompt}%u%b"
-    tmp_prompt2="%B%U${tmp_prompt2}%u%b"
-    tmp_rprompt="%B%U${tmp_rprompt}%u%b"
-    tmp_sprompt="%B%U${tmp_sprompt}%u%b"
-fi
-
-PROMPT=$tmp_prompt    # 通常のプロンプト
-PROMPT2=$tmp_prompt2  # セカンダリのプロンプト(コマンドが2行以上の時に表示される)
-RPROMPT=$tmp_rprompt  # 右側のプロンプト
-SPROMPT=$tmp_sprompt  # スペル訂正用プロンプト
-# SSHログイン時のプロンプト
-[ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
-PROMPT="%{${fg[white]}%}${HOST%%.*} ${PROMPT}"
-;
-
-# ------------------------------
-# Other Settings
-# ------------------------------
 
 function send_emacs(){
     emacsclient $1 > /dev/null &
 }
 
 ### Aliases ###
-alias v=vim
+alias v=nvim
 alias e=send_emacs
 alias ls="ls --color"
-alias -g L="|less"
 alias grep='grep --color=auto'
 
 function extract() {
@@ -164,3 +116,18 @@ fi
 
 # for opam
 source ~/.zshrc
+
+source ~/.zplug/init.zsh
+
+zplug 'mafredri/zsh-async', from:github
+zplug 'sindresorhus/pure', use:pure.zsh, from:github, as:theme
+zplug 'zplug/zplug', hook-build:'zplug --self-manage'
+
+# zplug check はインストールするものがないときに真を返す
+# ゆえにそうでないとき zplug install する
+if ! zplug check; then
+    zplug install
+fi
+
+# プラグインを読み込み、コマンドを実行可能にする
+zplug load
