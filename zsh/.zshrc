@@ -76,12 +76,15 @@ autoload history-search-end
 zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
 
-# すべてのヒストリを表示する
-function history-all { history -E 1 }
-
 # インクリメンタルからの検索
-bindkey "^R" history-incremental-search-backward
-bindkey "^S" history-incremental-search-forward
+function peco-history-selection() {
+    BUFFER=$(history -n 1 | tac | awk '!a[$0]++' | peco)
+    CURSOR=$#BUFFER
+    zle reset-prompt
+}
+
+zle -N peco-history-selection
+bindkey '^R' peco-history-selection
 
 # ------------------------------
 # Look And Feel Settings
@@ -154,16 +157,9 @@ function cd() {
 }
 
 # clipboard
-if which pbcopy >/dev/null 2>&1 ; then 
-    # Mac  
-    alias -g C='| pbcopy'
-elif which xsel >/dev/null 2>&1 ; then 
-    # Linux
+if which xsel >/dev/null 2>&1 ; then 
     alias -g C='| xsel --input --clipboard'
     alias -g P='xclip -out -sel clip'
-elif which putclip >/dev/null 2>&1 ; then 
-    # Cygwin 
-    alias -g C='| putclip'
 fi
 
 # for opam
