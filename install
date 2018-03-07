@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cud=$(pwd)
+cud=$(dirname $0)
 
 cat << EOF > ~/.zshenv
 #! /usr/bin/env zsh 
