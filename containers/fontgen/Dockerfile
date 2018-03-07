@@ -25,9 +25,8 @@ ENV HOME /home/font
 
 RUN wget http://download.macromedia.com/pub/developer/opentype/FDK.2.5.65322/FDK-25-LINUX.b65322.zip \ 
     && unzip ~/FDK-25-LINUX.b65322.zip \ 
-    && ~/FDK-25-LINUX.b65322/FinishInstallLinux
-
-RUN . /home/font/.profile \
+    && ~/FDK-25-LINUX.b65322/FinishInstallLinux \
+    && . /home/font/.profile \
     && git clone https://github.com/adobe-fonts/source-han-code-jp \
     && cd ~/source-han-code-jp \
     && bash ./commands.sh \
