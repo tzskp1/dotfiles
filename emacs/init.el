@@ -4,6 +4,7 @@
 ;; silversearcher-ag
 ;; opam
 
+;; コンパイル時にパッケージをインストールする.
 (eval-when-compile
   (package-initialize)
   (setq package-archives
@@ -254,7 +255,7 @@
   (global-company-mode))
 
 ;;# skk
-(use-package ddskk :defer t 
+(use-package ddskk
   :bind (("C-x C-j" . skk-mode))
   :init
   (setq skk-kakutei-when-unique-candidate t)
