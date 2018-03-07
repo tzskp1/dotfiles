@@ -4,5 +4,3 @@ set editing-mode vi
 "\C-t":history-search-backward
 ## arrow down
 "\C-h":history-search-forward
-
-
