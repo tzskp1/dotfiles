@@ -25,6 +25,9 @@ ln -sfn $cud/texmf ~/texmf
 
 ln -sfn $cud/xmonad ~/.xmonad
 
+ln -sfn $cud/sshrc/.sshrc ~/.sshrc
+ln -sfn $cud/sshrc/.sshrc.d ~/.sshrc.d
+
 cd /tmp
 rm -rf ~/.icons
 git clone https://github.com/gmmeyer/awesome-dangerzone

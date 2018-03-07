@@ -1,0 +1,8 @@
+set editing-mode vi
+
+## arrow up
+"\C-t":history-search-backward
+## arrow down
+"\C-h":history-search-forward
+
+
