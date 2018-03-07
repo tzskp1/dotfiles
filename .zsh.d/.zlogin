@@ -1,1 +1,0 @@
-#xmodmap ~/Dropbox/Dotfiles/.xmodmap

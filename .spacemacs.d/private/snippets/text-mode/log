@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: log
-# key: log
-# --
-NSLog(@"$0", $1);
