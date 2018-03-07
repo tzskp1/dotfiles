@@ -3,7 +3,7 @@ commands := yo dotnet fsharpi fsharpc
 mask_commands := bash emacs
 VPATH := $(CURDIR)/../../bin
 
-.PHONY: all force clean
+.PHONY: all clean
 
 all: $(commands) $(mask_commands) 
 
@@ -14,7 +14,7 @@ define make_symlink
 	@echo "Creating symlink of "$@" ..."
 	@mkdir -p $(CURDIR)/../../bin
 	@$(RM) $(CURDIR)/../../bin/$@
-	@ln -s $(CURDIR)/$< $(CURDIR)/../bin/$@
+	@ln -s $(CURDIR)/$< $(CURDIR)/../../bin/$@
 endef
 
 define make_symlink_at_local
@@ -34,7 +34,7 @@ endef
 build: Dockerfile packages.el 
 	@$(copy_emacs_settings)
 	docker build -t dotnet_core $(CURDIR)
-	touch build
+	@touch build
 
 up_container_with: % : %.m4 build 
 	m4 -P --define=HOST_USER=$(USER) $< > $@
@@ -46,8 +46,9 @@ $(commands): % : up_container_with
 $(mask_commands): % : up_container_with 
 	$(make_symlink_at_local)
 
-force:
-
 clean:
 	$(RM) $(CURDIR)/build
 	$(RM) $(CURDIR)/Dockerfile
+	rm -rf $(CURDIR)/.emacs.d
+	$(RM) $(mask_commands)
+	$(RM) $(CURDIR)/up_container_with

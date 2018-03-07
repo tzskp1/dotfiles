@@ -16,6 +16,9 @@ source \${ZDOTDIR}/.zshenv
 #---------------------------- " 
 EOF
 
+rm ~/.dir_colors
+ln -s $cud/dircolors ~/.dir_colors
+
 if [ -e ~/.emacs.d ]; then
 	mv ~/.emacs.d ~/.emacs.d.bak
 fi

@@ -12,7 +12,7 @@ bindkey -v               # キーバインドをviモードに設定
 bindkey '^B' vi-backward-delete-char
 bindkey "^T" history-beginning-search-backward-end
 bindkey "^H" history-beginning-search-forward-end
-bindkey "^_" vi-cmd-mode
+bindkey -M viins 'hh' vi-cmd-mode
 bindkey "^[OC" vi-forward-char
 bindkey "^[OD" vi-backward-char
 bindkey "^[OF" vi-end-of-line
@@ -87,7 +87,9 @@ bindkey "^S" history-incremental-search-forward
 # Look And Feel Settings
 # ------------------------------
 ### Ls Color ###
-export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
+if type -p dircolors >/dev/null ; then
+  eval $(dircolors $HOME/.dir_colors)
+fi
 # 補完候補に色を付ける
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
@@ -96,7 +98,6 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 autoload -U colors; colors
 # 一般ユーザ時
 tmp_prompt="%{${fg[cyan]}%}%n%{${reset_color}%}@%{${fg[cyan]}%}%m%{${reset_color}%}# "
-#tmp_prompt='%M%f %n$ '
 tmp_prompt2="%{${fg[cyan]}%}%_> %{${reset_color}%}"
 tmp_rprompt="%{${fg[green]}%}[%~]%{${reset_color}%}"
 tmp_sprompt="%{${fg[yellow]}%}%r is correct? [Yes, No, Abort, Edit]:%{${reset_color}%}"
