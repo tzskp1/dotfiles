@@ -49,7 +49,7 @@
 ;;# 右から左に読む言語に対応させないことで描画高速化
 (setq-default bidi-display-reordering nil)
 ;;# クリップボード
-(setq x-select-enable-primary t)
+(setq select-enable-primary t)
 ;;# display EOF
 (setq-default indicate-empty-lines t)
 ;;# Edit
@@ -86,8 +86,8 @@
 (setq tramp-auto-save-directory "~/.bak/emacs")
 
 ;;# font
-(set-default-font "Source Han Code JP N")
-(set-face-attribute 'default nil :height 122)
+(set-face-attribute 'default nil :family "Source Han Code JP N" :height 122)
+(set-frame-font "Source Han Code JP N" nil t)
 
 (add-to-list 'default-frame-alist '(alpha . 95))
 
@@ -107,6 +107,11 @@
 
 ;;# key binding
 (bind-key "C-x h" nil) ; delete help
+(if window-system
+    (progn
+      (bind-key "C-x 3" 'make-frame-command) ; using X
+      (bind-key "C-x 2" 'make-frame-command) ; using X
+      ))
 (bind-keys :map isearch-mode-map
            ("C-b" . isearch-delete-char)
            ("C-m" . ret))
@@ -213,9 +218,6 @@
   (setq helm-idle-delay 0.3) 
   (setq helm-input-idle-delay 0.2) 
   (setq helm-candidate-number-limit 50)
-  (setq helm-display-function (lambda (buf)
-                                (split-window-vertically)
-                                (switch-to-buffer buf)))
   :config
   (helm-descbinds-mode t)
   (helm-mode 1)
@@ -231,11 +233,11 @@
 
 (use-package yasnippet :ensure t :diminish yas-minor-mode
   :config
-  (yas-initialize)
+  (yas-global-mode 1)
   (yas-load-directory "~/.emacs.d/snippets"))
 
 ;;# auto-complete
-(use-package auto-complete-config
+(use-package auto-complete
   :commands (auto-complete-mode)
   :config
   (bind-keys :map ac-complete-mode-map
@@ -309,20 +311,6 @@
      (let ((face (intern (format "rainbow-delimiters-depth-%d-face" index))))
        (cl-callf color-saturate-name (face-foreground face) 30)))))
 
-(use-package golden-ratio :ensure t :diminish ""
-  :init
-  (golden-ratio-mode 1)
-  ;; 条件に応じてウィンドウの大きさを変更しない
-  ;; ウィンドウの大きさを変更しないメジャーモード
-  (setq golden-ratio-exclude-modes '(calendar-mode))
-  ;; ;; ウィンドウの大きさを変更しないバッファ名
-  ;; (setq golden-ratio-exclude-buffer-names '(" *Org tags*" " *Org todo*"))
-  ;; ウィンドウの大きさを変更しないバッファ名の正規表現
-  (setq golden-ratio-exclude-buffer-regexp '("\\*anything" "\\*helm"))
-  ;; ウィンドウ選択系のコマンドで作用させる
-  (setq golden-ratio-extra-commands
-        '(windmove-left windmove-right windmove-down windmove-up)))
-
 (use-package magit :ensure t
   :commands (magit-status)
   :after (evil)
@@ -338,7 +326,7 @@
 
 ;;# Theme
 (use-package madhat2r-theme :ensure t
- :config
+  :config
   (load-theme 'madhat2r t))
 
 ;;# start server
@@ -379,14 +367,6 @@
                                 (setq c-basic-offset 4)))
   :config
   (c-set-offset 'cpp-macro 0 nil))
-
-;;# eldoc
-(use-package eldoc-extension :ensure t
-  :hook ((emacs-lisp-mode-hook lisp-interaction-mode-hook ielm-mode-hook) .turn-on-eldoc-mode)
-  :after (company)
-  :init
-  (setq eldoc-idle-delay 0)
-  (setq eldoc-echo-area-use-multiline-p t))
 
 ;;# YaTeX
 (use-package yatex
