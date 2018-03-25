@@ -44,12 +44,12 @@ set hidden
 set number
 set relativenumber
 
+set smartcase
 set expandtab 
 set tabstop=4
 set shiftwidth=4
 set autoindent
 set mouse=a
-
 
 if (has("nvim"))
     tnoremap <silent> <ESC> <C-\><C-n>
