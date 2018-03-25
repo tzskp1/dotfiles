@@ -1,6 +1,6 @@
 #!/bin/sh
-
-cud=$(dirname $0)
+cd $(dirname $0)
+cud=$(pwd)
 
 cat << EOF > ~/.zshenv
 #! /usr/bin/env zsh 
@@ -13,6 +13,7 @@ source \${ZDOTDIR}/.zshenv
 EOF
 
 ln -sfn $cud/dircolors ~/.dir_colors
+ln -sfn $cud/most/.mostrc ~/.mostrc
 
 go get github.com/peco/peco/cmd/peco
 

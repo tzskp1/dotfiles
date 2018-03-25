@@ -6,18 +6,17 @@ autoload -U edit-command-line
 zle -N edit-command-line
 bindkey "^X^E" edit-command-line
 
-bindkey -v               # キーバインドをviモードに設定
-bindkey '^B' vi-backward-delete-char
-bindkey "^T" history-beginning-search-backward-end
-bindkey "^H" history-beginning-search-forward-end
-bindkey -M viins 'hh' vi-cmd-mode
-bindkey "^[OC" vi-forward-char
-bindkey "^[OD" vi-backward-char
-bindkey "^[OF" vi-end-of-line
-bindkey "^[OH" vi-beginning-of-line
-bindkey "^G" send-break
-bindkey "^N" forward-char
-bindkey "^D" backward-char
+bindkey -v
+bindkey -M viins "^B" vi-backward-delete-char
+bindkey -M viins "^T" history-beginning-search-backward-end
+bindkey -M viins "^H" history-beginning-search-forward-end
+bindkey -M viins "hh" vi-cmd-mode
+bindkey -M viins "^[OC" vi-forward-char
+bindkey -M viins "^[OD" vi-backward-char
+bindkey -M viins "^G" send-break
+bindkey -M vicmd "n" vi-forward-char
+bindkey -M vicmd "d" vi-backward-char
+bindkey -M vicmd "k" vi-delete
 zle -A .backward-kill-word vi-backward-kill-word
 zle -A .backward-delete-char vi-backward-delete-char
 
@@ -85,7 +84,9 @@ function send_emacs(){
 alias v=nvim
 alias e=send_emacs
 alias ls="ls --color"
-alias grep='grep --color=auto'
+alias grep="grep --color=auto"
+alias diff="diff --color=auto"
+alias less="most -s"
 
 function extract() {
   case $1 in
