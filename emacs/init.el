@@ -68,7 +68,7 @@
 (setq truncate-lines nil)
 (setq truncate-partial-width-windows nil)
 (setq ring-bell-function 'ignore) ; No Beeps
-;;# Don't ask
+;;# like "mkdir -p"
 (add-hook 'find-file-not-found-hooks
           '(lambda () (make-directory (file-name-directory buffer-file-name) t)))
 ;; 自動分割を抑制
@@ -119,6 +119,8 @@
            ("C-b" . backward-delete-char-untabify)
            ("C-h" . next-line-or-history-element)
            ("C-t" . previous-line-or-history-element))
+(bind-key "<C-tab>" 'other-window)
+(bind-key "<C-iso-lefttab>" (lambda () (interactive) (other-window -1)))
 
 ;;# evil
 (use-package evil :ensure t
@@ -431,6 +433,12 @@
 
 ;;# Haskell 
 (use-package haskell-mode :ensure t)
+
+;;# ediff
+(use-package ediff
+  :config
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+  (setq ediff-split-window-function 'split-window-horizontally))
 
 ;; kill custom
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
