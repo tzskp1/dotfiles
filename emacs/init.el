@@ -54,7 +54,7 @@
 (setq truncate-lines nil)
 (setq truncate-partial-width-windows nil)
 (setq ring-bell-function 'ignore) ; No Beeps
-;;# like "mkdir -p"
+;; like "mkdir -p"
 (add-hook 'find-file-not-found-hooks
           '(lambda () (make-directory (file-name-directory buffer-file-name) t)))
 ;; 自動分割を抑制
@@ -91,7 +91,7 @@
   (advice-add 'recentf-save-list :around 'recentf-save-list-inhibit-message:around)
   :custom
   (recentf-max-saved-items 2000)
-  (recentf-exclude '("/\\.emacs\\.d/recentf" "COMMIT_EDITMSG" "/.?TAGS" "^/sudo:" "/\\.emacs\\.d/games/*-scores" "/\\.emacs\\.d/\\.cask/"))
+  (recentf-exclude '("recentf" "COMMIT_EDITMSG" "/.?TAGS" "^/sudo:" "/\\.emacs\\.d/games/*-scores" "/\\.emacs\\.d/elpa"))
   (recentf-save-file (expand-file-name "~/.bak/emacs/recentf")))
 
 (use-package recentf-ext :ensure t)
@@ -104,7 +104,7 @@
 
 (use-package undohist :ensure t
   :custom
-  (undohist-ignored-files '("/tmp/"))
+  (undohist-ignored-files '("/tmp" "/EDITMSG" "/elpa"))
   (undohist-directory (expand-file-name "~/.bak/emacs/undohist"))
   :config
   (undohist-initialize))
