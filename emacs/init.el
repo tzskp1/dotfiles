@@ -13,7 +13,7 @@
   (unless package-archive-contents (package-refresh-contents))
   (when (not (package-installed-p 'use-package))
     (package-install 'use-package))
-  (load (expand-file-name "packages.el" user-emacs-directory)))
+  (package-install-selected-packages))
 
 (setq gc-cons-threshold 100000000)
 
@@ -21,25 +21,14 @@
 
 (require 'use-package)
 
-;;# 行の表示
-(use-package linum-relative :ensure t
-  :config
-  (setq linum-format "%5d")
-  (linum-relative-on)
-  (global-linum-mode 1))
-
-(savehist-mode 1)
 (setq initial-major-mode 'lisp-interaction-mode)
 (setq inhibit-startup-screen t)
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
-(global-font-lock-mode t)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (line-number-mode t)
 (column-number-mode t)
-(setq vc-follow-symlinks t)
-(setq auto-revert-check-vc-info t)
 (setq frame-title-format
       '("emacs@" system-name ":"
         (:eval (or (buffer-file-name)
@@ -61,9 +50,6 @@
       scroll-margin 0
       scroll-step 1)
 (setq comint-scroll-show-maximum-output t) ;for exec in shell
-;;# Region
-(setq transient-mark-mode t) ;highlight region
-(setq highlight-nonselected-windows t)
 ;;# fold always
 (setq truncate-lines nil)
 (setq truncate-partial-width-windows nil)
@@ -74,31 +60,58 @@
 ;; 自動分割を抑制
 (setq split-height-threshold nil)
 (setq split-width-threshold nil)
-;;# バックアップファイルを~/.bakに集める
-(setq make-backup-files t)
-(setq auto-save-default t)
-(setq backup-directory-alist
-      (cons (cons ".*" (expand-file-name "~/.bak"))
-            backup-directory-alist))
-(setq auto-save-file-name-transforms
-      `((".*", (expand-file-name "~/.bak") t)))
-;;# tramp
-(setq tramp-auto-save-directory "~/.bak/emacs")
+(custom-set-variables
+ ;; collecting backups
+ '(make-backup-files t)
+ '(auto-save-default t)
+ '(backup-directory-alist '(("." . "~/.bak/emacs")))
+ '(auto-save-file-name-transforms '(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'" ,(expand-file-name "~/.bak/emacs/autosave") t)))
+ '(vc-follow-symlinks t)
+ '(auto-revert-check-vc-info t))
 
 ;;# font
 (set-face-attribute 'default nil :family "Source Han Code JP N" :height 122)
 (set-frame-font "Source Han Code JP N" nil t)
 
-(add-to-list 'default-frame-alist '(alpha . 95))
-
 (use-package diminish :ensure t)
 
-;;# undohist
-(use-package undohist :ensure t
+(use-package recentf
   :init
-  (setq undohist-ignored-files '("/tmp/"))
+  (setq recentf-auto-cleanup 'never)  ;; 存在しないファイルは消さない
+  (setq recentf-auto-save-timer (run-with-idle-timer 60 t 'recentf-save-list))
+  (recentf-mode 1)
+  :config
+  ;; recentf の メッセージをエコーエリア(ミニバッファ)に表示しない
+  (defun recentf-save-list-inhibit-message:around (orig-func &rest args)
+    (setq inhibit-message t)
+    (apply orig-func args)
+    (setq inhibit-message nil)
+    'around)
+  (advice-add 'recentf-cleanup   :around 'recentf-save-list-inhibit-message:around)
+  (advice-add 'recentf-save-list :around 'recentf-save-list-inhibit-message:around)
+  :custom
+  (recentf-max-saved-items 2000)
+  (recentf-exclude '("/\\.emacs\\.d/recentf" "COMMIT_EDITMSG" "/.?TAGS" "^/sudo:" "/\\.emacs\\.d/games/*-scores" "/\\.emacs\\.d/\\.cask/"))
+  (recentf-save-file (expand-file-name "~/.bak/emacs/recentf")))
+
+(use-package recentf-ext :ensure t)
+
+(use-package savehist
+  :custom
+  (savehist-file (expand-file-name "~/.bak/emacs/history"))
+  :config
+  (savehist-mode 1))
+
+(use-package undohist :ensure t
+  :custom
+  (undohist-ignored-files '("/tmp/"))
+  (undohist-directory (expand-file-name "~/.bak/emacs/undohist"))
   :config
   (undohist-initialize))
+
+(use-package tramp
+  :config
+  (setq tramp-auto-save-directory (expand-file-name "~/.bak/emacs/tramp")))
 
 (use-package undo-tree :diminish ""
   :bind (:map undo-tree-visualizer-mode-map
@@ -106,29 +119,30 @@
               ("C-h" . undo-tree-visualize-redo)))
 
 ;;# key binding
-(bind-key "C-x h" nil) ; delete help
-(if window-system
-    (progn
-      (bind-key "C-x 3" 'make-frame-command) ; using X
-      (bind-key "C-x 2" 'make-frame-command) ; using X
-      ))
-(bind-keys :map isearch-mode-map
-           ("C-b" . isearch-delete-char)
-           ("C-m" . ret))
-(bind-keys :map minibuffer-local-map
-           ("C-b" . backward-delete-char-untabify)
-           ("C-h" . next-line-or-history-element)
-           ("C-t" . previous-line-or-history-element))
-(bind-key "<C-tab>" 'other-window)
-(bind-key "<C-iso-lefttab>" (lambda () (interactive) (other-window -1)))
+(bind-keys* :map global-map
+            ("C-x h" . nil) ; delete help
+            ("<C-tab>" . other-window)
+            ("<C-iso-lefttab>" . (lambda () (interactive) (other-window -1)))
+            :map isearch-mode-map
+            ("C-b" . isearch-delete-char)
+            ("C-m" . ret)
+            :map minibuffer-local-map
+            ("C-b" . backward-delete-char-untabify)
+            ("C-h" . next-line-or-history-element)
+            ("C-t" . previous-line-or-history-element)
+            :filter window-system ;; for tiling window manager
+            :map global-map
+            ("C-x 3" . make-frame-command)
+            ("C-x 2" . make-frame-command))
 
 ;;# evil
 (use-package evil :ensure t
   :init
-  (setq evil-search-module 'evil-search)
-  (setq-default evil-shift-width 2)
   (evil-mode 1)
-  :custom (evil-ex-substitute-case 'smart)
+  :custom
+  (evil-ex-substitute-case 'smart)
+  (evil-search-module 'evil-search)
+  (evil-shift-width 2)
   :bind (:map evil-ex-search-keymap
               ("C-b" . backward-delete-char-untabify)
               :map evil-visual-state-map
@@ -187,8 +201,45 @@
   (bind-key "+" 'evil-numbers/inc-at-pt evil-normal-state-map)
   (bind-key "-" 'evil-numbers/dec-at-pt evil-normal-state-map))
 
+;;# 行の表示
+;; TODO : 26.0.5 < emacs version
+(use-package linum-relative :ensure t :diminish ""
+  :config
+  (linum-relative-global-mode 1)
+  (global-linum-mode 1))
+
+(use-package git-gutter :ensure t :diminish ""
+  :after (linum-relative)
+  :config
+  (global-git-gutter-mode t)
+  (git-gutter:linum-setup))
+
+;;# helm
+(use-package helm :ensure t)
+(use-package helm-config 
+  :bind (("M-x" . helm-M-x)
+         :map helm-buffer-map
+         ("C-t" . helm-previous-line)
+         ("C-h" . helm-next-line)
+         :map helm-moccur-map
+         ("C-h" . helm-next-line)
+         ("C-t" . helm-previous-line)
+         :map helm-map
+         ("C-t" . helm-previous-line)
+         ("C-h" . helm-next-line))
+  :custom
+  (helm-ff-auto-update-initial-value nil)
+  (helm-input-idle-delay 0.2) 
+  (helm-candidate-number-limit 50)
+  :config
+  ;; (require 'helm-lib)
+  ;; (require 'linum-relative)
+  ;; (helm-linum-relative-mode 1)
+  (helm-mode 1)
+  (add-to-list 'helm-completing-read-handlers-alist '(find-file . nil)))
+
 (use-package evil-leader :ensure t
-  :after (evil)
+  :after (evil helm)
   :config
   (global-evil-leader-mode)
   (evil-leader/set-leader "<SPC>")
@@ -197,39 +248,9 @@
     "w" 'save-buffer
     "<SPC>" 'helm-mini))
 
-;;# helm
-(use-package helm :ensure t)
-
-(use-package helm-config
-  :bind (("C-x C-b" . helm-mini)
-         ("M-x" . helm-M-x)
-         :map helm-buffer-map
-         ("C-t" . helm-previous-line)
-         ("C-h" . helm-next-line)
-         :map helm-moccur-map
-         ("C-h" . helm-next-line)
-         ("C-t" . helm-previous-line)
-         :map helm-command-map
-         ("C-t" . helm-previous-line)
-         ("C-h" . helm-next-line)
-         :map helm-map
-         ("C-t" . helm-previous-line)
-         ("C-h" . helm-next-line))
-  :custom (helm-ff-auto-update-initial-value nil)
-  :init
-  (setq helm-idle-delay 0.3) 
-  (setq helm-input-idle-delay 0.2) 
-  (setq helm-candidate-number-limit 50)
-  :config
-  (helm-descbinds-mode t)
-  (helm-mode 1)
-  (add-to-list 'helm-completing-read-handlers-alist '(find-file . nil)))
-
 (use-package helm-ag :ensure t
   :after (helm)
-  :bind (("M-g ," . helm-ag-pop-stack)
-         ("C-M-s" . helm-ag-this-file)
-         ("C-M-f" . helm-ag))
+  :bind (("C-M-f" . helm-ag))
   :init
   (setq helm-ag-base-command "ag --nocolor --nogrou"))
 
@@ -238,7 +259,6 @@
   (yas-global-mode 1)
   (yas-load-directory "~/.emacs.d/snippets"))
 
-;;# auto-complete
 (use-package auto-complete
   :commands (auto-complete-mode)
   :config
@@ -252,13 +272,13 @@
   (:map company-active-map
         ("C-h" . company-select-next)
         ("C-t" . company-select-previous))
+  :custom
+  (company-idle-delay 0)
+  (company-minimum-prefix-length 4)
+  (company-selection-wrap-around t)
   :init
-  (setq company-idle-delay 0)
-  (setq company-minimum-prefix-length 4)
-  (setq company-selection-wrap-around t)
   (global-company-mode))
 
-;;# skk
 (use-package ddskk
   :bind (("C-x C-j" . skk-mode))
   :init
@@ -270,12 +290,6 @@
   (setq-default skk-kutouten-type 'en)
   (setq skk-user-directory "~/skk"))
 
-;;# git-gutter
-(use-package git-gutter :ensure t :diminish ""
-  :config
-  (global-git-gutter-mode t))
-
-;;# dired
 (use-package dired
   :commands (dired-mode)
   :after (evil)
@@ -300,7 +314,7 @@
     (kbd "SPC")   (lookup-key dired-mode-map "m")
     (kbd "S-SPC") (lookup-key dired-mode-map "d")))
 
-;;# http://d.hatena.ne.jp/murase_syuka/20140815/1408061850
+;; http://d.hatena.ne.jp/murase_syuka/20140815/1408061850
 (use-package rainbow-delimiters :ensure t
   :config
   (use-package color
@@ -330,14 +344,13 @@
 (use-package madhat2r-theme :ensure t
   :config
   (load-theme 'madhat2r t))
+(add-to-list 'default-frame-alist '(alpha . 95))
 
-;;# start server
 (use-package server
   :config
   (unless (server-running-p)
     (server-start)))
 
-;;# markdown
 (use-package markdown-mode
   :commands (markdown-mode)
   :mode (("\\.md" . markdown-mode)
@@ -356,7 +369,6 @@
                               (setq imenu-create-index-function 'outline-imenu-create-index)
                               (auto-fill-mode))))
 
-;;# c
 (use-package cc-mode
   :commands (c++-mode)
   :mode (("\\.c\\'" . c++-mode)
@@ -370,7 +382,6 @@
   :config
   (c-set-offset 'cpp-macro 0 nil))
 
-;;# YaTeX
 (use-package yatex
   :commands (yatex-mode)
   :mode ("\\.tex\\'" . yatex-mode)
@@ -428,19 +439,16 @@
   :init 
   (add-hook 'tuareg-mode-hook 'utop-minor-mode t))
 
-;;# F#
 (use-package fsharp-mode)
 
-;;# Haskell 
 (use-package haskell-mode :ensure t)
 
-;;# ediff
 (use-package ediff
-  :config
-  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
-  (setq ediff-split-window-function 'split-window-horizontally))
+  :custom
+  (ediff-window-setup-function 'ediff-setup-windows-plain)
+  (ediff-split-window-function 'split-window-horizontally))
 
-;; kill custom
+;; killing custom
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file))
