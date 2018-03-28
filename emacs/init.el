@@ -104,7 +104,7 @@
 
 (use-package undohist :ensure t
   :custom
-  (undohist-ignored-files '("/tmp" "COMMIT_EDITMSG" "/EDITMSG" "/elpa"))
+  (undohist-ignored-files '("/tmp" "/COMMIT_EDITMSG" "/EDITMSG" "/elpa"))
   (undohist-directory (expand-file-name "~/.bak/emacs/undohist"))
   :config
   (undohist-initialize))
