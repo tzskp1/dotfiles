@@ -4,6 +4,11 @@
 ;; silversearcher-ag
 ;; opam
 
+;; killing custom
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 ;; コンパイル時にパッケージをインストールする.
 (eval-when-compile
   (package-initialize)
@@ -91,23 +96,23 @@
   (advice-add 'recentf-save-list :around 'recentf-save-list-inhibit-message:around)
   :custom
   (recentf-max-saved-items 2000)
-  (recentf-exclude '("recentf" "COMMIT_EDITMSG" "/.?TAGS" "^/sudo:" "/\\.emacs\\.d/games/*-scores" "/\\.emacs\\.d/elpa"))
+  (recentf-exclude '("/recentf" "COMMIT_EDITMSG" "/.?TAGS" "^/sudo:" "/\\.emacs\\.d/games/*-scores" "/\\.emacs\\.d/elpa"))
   (recentf-save-file (expand-file-name "~/.bak/emacs/recentf")))
 
 (use-package recentf-ext :ensure t)
 
 (use-package savehist :ensure t
+  :init
+  (savehist-mode 1)
   :custom
-  (savehist-file (expand-file-name "~/.bak/emacs/history"))
-  :config
-  (savehist-mode 1))
+  (savehist-file (expand-file-name "~/.bak/emacs/history")))
 
 (use-package undohist :ensure t
-  :custom
-  (undohist-ignored-files '("/tmp" "/COMMIT_EDITMSG" "/EDITMSG" "/elpa"))
-  (undohist-directory (expand-file-name "~/.bak/emacs/undohist"))
   :config
-  (undohist-initialize))
+  (undohist-initialize)
+  :custom
+  (undohist-ignored-files '("^/tmp" "COMMIT_EDITMSG" "EDITMSG" "/elpa"))
+  (undohist-directory (expand-file-name "~/.bak/emacs/undohist")))
 
 (use-package tramp
   :config
@@ -449,8 +454,3 @@
   :custom
   (ediff-window-setup-function 'ediff-setup-windows-plain)
   (ediff-split-window-function 'split-window-horizontally))
-
-;; killing custom
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(when (file-exists-p custom-file)
-  (load custom-file))
