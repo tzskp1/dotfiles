@@ -96,7 +96,7 @@
 
 (use-package recentf-ext :ensure t)
 
-(use-package savehist
+(use-package savehist :ensure t
   :custom
   (savehist-file (expand-file-name "~/.bak/emacs/history"))
   :config
@@ -104,7 +104,7 @@
 
 (use-package undohist :ensure t
   :custom
-  (undohist-ignored-files '("/tmp" "/EDITMSG" "/elpa"))
+  (undohist-ignored-files '("/tmp" "COMMIT_EDITMSG" "/EDITMSG" "/elpa"))
   (undohist-directory (expand-file-name "~/.bak/emacs/undohist"))
   :config
   (undohist-initialize))
@@ -144,49 +144,49 @@
   (evil-search-module 'evil-search)
   (evil-shift-width 2)
   :bind (:map evil-ex-search-keymap
-              ("C-b" . backward-delete-char-untabify)
-              :map evil-visual-state-map
-              ("h" . evil-next-visual-line)
-              ("t" . evil-previous-visual-line)
-              ("n" . evil-forward-char)
-              ("d" . evil-backward-char)
-              ("k" . evil-delete)
-              ("K" . evil-delete-line)
-              ("M" . evil-ex-search-previous)
-              ("N" . evil-ex-search-previous)
-              ("m" . evil-ex-search-next)
-              ("C-w" . comment-or-uncomment-region)
-              ("C-c C-l" . xref-find-definitions)
-              :map evil-motion-state-map
-              ("h" . evil-next-visual-line)
-              ("t" . evil-previous-visual-line)
-              ("n" . evil-forward-char)
-              ("d" . evil-backward-char)
-              ("k" . evil-delete)
-              ("K" . evil-delete-line)
-              ("M" . evil-ex-search-previous)
-              ("N" . evil-ex-search-previous)
-              ("m" . evil-ex-search-next)
-              ("C-w" . comment-or-uncomment-region)
-              ("C-c C-l" . xref-find-definitions)
-              :map evil-normal-state-map
-              ("h" . evil-next-visual-line)
-              ("t" . evil-previous-visual-line)
-              ("n" . evil-forward-char)
-              ("d" . evil-backward-char)
-              ("k" . evil-delete)
-              ("K" . evil-delete-line)
-              ("M" . evil-ex-search-previous)
-              ("N" . evil-ex-search-previous)
-              ("m" . evil-ex-search-next)
-              ("C-w" . comment-or-uncomment-region)
-              ("C-c C-l" . xref-find-definitions)
-              :map evil-insert-state-map
-              ("C-d" . backward-char)
-              ("C-n" . forward-char)
-              ("C-t" . previous-line)
-              ("C-b" . backward-delete-char-untabify)
-              ("C-h" . next-line)))
+         ("C-b" . backward-delete-char-untabify)
+         :map evil-visual-state-map
+         ("h" . evil-next-visual-line)
+         ("t" . evil-previous-visual-line)
+         ("n" . evil-forward-char)
+         ("d" . evil-backward-char)
+         ("k" . evil-delete)
+         ("K" . evil-delete-line)
+         ("M" . evil-ex-search-previous)
+         ("N" . evil-ex-search-previous)
+         ("m" . evil-ex-search-next)
+         ("C-w" . comment-or-uncomment-region)
+         ("C-c C-l" . xref-find-definitions)
+         :map evil-motion-state-map
+         ("h" . evil-next-visual-line)
+         ("t" . evil-previous-visual-line)
+         ("n" . evil-forward-char)
+         ("d" . evil-backward-char)
+         ("k" . evil-delete)
+         ("K" . evil-delete-line)
+         ("M" . evil-ex-search-previous)
+         ("N" . evil-ex-search-previous)
+         ("m" . evil-ex-search-next)
+         ("C-w" . comment-or-uncomment-region)
+         ("C-c C-l" . xref-find-definitions)
+         :map evil-normal-state-map
+         ("h" . evil-next-visual-line)
+         ("t" . evil-previous-visual-line)
+         ("n" . evil-forward-char)
+         ("d" . evil-backward-char)
+         ("k" . evil-delete)
+         ("K" . evil-delete-line)
+         ("M" . evil-ex-search-previous)
+         ("N" . evil-ex-search-previous)
+         ("m" . evil-ex-search-next)
+         ("C-w" . comment-or-uncomment-region)
+         ("C-c C-l" . xref-find-definitions)
+         :map evil-insert-state-map
+         ("C-d" . backward-char)
+         ("C-n" . forward-char)
+         ("C-t" . previous-line)
+         ("C-b" . backward-delete-char-untabify)
+         ("C-h" . next-line)))
 
 (use-package key-chord :ensure t
   :after (evil)
@@ -268,10 +268,12 @@
   (global-auto-complete-mode -1))
 
 (use-package company :ensure t :diminish ""
-  :bind
-  (:map company-active-map
-        ("C-h" . company-select-next)
-        ("C-t" . company-select-previous))
+  :bind (:map company-active-map
+              ("C-h" . company-select-next)
+              ("C-t" . company-select-previous)
+         :map company-search-map 
+              ("C-h" . company-select-next)
+              ("C-t" . company-select-previous))
   :custom
   (company-idle-delay 0)
   (company-minimum-prefix-length 4)
