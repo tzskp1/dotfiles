@@ -302,24 +302,11 @@
   :after (evil)
   :config
   (evil-make-overriding-map dired-mode-map 'normal)
-  (defun keu-dired-down-directory ()
-    "[Dired command] Go down to the directory."
-    (interactive)
-    (condition-case err
-        (let ((path (dired-get-file-for-visit)))
-          (if (f-directory? path)
-              (dired-find-file)
-            (message "This is not directory!")))
-      (error (message "%s" (cadr err)))))
   (evil-define-key 'normal dired-mode-map
-    ";" (lookup-key evil-motion-state-map ";")
     "t" 'dired-previous-line
     "h" 'dired-next-line
     "d" 'dired-up-directory
-    "n" 'keu-dired-down-directory
-    "w" (lookup-key evil-normal-state-map "w")
-    (kbd "SPC")   (lookup-key dired-mode-map "m")
-    (kbd "S-SPC") (lookup-key dired-mode-map "d")))
+    "n" 'dired-find-alternate-file))
 
 ;; http://d.hatena.ne.jp/murase_syuka/20140815/1408061850
 (use-package rainbow-delimiters :ensure t
