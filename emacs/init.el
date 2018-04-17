@@ -334,6 +334,11 @@
   (add-hook 'with-editor-mode-hook 'evil-insert-state)
   (evil-make-overriding-map dired-mode-map 'normal))
 
+(use-package ediff
+  :custom
+  (ediff-window-setup-function 'ediff-setup-windows-plain)
+  (ediff-split-window-function 'split-window-horizontally))
+
 ;;# Theme
 (use-package madhat2r-theme :ensure t
   :config
@@ -427,17 +432,17 @@
   (add-to-list 'company-backends 'merlin-company-backend)
   (setq merlin-command 'opam))
 
-(use-package utop
-  :after (tuareg)
-  :commands (utop-minor-mode)
-  :init 
-  (add-hook 'tuareg-mode-hook 'utop-minor-mode t))
+;; (use-package utop
+;;   :after (tuareg)
+;;   :commands (utop-minor-mode)
+;;   :init 
+;;   (add-hook 'tuareg-mode-hook 'utop-minor-mode t))
 
 (use-package fsharp-mode)
 
 (use-package haskell-mode :ensure t)
 
-(use-package ediff
-  :custom
-  (ediff-window-setup-function 'ediff-setup-windows-plain)
-  (ediff-split-window-function 'split-window-horizontally))
+;;# Coq
+;; Open .v files with Proof General's Coq mode
+(when (file-exists-p "~/.emacs.d/lisp/PG/generic/proof-site.el")
+  (load "~/.emacs.d/lisp/PG/generic/proof-site"))
