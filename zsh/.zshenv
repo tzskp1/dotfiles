@@ -6,5 +6,6 @@ export PATH=/usr/local/texlive/2017/bin/x86_64-linux:$HOME/go/bin:$HOME/Dotfiles
 export PAGER="most"
 export EDITOR="nvim"
 export TERM="xterm-256color"
-export LANG=ja_JP.UTF-8
+export LANG=en_US.UTF-8
+#ja_JP.UTF-8
 export KCODE=u  
