@@ -1,7 +1,0 @@
-#!/bin/sh
-cd $(dirname $0)
-docker build -t fontgen .
-docker container create --name fontgen_result fontgen
-docker cp fontgen_result:/home/font/source-han-code-jp/SourceHanCodeJP.ttc ./
-docker rm fontgen_result
-docker rmi fontgen

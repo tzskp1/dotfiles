@@ -359,7 +359,7 @@ main = do
           , ppSep = "   "
       }
       , manageHook = manageDocks <+> myManageHook
-      -- , startupHook = setWMName "LG3D" -- for java
+      , startupHook = setWMName "LG3D" -- for java
   }
 
 

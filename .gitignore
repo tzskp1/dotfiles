@@ -10,6 +10,8 @@
 /emacs/auto-save-list/*
 /emacs/.python-environments/*
 /emacs/undohist/*
+.zcompdump
+xmonad-x86_64-linux
 *.elc
 *.o
 *.errors

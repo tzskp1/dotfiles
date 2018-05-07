@@ -1,7 +1,0 @@
-#!/bin/bash
-docker run -it --rm \
-       -u $UID:$GID \
-       --name font \
-       fontgen:latest \
-       /bin/bash
-       $@

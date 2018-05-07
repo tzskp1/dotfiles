@@ -101,6 +101,7 @@ function extract() {
     *.Z) uncompress $1;;
     *.tar) tar xvf $1;;
     *.arj) unarj $1;;
+    *.rar) unrar x $1;;
   esac
 }
 

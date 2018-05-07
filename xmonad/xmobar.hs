@@ -1,7 +1,7 @@
 Config { -- appearance
-   font = "xft:Migu 1M:size=10"
-   , bgColor = "#1c1c1c"
-   , fgColor = "#757575"
+    font = "xft:SourceHanCodeJP:size=10:antialias=true"
+   , bgColor = "#2E3440"
+   , fgColor = "#8FBCBB"
    , position = TopSize C 100 20
    , border = NoBorder
    , borderColor = "#26a69a"
