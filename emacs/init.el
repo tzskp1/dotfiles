@@ -74,6 +74,9 @@
  '(vc-follow-symlinks t)
  '(auto-revert-check-vc-info t))
 
+(setq display-line-numbers-type 'relative)
+(global-display-line-numbers-mode)
+
 ;;# font
 (set-face-attribute 'default nil :family "Source Han Code JP N" :height 122)
 (set-frame-font "Source Han Code JP N" nil t)
@@ -205,13 +208,6 @@
   :config
   (bind-key "+" 'evil-numbers/inc-at-pt evil-normal-state-map)
   (bind-key "-" 'evil-numbers/dec-at-pt evil-normal-state-map))
-
-;;# 行の表示
-;; TODO : 26.0.5 < emacs version
-(use-package linum-relative :ensure t :diminish ""
-  :config
-  (linum-relative-global-mode 1)
-  (global-linum-mode 1))
 
 (use-package git-gutter :ensure t :diminish ""
   :after (linum-relative)
@@ -432,11 +428,11 @@
   (add-to-list 'company-backends 'merlin-company-backend)
   (setq merlin-command 'opam))
 
-;; (use-package utop
-;;   :after (tuareg)
-;;   :commands (utop-minor-mode)
-;;   :init 
-;;   (add-hook 'tuareg-mode-hook 'utop-minor-mode t))
+(use-package utop
+  :after (tuareg)
+  :commands (utop-minor-mode)
+  :init 
+  (add-hook 'tuareg-mode-hook 'utop-minor-mode t))
 
 (use-package fsharp-mode)
 

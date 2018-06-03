@@ -49,4 +49,3 @@ cd ~
 wget https://github.com/adobe-fonts/source-han-code-jp/archive/2.011R.zip
 unzip 2.011R.zip
 cp ~/source-han-code-jp-2.011R/OTC/SourceHanCodeJP.ttc ~/.local/share/fonts
-
