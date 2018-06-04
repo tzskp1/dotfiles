@@ -149,6 +149,7 @@
   (evil-mode 1)
   :custom
   (evil-ex-substitute-case 'smart)
+  (evil-want-abbrev-expand-on-insert-exit 'nil)
   (evil-search-module 'evil-search)
   (evil-shift-width 2)
   :bind (:map evil-ex-search-keymap
