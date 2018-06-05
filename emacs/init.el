@@ -443,3 +443,6 @@
 ;; Open .v files with Proof General's Coq mode
 (when (file-exists-p "~/.emacs.d/lisp/PG/generic/proof-site.el")
   (load "~/.emacs.d/lisp/PG/generic/proof-site"))
+
+;;# Scala
+(use-package ensime :ensure t)
