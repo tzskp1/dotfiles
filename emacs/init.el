@@ -337,9 +337,9 @@
   (ediff-split-window-function 'split-window-horizontally))
 
 ;;# Theme
-(use-package madhat2r-theme :ensure t
+(use-package nord-theme :ensure t
   :config
-  (load-theme 'madhat2r t))
+  (load-theme 'nord t))
 (add-to-list 'default-frame-alist '(alpha . 95))
 
 (use-package server
