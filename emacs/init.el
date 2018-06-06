@@ -165,7 +165,6 @@
          ("N" . evil-ex-search-previous)
          ("m" . evil-ex-search-next)
          ("C-w" . comment-or-uncomment-region)
-         ("C-c C-l" . xref-find-definitions)
          :map evil-motion-state-map
          ("h" . evil-next-visual-line)
          ("t" . evil-previous-visual-line)
@@ -177,7 +176,6 @@
          ("N" . evil-ex-search-previous)
          ("m" . evil-ex-search-next)
          ("C-w" . comment-or-uncomment-region)
-         ("C-c C-l" . xref-find-definitions)
          :map evil-normal-state-map
          ("h" . evil-next-visual-line)
          ("t" . evil-previous-visual-line)
@@ -189,7 +187,6 @@
          ("N" . evil-ex-search-previous)
          ("m" . evil-ex-search-next)
          ("C-w" . comment-or-uncomment-region)
-         ("C-c C-l" . xref-find-definitions)
          :map evil-insert-state-map
          ("C-d" . backward-char)
          ("C-n" . forward-char)
@@ -261,6 +258,20 @@
   (yas-global-mode 1)
   (yas-load-directory "~/.emacs.d/snippets"))
 
+;;# Code Jump
+(use-package helm-xref :ensure t
+  :config
+  (setq xref-show-xrefs-function 'helm-xref-show-xrefs))
+
+(use-package dumb-jump :ensure t
+  :custom
+  (dumb-jump-default-project "")
+  (dumb-jump-selector 'helm)
+  :bind (("C-M-g" . dumb-jump-go)
+         :map emacs-lisp-mode-map
+         ("C-M-g" . xref-find-definitions)))
+
+;;# completion
 (use-package auto-complete
   :commands (auto-complete-mode)
   :config
@@ -283,6 +294,7 @@
   :init
   (global-company-mode))
 
+;;# skk
 (use-package ddskk
   :bind (("C-x C-j" . skk-mode))
   :init
@@ -305,6 +317,7 @@
     "d" 'dired-up-directory
     "n" 'dired-find-alternate-file))
 
+;;# parens
 ;; http://d.hatena.ne.jp/murase_syuka/20140815/1408061850
 (use-package rainbow-delimiters :ensure t
   :config
