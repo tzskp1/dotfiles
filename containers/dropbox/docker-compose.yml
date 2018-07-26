@@ -1,0 +1,11 @@
+version: '3'
+services:
+    dropbox:
+        build:
+            context: .
+            args:
+                HOST_USER: $USER
+        volumes:
+            - ~/Dropbox:/home/$USER/Dropbox
+            - ~/.dropbox:/home/$USER/.dropbox
+        container_name: dropbox_instance
