@@ -275,8 +275,9 @@
 
 (use-package dumb-jump :ensure t
   :custom
-  (dumb-jump-default-project "")
+  (dumb-jump-default-project (expand-file-name "~"))
   (dumb-jump-selector 'helm)
+  (dumb-jump-force-searcher 'ag)
   :bind (("C-M-g" . dumb-jump-go)
          :map emacs-lisp-mode-map
          ("C-M-g" . xref-find-definitions)))
