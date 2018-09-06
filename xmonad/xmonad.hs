@@ -26,14 +26,14 @@ import qualified Data.Map        as M
 myTerminal = "/bin/sakura"
 
 -- The command to lock the screen or show the screensaver.
-myScreensaver = "/usr/bin/gnome-screensaver-command --lock"
+myScreensaver = ""
 
 -- The command to take a selective screenshot, where you select
 -- what you'd like to capture on the screen.
-mySelectScreenshot = "select-screenshot"
+mySelectScreenshot = ""
 
 -- The command to take a fullscreen screenshot.
-myScreenshot = "screenshot"
+myScreenshot = ""
 
 -- The command to use as a launcher, to launch commands that don't have
 -- preset keybindings.
@@ -293,7 +293,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   -- mod-{',.,,}, Switch to physical/Xinerama screens 1, 2, or 3
   -- mod-shift-{w,e,r}, Move client to screen 1, 2, or 3
   [((m .|. modMask, key), screenWorkspace sc >>= flip whenJust (windows . f))
-      | (key, sc) <- zip [xK_quoteright, xK_comma, xK_period] [0..]
+      | (key, sc) <- zip [xK_comma, xK_quoteright, xK_period] [0..]
       , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
 
@@ -341,10 +341,9 @@ myMouseBindings (XConfig {XMonad.modMask = modMask}) = M.fromList $
 -- per-workspace layout choices.
 --
 -- By default, do nothing.
-myStartupHook = do
-                spawn "redshift -l 35.18:136.90 -t 3700:3700"
---myStartupHook = return ()
-
+-- myStartupHook = do
+                -- spawn "redshift -l 35.18:136.90 -t 3700:3700"
+myStartupHook = return ()
 
 ------------------------------------------------------------------------
 -- Run xmonad with all the defaults we set up.
