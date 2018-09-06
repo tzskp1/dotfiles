@@ -241,7 +241,7 @@
   (helm-input-idle-delay 0.2) 
   (helm-candidate-number-limit 50)
   (helm-boring-buffer-regexp-list
-   '("\\` " "\\`\\*helm" "\\`\\*Echo Area" "\\`\\*Minibuf" "\\`\\magit:" "\\`\\*magit*." "\\`\\*Ediff*."))
+   '("\\` " "\\`\\*helm" "\\`\\*Echo Area" "\\`\\*Minibuf" "\\`\\magit*." "\\`\\*magit*." "\\`\\*Ediff*."))
   :config
   (helm-mode 1)
   (add-to-list 'helm-completing-read-handlers-alist '(find-file . nil)))
