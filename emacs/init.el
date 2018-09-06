@@ -245,6 +245,9 @@
   (add-to-list 'helm-completing-read-handlers-alist '(find-file . nil)))
 
 (use-package evil-leader :ensure t
+  :custom
+  (helm-boring-buffer-regexp-list
+   '("\\` " "\\`\\*helm" "\\`\\*Echo Area" "\\`\\*Minibuf" "\\`\\magit:" "\\`\\*magit"))
   :after (evil helm)
   :config
   (global-evil-leader-mode)
