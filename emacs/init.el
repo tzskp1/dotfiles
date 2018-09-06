@@ -240,14 +240,13 @@
   (helm-ff-auto-update-initial-value nil)
   (helm-input-idle-delay 0.2) 
   (helm-candidate-number-limit 50)
+  (helm-boring-buffer-regexp-list
+   '("\\` " "\\`\\*helm" "\\`\\*Echo Area" "\\`\\*Minibuf" "\\`\\magit:" "\\`\\*magit"))
   :config
   (helm-mode 1)
   (add-to-list 'helm-completing-read-handlers-alist '(find-file . nil)))
 
 (use-package evil-leader :ensure t
-  :custom
-  (helm-boring-buffer-regexp-list
-   '("\\` " "\\`\\*helm" "\\`\\*Echo Area" "\\`\\*Minibuf" "\\`\\magit:" "\\`\\*magit"))
   :after (evil helm)
   :config
   (global-evil-leader-mode)
@@ -327,6 +326,20 @@
     "h" 'dired-next-line
     "d" 'dired-up-directory
     "n" 'dired-find-alternate-file))
+
+(use-package arc-mode
+  :bind (:map archive-mode-map
+         ("t" . 'archive-previous-line)
+         ("h" . 'archive-next-line))
+  :commands (archive-mode)
+  :after (evil))
+
+(use-package tar-mode
+  :bind (:map tar-mode-map
+         ("t" . 'tar-previous-line)
+         ("h" . 'tar-next-line))
+  :commands (tar-mode)
+  :after (evil))
 
 ;;# parens
 ;; http://d.hatena.ne.jp/murase_syuka/20140815/1408061850
