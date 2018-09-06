@@ -223,12 +223,6 @@
   (bind-key "+" 'evil-numbers/inc-at-pt evil-normal-state-map)
   (bind-key "-" 'evil-numbers/dec-at-pt evil-normal-state-map))
 
-(use-package git-gutter :ensure t :diminish ""
-  :after (linum-relative)
-  :config
-  (global-git-gutter-mode t)
-  (git-gutter:linum-setup))
-
 ;;# helm
 (use-package helm :ensure t)
 (use-package helm-config 
