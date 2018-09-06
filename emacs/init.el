@@ -258,7 +258,8 @@
   (evil-leader/set-key
     "q" 'kill-this-buffer
     "w" 'save-buffer
-    "<SPC>" 'helm-mini))
+    "<SPC>" 'helm-mini)
+  (kill-buffer (messages-buffer)))
 
 (use-package helm-ag :ensure t
   :after (helm)
