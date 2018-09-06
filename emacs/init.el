@@ -77,9 +77,23 @@
 (setq display-line-numbers-type 'relative)
 (global-display-line-numbers-mode)
 
-;;# font
-(set-face-attribute 'default nil :family "Source Han Code JP N" :height 122)
-(set-frame-font "Source Han Code JP N" nil t)
+;;# fonts
+(when (equal system-type 'darwin)
+  (let* ((size 12)
+         (asciifont "Droid Sans Mono Dotted for Powerline")
+         (jpfont "Osaka")
+         (h (* size 10))
+         (fontspec (font-spec :family asciifont))
+         (jp-fontspec (font-spec :family jpfont)))
+    (set-face-attribute 'default nil :family asciifont :height h)
+    (set-fontset-font nil 'japanese-jisx0213.2004-1 jp-fontspec)
+    (set-fontset-font nil 'japanese-jisx0213-2 jp-fontspec)
+    (set-fontset-font nil 'katakana-jisx0201 jp-fontspec)
+    (set-fontset-font nil '(#x0080 . #x024F) fontspec) 
+    (set-fontset-font nil '(#x0370 . #x03FF) fontspec)))
+
+(when (equal system-type 'gnu/linux)
+  (set-face-attribute 'default nil :family "Source Han Code JP N" :height 122))
 
 (use-package diminish :ensure t)
 
@@ -137,11 +151,19 @@
             :map minibuffer-local-map
             ("C-b" . backward-delete-char-untabify)
             ("C-h" . next-line-or-history-element)
-            ("C-t" . previous-line-or-history-element)
-            :filter window-system ;; for tiling window manager
-            :map global-map
-            ("C-x 3" . make-frame-command)
-            ("C-x 2" . make-frame-command))
+            ("C-t" . previous-line-or-history-element))
+
+(defvar last-h-inserted-time nil "The last inserted time")
+(defun hh-normal ()
+    (interactive)
+    ;; (message "%f" (abs (float-time (time-subtract (current-time) last-h-inserted-time))))
+    (if (and (char-equal (string-to-char "h") (char-before)) (< (abs (float-time (time-subtract (current-time) last-h-inserted-time))) 0.15))
+          (progn
+            (delete-backward-char 1)
+            (evil-normal-state))
+    (progn 
+      (setq last-h-inserted-time (current-time))
+      (insert-char (string-to-char "h")))))
 
 ;;# evil
 (use-package evil :ensure t
@@ -188,18 +210,12 @@
          ("m" . evil-ex-search-next)
          ("C-w" . comment-or-uncomment-region)
          :map evil-insert-state-map
+         ("h" . hh-normal)
          ("C-d" . backward-char)
          ("C-n" . forward-char)
          ("C-t" . previous-line)
          ("C-b" . backward-delete-char-untabify)
          ("C-h" . next-line)))
-
-(use-package key-chord :ensure t
-  :after (evil)
-  :custom (key-chord-two-keys-delay 0.05)
-  :config
-  (key-chord-mode t)
-  (key-chord-define evil-insert-state-map "hh" 'evil-normal-state))
 
 (use-package evil-numbers :ensure t
   :after (evil)
@@ -231,9 +247,6 @@
   (helm-input-idle-delay 0.2) 
   (helm-candidate-number-limit 50)
   :config
-  ;; (require 'helm-lib)
-  ;; (require 'linum-relative)
-  ;; (helm-linum-relative-mode 1)
   (helm-mode 1)
   (add-to-list 'helm-completing-read-handlers-alist '(find-file . nil)))
 
@@ -411,7 +424,9 @@
 ;;# OCaml
 (use-package tuareg
   :commands (tuareg-mode)
-  :mode (("\\.ml\\'" . tuareg-mode)
+  :mode (("\\.sml\\'" . tuareg-mode)
+         ("\\.smi\\'" . tuareg-mode)
+         ("\\.ml\\'" . tuareg-mode)
          ("\\.mli\\'" . tuareg-mode))
   :config
   ;; work around
@@ -442,11 +457,11 @@
   (add-to-list 'company-backends 'merlin-company-backend)
   (setq merlin-command 'opam))
 
-(use-package utop
-  :after (tuareg)
-  :commands (utop-minor-mode)
-  :init 
-  (add-hook 'tuareg-mode-hook 'utop-minor-mode t))
+;; (use-package utop
+;;   :after (tuareg)
+;;   :commands (utop-minor-mode)
+;;   :init 
+;;   (add-hook 'tuareg-mode-hook 'utop-minor-mode t))
 
 (use-package fsharp-mode)
 
