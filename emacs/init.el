@@ -93,7 +93,9 @@
     (set-fontset-font nil '(#x0370 . #x03FF) fontspec)))
 
 (when (equal system-type 'gnu/linux)
-  (set-face-attribute 'default nil :family "Source Han Code JP N" :height 122))
+  (progn
+    (set-face-attribute 'default nil :family "Source Han Code JP N" :height 120)
+    (set-frame-font "Source Han Code JP N" nil t)))
 
 (use-package diminish :ensure t)
 
@@ -157,7 +159,7 @@
 (defun hh-normal ()
     (interactive)
     ;; (message "%f" (abs (float-time (time-subtract (current-time) last-h-inserted-time))))
-    (if (and (char-equal (string-to-char "h") (char-before)) (< (abs (float-time (time-subtract (current-time) last-h-inserted-time))) 0.15))
+    (if (and (char-equal (string-to-char "h") (char-before)) (< (abs (float-time (time-subtract (current-time) last-h-inserted-time))) 0.20))
           (progn
             (delete-backward-char 1)
             (evil-normal-state))
@@ -483,8 +485,7 @@
 
 ;;# Coq
 ;; Open .v files with Proof General's Coq mode
-(when (file-exists-p "~/.emacs.d/lisp/PG/generic/proof-site.el")
-  (load "~/.emacs.d/lisp/PG/generic/proof-site"))
+(use-package proof-general :ensure t)
 
 ;;# Scala
 (use-package ensime :ensure t)
