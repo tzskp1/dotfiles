@@ -478,7 +478,7 @@
   (setq merlin-command 'opam)
   :bind
   (:map merlin-mode-map
-        ("C-M-g" . marlin-locate)))
+        ("C-M-g" . merlin-locate)))
 
 
 ;; (use-package utop
