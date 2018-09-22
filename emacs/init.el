@@ -147,6 +147,10 @@
             ("C-x h" . nil) ; delete help
             ("<C-tab>" . other-window)
             ("<C-iso-lefttab>" . (lambda () (interactive) (other-window -1)))
+            :filter window-system ;; for tiling window manager
+            :filter (equal system-type 'gnu/linux)
+            ("C-x 3" . make-frame-command)
+            ("C-x 2" . make-frame-command)
             :map isearch-mode-map
             ("C-b" . isearch-delete-char)
             ("C-m" . ret)
