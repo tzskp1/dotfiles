@@ -475,7 +475,11 @@
   :config
   (evil-make-overriding-map merlin-mode-map 'normal)
   (add-to-list 'company-backends 'merlin-company-backend)
-  (setq merlin-command 'opam))
+  (setq merlin-command 'opam)
+  :bind
+  (:map merlin-mode-map
+        ("C-M-g" . marlin-locate)))
+
 
 ;; (use-package utop
 ;;   :after (tuareg)
