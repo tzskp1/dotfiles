@@ -497,3 +497,21 @@
 
 ;;# Scala
 (use-package ensime :ensure t)
+
+;;# python
+(use-package python :ensure t)
+(use-package jedi :ensure t
+  :after (python)
+  :custom
+  (jedi:complete-on-dot t)
+  :hook
+  (python-mode-hook . jedi:setup))
+(use-package company-jedi :ensure t
+  :after (jedi company)
+  :config
+  (add-to-list 'company-backends 'company-jedi))
+
+(use-package ein
+  :after (company-jedi)
+  :config
+  (add-to-list 'company-backends 'ein:company-backend))
