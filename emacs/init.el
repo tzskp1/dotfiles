@@ -159,13 +159,13 @@
             ("C-h" . next-line-or-history-element)
             ("C-t" . previous-line-or-history-element))
 
-(defvar last-h-inserted-time nil "The last inserted time")
+(defvar last-h-inserted-time (current-time) "The last inserted time")
 (defun hh-normal ()
     (interactive)
-    ;; (message "%f" (abs (float-time (time-subtract (current-time) last-h-inserted-time))))
-    (if (and (char-equal (string-to-char "h") (char-before)) (< (abs (float-time (time-subtract (current-time) last-h-inserted-time))) 0.20))
+    ;; (message "%f" (abs (float-time (time-subtract last-h-inserted-time (current-time) ))))
+    (if (< (abs (float-time (time-subtract (current-time) last-h-inserted-time))) 0.20)
           (progn
-            (delete-backward-char 1)
+            (if (char-equal (string-to-char "h") (char-before)) (delete-backward-char 1) nil)
             (evil-normal-state))
     (progn 
       (setq last-h-inserted-time (current-time))
