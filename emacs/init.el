@@ -155,6 +155,8 @@
             ("C-b" . isearch-delete-char)
             ("C-m" . ret)
             :map minibuffer-local-map
+            ("C-d" . left-char)
+            ("C-n" . right-char)
             ("C-b" . backward-delete-char-untabify)
             ("C-h" . next-line-or-history-element)
             ("C-t" . previous-line-or-history-element))
@@ -169,7 +171,10 @@
             (evil-normal-state))
     (progn 
       (setq last-h-inserted-time (current-time))
-      (insert-char (string-to-char "h")))))
+      
+      (if (and (boundp 'skk-j-mode) skk-j-mode)
+          (skk-insert)
+        (insert-char (string-to-char "h"))))))
 
 ;;# evil
 (use-package evil :ensure t
@@ -314,6 +319,7 @@
 ;;# skk
 (use-package ddskk
   :bind (("C-x C-j" . skk-mode))
+  :after (evil)
   :init
   (setq skk-kakutei-when-unique-candidate t)
   (setq skk-egg-like-newline t)
@@ -479,13 +485,6 @@
   :bind
   (:map merlin-mode-map
         ("C-M-g" . merlin-locate)))
-
-
-;; (use-package utop
-;;   :after (tuareg)
-;;   :commands (utop-minor-mode)
-;;   :init 
-;;   (add-hook 'tuareg-mode-hook 'utop-minor-mode t))
 
 (use-package fsharp-mode)
 
