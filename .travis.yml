@@ -6,5 +6,4 @@ os:
 script:
     - make prerequire 
     - make all
-    - ls /home/travis/build/tzskp1/Dotfiles
     - zsh -c "echo $PAGER" | grep "most"
