@@ -4,6 +4,7 @@ cat << EOF > ~/.zshenv
 #! /usr/bin/env zsh
 # -*- mode: sh ; coding: utf-8 -*- 
 #--- copy to each machine ---
+export DOTDIR=$cud
 export ZDOTDIR=$cud/zsh
 source \${ZDOTDIR}/.zshenv
 #---------------------------- "
