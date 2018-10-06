@@ -4,7 +4,5 @@ os:
     - linux
 
 script:
-    - make prerequire 
-    - make
-    - make chsh
+    - make install
     - ./ci/check_zsh.sh
