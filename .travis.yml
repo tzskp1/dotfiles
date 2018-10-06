@@ -5,6 +5,6 @@ os:
 
 script:
     - make prerequire 
-    - make all
-    - sudo chsh -s $(which zsh)
+    - make
+    - make chsh
     - ./ci/check_zsh.sh

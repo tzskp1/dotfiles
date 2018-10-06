@@ -1,4 +1,4 @@
 #!/bin/bash
-sudo login -f travis <<EOF
+exec zsh -l <<EOF
 zsh -c "echo $PAGER" | grep "most"
 EOF
