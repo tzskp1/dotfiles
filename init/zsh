@@ -1,11 +1,11 @@
 #!/bin/bash
 cd $(dirname $0)
-echo $(pwd)
+cud=$(pwd)
 cat << EOF > ~/.zshenv
 #! /usr/bin/env zsh
 # -*- mode: sh ; coding: utf-8 -*- 
 #--- copy to each machine ---
-export ZDOTDIR=$(pwd)/../zsh
+export ZDOTDIR=$cud/../zsh
 source ${ZDOTDIR}/.zshenv
 #---------------------------- " 
 EOF
