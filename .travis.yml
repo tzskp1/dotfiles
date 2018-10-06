@@ -6,5 +6,5 @@ os:
 script:
     - make prerequire 
     - make all
-    - chsh -s zsh
+    - sudo chsh -s $(which zsh)
     - zsh -c "echo $PAGER" | grep "most"
