@@ -8,7 +8,7 @@ all: sym init
 
 define make_symlink
 	@tput setaf 1 && echo "Creating symlink of "$@""
-	@mv ~/$@ ~/$@.bak || true
+	@mv ~/$@ ~/$@.bak 2> /dev/null || true
 	@ln -sfn $(MAKEFILE_DIR)$@ ~/$@
 endef
 
@@ -21,4 +21,3 @@ $(dots):
 sym: $(dots)
 
 init: $(filter-out prerequire ,$(inits))
-
