@@ -7,4 +7,4 @@ script:
     - make prerequire 
     - make all
     - sudo chsh -s $(which zsh)
-    - zsh -c "echo $PAGER" | grep "most"
+    - sudo login travis && zsh -c "echo $PAGER" | grep "most"
