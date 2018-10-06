@@ -5,4 +5,4 @@ unzip 2.011R.zip
 cp ~/source-han-code-jp-2.011R/OTC/SourceHanCodeJP.ttc ~/.local/share/fonts
 git clone https://github.com/powerline/fonts
 cd ~/fonts/
-install.sh
+./install.sh
