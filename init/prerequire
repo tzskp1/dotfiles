@@ -28,10 +28,8 @@ get_os_distribution() {
 case "$(get_os_distribution)" in
   "arch" ) echo "test";;
   "ubuntu" )
-  printf "password: "
-  read password
-  echo "$password" | sudo -S apt-get update -y
-  echo "$password" | sudo -S apt-get install -y ${require}
+  sudo -S apt-get update -y
+  sudo -S apt-get install -y ${require}
   ;;
   "debian" ) exit 1;;
   "unkown" ) exit 1;;
