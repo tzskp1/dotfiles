@@ -86,7 +86,6 @@ alias e=send_emacs
 alias ls="ls --color"
 alias grep="grep --color=auto"
 alias diff="diff --color=auto"
-alias less="most -s"
 
 function extract() {
   case $1 in

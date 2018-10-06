@@ -171,7 +171,6 @@
             (evil-normal-state))
     (progn 
       (setq last-h-inserted-time (current-time))
-      
       (if (and (boundp 'skk-j-mode) skk-j-mode)
           (skk-insert)
         (insert-char (string-to-char "h"))))))
