@@ -1,8 +1,8 @@
 #!/bin/sh
-cd ~
+cd /tmp
 wget https://github.com/adobe-fonts/source-han-code-jp/archive/2.011R.zip
 unzip 2.011R.zip
-cp ~/source-han-code-jp-2.011R/OTC/SourceHanCodeJP.ttc ~/.local/share/fonts
+cp /tmp/source-han-code-jp-2.011R/OTC/SourceHanCodeJP.ttc ~/.local/share/fonts
 git clone https://github.com/powerline/fonts
-cd ~/fonts/
+cd /tmp/fonts/
 ./install.sh

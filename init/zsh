@@ -7,7 +7,7 @@ cat << EOF > ~/.zshenv
 #--- copy to each machine ---
 export ZDOTDIR=$cud/../zsh
 source \${ZDOTDIR}/.zshenv
-#---------------------------- " 
+#---------------------------- "
 EOF
 cd ~
 curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh; exit 0
