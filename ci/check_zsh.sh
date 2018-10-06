@@ -1,4 +1,2 @@
 #!/bin/bash
-exec zsh -l <<EOF 
-echo $PAGER | grep most
-EOF
+exec zsh -l -c 'echo $PAGER | grep most'

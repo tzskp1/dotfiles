@@ -1,6 +1,8 @@
 #!/bin/bash
 
-require="silversearcher-ag emacs zsh git source-highlight"
+common="emacs zsh git source-highlight"
+ag="silversearcher-ag"
+vim="vim"
 
 get_os_distribution() {
     if   [ -e /etc/debian_version ] ||
@@ -26,11 +28,13 @@ get_os_distribution() {
 }
 
 case "$(get_os_distribution)" in
-  "arch" ) echo "test";;
-  "ubuntu" )
-  sudo -S apt-get update -y
-  sudo -S apt-get install -y ${require}
-  ;;
-  "debian" ) exit 1;;
-  "unkown" ) exit 1;;
+    "arch" )
+        exit 1
+        ;;
+    "ubuntu" )
+        sudo -S apt-get update -y
+        sudo -S apt-get install -y $vim $ag $common
+        ;;
+    "debian" ) exit 1;;
+    "unkown" ) exit 1;;
 esac
