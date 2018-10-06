@@ -6,7 +6,7 @@ cat << EOF > ~/.zshenv
 # -*- mode: sh ; coding: utf-8 -*- 
 #--- copy to each machine ---
 export ZDOTDIR=$cud/../zsh
-source ${ZDOTDIR}/.zshenv
+source \${ZDOTDIR}/.zshenv
 #---------------------------- " 
 EOF
 cd ~
