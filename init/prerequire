@@ -1,6 +1,6 @@
 #!/bin/bash
 
-require="silversearcher-ag emacs zsh git"
+require="silversearcher-ag emacs zsh git source-highlight"
 
 get_os_distribution() {
     if   [ -e /etc/debian_version ] ||
