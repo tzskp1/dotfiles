@@ -1,13 +1,19 @@
 MAKEFILE_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 dots := .emacs .config .sshrc .sshrc.d .mostrc .dircolors texmf .xmonad
-inits := zsh lesskey peco font icon
+inits := prerequire zsh lesskey peco font icon
 
 .PHONY: all sym $(dots) $(inits)
 
 all: $(dots) $(inits)
 
+define colorecho
+      @tput setaf 6
+      @echo $1
+      @tput sgr0
+endef
+
 define make_symlink
-	@echo -e "\e[34mCreating symlink of "$@" ..."
+	@colorecho "Creating symlink of "$@" ..."
 	@rm -rf ~/$@
 	@ln -sfn $(MAKEFILE_DIR)$@ ~/$@
 endef

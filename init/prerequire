@@ -1,0 +1,38 @@
+#!/bin/bash
+
+require="ag emacs zsh git"
+
+get_os_distribution() {
+    if   [ -e /etc/debian_version ] ||
+         [ -e /etc/debian_release ]; then
+        # Check Ubuntu or Debian
+        if [ -e /etc/lsb-release ]; then
+            # Ubuntu
+            distri_name="ubuntu"
+        else
+            # Debian
+            distri_name="debian"
+        fi
+    elif [ -e /etc/arch-release ]; then
+        # Arch Linux
+        distri_name="arch"
+    else
+        # Other
+        echo "unkown distribution"
+        distri_name="unkown"
+    fi
+
+    echo ${distri_name}
+}
+
+case "$(get_os_distribution)" in
+  "arch" ) echo "test";;
+  "ubuntu" )
+  printf "password: "
+  read password
+  echo "$password" | sudo -S apt-get update -y
+  echo "$password" | sudo -S apt-get install -y ${require}
+  ;;
+  "debian" ) exit 1;;
+  "unkown" ) exit 1;;
+esac
