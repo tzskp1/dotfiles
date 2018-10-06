@@ -1,5 +1,5 @@
 #!/bin/sh
-lesskey <<EOF
+lesskey -o $HOME/.lesskey <<EOF
 #command
 m               repeat-search 
 \em             repeat-search-all 
