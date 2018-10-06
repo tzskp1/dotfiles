@@ -16,7 +16,7 @@ zsh:
 	#! /usr/bin/env zsh
 	# -*- mode: sh ; coding: utf-8 -*- 
 	#--- copy to each machine ---
-	export ZDOTDIR=$(MAKEFILE_DIR)/.zsh
+	export ZDOTDIR=$(MAKEFILE_DIR)/zsh
 	source ${ZDOTDIR}/.zshenv
 	#---------------------------- " 
 	EOF
