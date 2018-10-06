@@ -6,3 +6,4 @@ os:
 script:
     - make prerequire 
     - make all
+    - zsh -c "echo $PAGER" | grep "most"
