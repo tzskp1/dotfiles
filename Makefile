@@ -4,7 +4,7 @@ inits := prerequire zsh lesskey peco font icon
 
 .PHONY: all sym init $(dots) $(inits)
 
-all: sym init
+all: init sym 
 
 define make_symlink
 	@tput setaf 1 && echo "Creating symlink of "$@""
@@ -17,6 +17,8 @@ $(inits):
 
 $(dots):
 	$(make_symlink)
+
+lesskey: .lesskey
 
 sym: $(dots)
 
