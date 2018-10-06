@@ -4,7 +4,7 @@ inits := prerequire zsh lesskey peco font icon
 
 .PHONY: all sym init $(dots) $(inits)
 
-all: $(dots) $(inits)
+all: sym init
 
 define colorecho
       @tput setaf 6
@@ -26,4 +26,5 @@ $(dots):
 
 sym: $(dots)
 
-init: $(inits)
+init: $(filter-out prerequire ,$(inits))
+
