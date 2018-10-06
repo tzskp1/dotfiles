@@ -13,7 +13,7 @@ define colorecho
 endef
 
 define make_symlink
-	@colorecho "Creating symlink of "$@" ..."
+	@$(colorecho) "Creating symlink of "$@" ..."
 	@rm -rf ~/$@
 	@ln -sfn $(MAKEFILE_DIR)$@ ~/$@
 endef
