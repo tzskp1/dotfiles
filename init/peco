@@ -1,0 +1,3 @@
+#!/bin/sh
+cd ~
+go get github.com/peco/peco/cmd/peco

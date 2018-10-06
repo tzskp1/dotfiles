@@ -1,0 +1,12 @@
+#!/bin/sh
+lesskey <<EOF
+#command
+m               repeat-search 
+\em             repeat-search-all 
+M               reverse-search 
+\eM             reverse-search-all 
+h               forw-line 
+t               back-line 
+H               forw-line-force 
+T               back-line-force 
+EOF

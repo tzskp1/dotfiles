@@ -1,0 +1,6 @@
+#!/bin/sh
+cd /tmp
+rm -rf ~/.icons
+git clone https://github.com/gmmeyer/awesome-dangerzone
+mv /tmp/awesome-dangerzone/icons ~/.icons
+rm -rf /tmp/awesome-dangerzone
