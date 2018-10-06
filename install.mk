@@ -11,19 +11,6 @@ define make_symlink
 	@ln -sfn $(MAKEFILE_DIR)$@ ~/$@
 endef
 
-define zsh
-	@cat << EOF > ~/.zshenv
-#! /usr/bin/env zsh
-# -*- mode: sh ; coding: utf-8 -*- 
-#--- copy to each machine ---
-export ZDOTDIR=$(MAKEFILE_DIR)/zsh
-source ${ZDOTDIR}/.zshenv
-#---------------------------- " 
-EOF
-	@cd ~
-	@curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
-endef
-
 define lesskey
 	@lesskey <<EOF
 #command
@@ -59,7 +46,7 @@ define misc
 endef
 
 zsh:
-	$(zsh)
+	$(MAKEFILE_DIR)init/zsh
 
 lesskey:
 	$(lesskey)
