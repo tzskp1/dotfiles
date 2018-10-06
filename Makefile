@@ -1,5 +1,5 @@
 MAKEFILE_DIR := $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
-dots := .emacs.d .config .sshrc .sshrc.d .mostrc .dir_colors .lesskey texmf .xmonad
+dots := .emacs.d .config .sshrc .sshrc.d .mostrc .dir_colors texmf .xmonad
 inits := chsh prerequire zsh lesskey peco font icon
 
 .PHONY: all sym init $(dots) $(inits)
@@ -17,8 +17,6 @@ $(inits):
 
 $(dots):
 	$(make_symlink)
-
-lesskey: .lesskey
 
 sym: $(dots)
 
