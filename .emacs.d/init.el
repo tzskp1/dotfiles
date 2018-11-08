@@ -176,7 +176,8 @@
         (insert-char (string-to-char "h"))))))
 
 ;;# evil
-(use-package evil :ensure t
+(eval 
+`(use-package evil :ensure t
   :init
   (evil-mode 1)
   :custom
@@ -186,46 +187,31 @@
   (evil-shift-width 2)
   :bind (:map evil-ex-search-keymap
          ("C-b" . backward-delete-char-untabify)
-         :map evil-visual-state-map
-         ("h" . evil-next-visual-line)
-         ("t" . evil-previous-visual-line)
-         ("n" . evil-forward-char)
-         ("d" . evil-backward-char)
-         ("k" . evil-delete)
-         ("K" . evil-delete-line)
-         ("M" . evil-ex-search-previous)
-         ("N" . evil-ex-search-previous)
-         ("m" . evil-ex-search-next)
-         ("C-w" . comment-or-uncomment-region)
-         :map evil-motion-state-map
-         ("h" . evil-next-visual-line)
-         ("t" . evil-previous-visual-line)
-         ("n" . evil-forward-char)
-         ("d" . evil-backward-char)
-         ("k" . evil-delete)
-         ("K" . evil-delete-line)
-         ("M" . evil-ex-search-previous)
-         ("N" . evil-ex-search-previous)
-         ("m" . evil-ex-search-next)
-         ("C-w" . comment-or-uncomment-region)
-         :map evil-normal-state-map
-         ("h" . evil-next-visual-line)
-         ("t" . evil-previous-visual-line)
-         ("n" . evil-forward-char)
-         ("d" . evil-backward-char)
-         ("k" . evil-delete)
-         ("K" . evil-delete-line)
-         ("M" . evil-ex-search-previous)
-         ("N" . evil-ex-search-previous)
-         ("m" . evil-ex-search-next)
-         ("C-w" . comment-or-uncomment-region)
          :map evil-insert-state-map
          ("h" . hh-normal)
          ("C-d" . backward-char)
          ("C-n" . forward-char)
          ("C-t" . previous-line)
          ("C-b" . backward-delete-char-untabify)
-         ("C-h" . next-line)))
+         ("C-h" . next-line)
+         ,@(mapcan (lambda (x)
+                     (list ':map x
+                           '("h" . evil-next-visual-line)
+                           '("t" . evil-previous-visual-line)
+                           '("n" . evil-forward-char)
+                           '("d" . evil-backward-char)
+                           '("k" . evil-delete)
+                           '("K" . evil-delete-line)
+                           '("M" . evil-ex-search-previous)
+                           '("N" . evil-ex-search-previous)
+                           '("m" . evil-ex-search-next)
+                           '("C-w" . comment-or-uncomment-region)))
+                   '(evil-visual-state-map evil-motion-state-map evil-normal-state-map)))
+  :config
+  (evil-set-initial-state 'tabulated-list-mode 'emacs)
+  (evil-define-key 'emacs tabulated-list-mode-map
+    "t" 'tablist-previous-line
+    "h" 'tablist-next-line)))
 
 (use-package evil-numbers :ensure t
   :after (evil)
@@ -377,8 +363,8 @@
          ("T" . magit-section-backward-sibling)
          ("H" . magit-section-forward-sibling))
   :config
-  (add-hook 'with-editor-mode-hook 'evil-insert-state)
-  (evil-make-overriding-map dired-mode-map 'normal))
+  (add-hook 'with-editor-mode-hook 'evil-insert-state))
+  ;; (evil-make-overriding-map dired-mode-map 'normal))
 
 (use-package evil-magit :ensure t)
 
