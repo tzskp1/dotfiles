@@ -353,6 +353,7 @@
      (let ((face (intern (format "rainbow-delimiters-depth-%d-face" index))))
        (cl-callf color-saturate-name (face-foreground face) 30)))))
 
+;;# git
 (use-package magit :ensure t
   :commands (magit-status)
   :custom
