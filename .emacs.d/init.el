@@ -355,6 +355,8 @@
 
 (use-package magit :ensure t
   :commands (magit-status)
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
   :after (evil)
   :bind (("C-c C-g" . magit-status)
          :map magit-mode-map
@@ -364,7 +366,6 @@
          ("H" . magit-section-forward-sibling))
   :config
   (add-hook 'with-editor-mode-hook 'evil-insert-state))
-  ;; (evil-make-overriding-map dired-mode-map 'normal))
 
 (use-package evil-magit :ensure t)
 
@@ -512,3 +513,4 @@
   :custom
   (docker-tramp-use-names t))
 (use-package dockerfile-mode :ensure t)
+
