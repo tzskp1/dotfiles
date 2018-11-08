@@ -475,10 +475,6 @@
 
 (use-package haskell-mode :ensure t)
 
-;;# Coq
-;; Open .v files with Proof General's Coq mode
-(use-package proof-general :ensure t)
-
 ;;# Scala
 (use-package ensime :ensure t)
 
@@ -494,8 +490,25 @@
   :after (jedi company)
   :config
   (add-to-list 'company-backends 'company-jedi))
-
 (use-package ein
   :after (company-jedi)
   :config
   (add-to-list 'company-backends 'ein:company-backend))
+
+(defun install-and-require (name)
+  (when (not (require name nil 'noerror))
+    (package-install name)))
+
+;;# Coq
+;; Open .v files with Proof General's Coq mode
+(install-and-require 'proof-general)
+;(use-package proof-general)
+
+;;# Docker
+(install-and-require 'docker)
+(use-package docker
+  :bind ("C-c C-d" . docker))
+(use-package docker-tramp :ensure t
+  :custom
+  (docker-tramp-use-names t))
+(use-package dockerfile-mode :ensure t)
