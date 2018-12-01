@@ -64,15 +64,6 @@
 ;; 自動分割を抑制
 (setq split-height-threshold nil)
 (setq split-width-threshold nil)
-(custom-set-variables
- ;; collecting backups
- '(make-backup-files t)
- '(auto-save-default t)
- '(backup-directory-alist '(("." . "~/.bak/emacs")))
- '(auto-save-file-name-transforms '(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'" ,(expand-file-name "~/.bak/emacs/autosave") t)))
- '(vc-follow-symlinks t)
- '(auto-revert-check-vc-info t))
-
 (setq display-line-numbers-type 'relative)
 (global-display-line-numbers-mode)
 
@@ -514,3 +505,5 @@
   (docker-tramp-use-names t))
 (use-package dockerfile-mode :ensure t)
 
+(use-package julia-mode :ensure t)
+(use-package ess :ensure t)
