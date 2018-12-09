@@ -59,7 +59,7 @@ Config { -- appearance
                              , "--high"     , "darkred"
                              ] 50
         -- cpu activity monitor
-        , Run MultiCpu        [ "-t"       , "<icon=/home/tk/.icons/sm4tik-icon-pack/xbm/cpu.xbm/> <total0>.<total1>.<total2>.<total3>"
+        , Run MultiCpu        [ "-t"       , "<icon=/home/tk/.icons/sm4tik-icon-pack/xbm/cpu.xbm/> <total0>.<total1>.<total2>.<total3>.<total4>.<total5>"
 		  	  				  , "-L"       , "40"
 							  , "-H"       , "85"
 							  , "-m"       , "2"

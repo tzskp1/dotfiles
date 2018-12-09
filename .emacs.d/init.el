@@ -84,7 +84,7 @@
 
 (when (equal system-type 'gnu/linux)
   (progn
-    (set-face-attribute 'default nil :family "Source Han Code JP N" :height 120)
+    (set-face-attribute 'default nil :family "Source Han Code JP N" :height 140)
     (set-frame-font "Source Han Code JP N" nil t)))
 
 (use-package diminish :ensure t)
@@ -471,21 +471,25 @@
 (use-package ensime :ensure t)
 
 ;;# python
-(use-package python :ensure t)
-(use-package jedi :ensure t
-  :after (python)
+(use-package python :ensure t
   :custom
-  (jedi:complete-on-dot t)
-  :hook
-  (python-mode-hook . jedi:setup))
+  (python-shell-interpreter "~/.emacs.d/.python-environments/default/bin/python3"))
+
 (use-package company-jedi :ensure t
-  :after (jedi company)
+  :init
+  (add-to-list 'company-backends 'company-jedi)
+  (add-hook 'python-mode-hook 'jedi:setup)
+  :bind
+  (:map jedi-mode-map
+        ("C-c C-b" . python-shell-send-buffer)
+        ("C-M-g" . jedi:goto-definition))
   :config
-  (add-to-list 'company-backends 'company-jedi))
-(use-package ein
-  :after (company-jedi)
-  :config
-  (add-to-list 'company-backends 'ein:company-backend))
+  (setq jedi:environment-root "default")
+  (setq jedi:environment-virtualenv
+   (append python-environment-virtualenv
+           '("--python" "python3")))
+  :custom
+  (jedi:complete-on-dot t))
 
 (defun install-and-require (name)
   (when (not (require name nil 'noerror))
@@ -504,6 +508,5 @@
   :custom
   (docker-tramp-use-names t))
 (use-package dockerfile-mode :ensure t)
-
 (use-package julia-mode :ensure t)
 (use-package ess :ensure t)

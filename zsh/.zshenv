@@ -4,6 +4,7 @@
 export GOPATH=$HOME/go
 export PATH=/usr/local/texlive/2017/bin/x86_64-linux:$PATH
 export PATH=$HOME/go/bin:$DOTDIR/bin:$HOME/.cabal/bin:$PATH
+export PATH=$HOME/.local/bin:$PATH
 export PAGER="most"
 export EDITOR="nvim"
 export TERM="xterm-256color"
@@ -12,6 +13,7 @@ export KCODE=u
 export LESSKEY=$HOME/.lesskey
 export LESSOPEN="| src-hilite-lesspipe.sh %s"
 export LESS='-R'
+export ANDROID_HOME=$HOME'/Android/Sdk'
 # Have less display colours
 # from: https://wiki.archlinux.org/index.php/Color_output_in_console#man
 export LESS_TERMCAP_mb=$'\e[1;31m'     # begin bold
