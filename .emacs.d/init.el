@@ -470,30 +470,50 @@
 ;;# Scala
 (use-package ensime :ensure t)
 
-;;# python
-(use-package python :ensure t
-  :custom
-  (python-shell-interpreter "~/.emacs.d/.python-environments/default/bin/python3"))
-
-(use-package company-jedi :ensure t
-  :init
-  (add-to-list 'company-backends 'company-jedi)
-  (add-hook 'python-mode-hook 'jedi:setup)
-  :bind
-  (:map jedi-mode-map
-        ("C-c C-b" . python-shell-send-buffer)
-        ("C-M-g" . jedi:goto-definition))
-  :config
-  (setq jedi:environment-root "default")
-  (setq jedi:environment-virtualenv
-   (append python-environment-virtualenv
-           '("--python" "python3")))
-  :custom
-  (jedi:complete-on-dot t))
 
 (defun install-and-require (name)
   (when (not (require name nil 'noerror))
     (package-install name)))
+
+;;# python
+(use-package python :ensure t
+  :custom
+  (python-environment-directory "~/.local/share/virtualenvs/")
+  (python-environment-virtualenv (list "virtualenv")))
+
+(use-package pipenv :ensure t
+  :init
+  (install-and-require 'jedi)
+  (install-and-require 'flycheck-mypy)
+  :bind
+  (:map jedi-mode-map
+        ("C-c C-b" . python-shell-send-buffer)
+        ("C-M-g" . jedi:goto-definition))
+  :custom
+  (jedi:complete-on-dot t)
+  :hook
+  (python-mode . (lambda ()
+                   (flycheck-mode 1)
+                   (pipenv-mode)
+                   (company-mode -1)
+                   (auto-complete-mode 1)
+                   (when (pipenv-activate)
+                     (setq python-environment-virtualenv
+                           (append python-environment-virtualenv
+                                   (list "--python" (pipenv-executable-find "python3"))))
+                     (jedi:setup)
+                     ;; fail to setup => install server.
+                     (async-start `(lambda ()
+                                     ,(sleep-for 1)
+                                     ,(condition-case err
+                                         (jedi:get-epc)
+                                        (error 
+                                         (progn
+                                           (pipenv-run jedi:install-server--command)
+                                           (sleep-for 1)
+                                           (jedi:setup))))))
+                     (run-python))
+                   )))
 
 ;;# Coq
 ;; Open .v files with Proof General's Coq mode

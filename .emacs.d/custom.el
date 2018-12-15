@@ -26,15 +26,16 @@
  '(evil-want-abbrev-expand-on-insert-exit nil)
  '(helm-boring-buffer-regexp-list
    (quote
-    ("\\` " "\\`\\*helm" "\\`\\*Echo Area" "\\`\\*Minibuf" "\\`\\magit*." "\\`\\*magit*." "\\`\\*Ediff*.")))
+    ("\\` " "\\`\\*helm" "\\`\\*Echo Area" "\\`\\*Minibuf" "\\`\\magit*." "\\`\\*magit*." "\\`\\*Ediff*.")) t)
  '(helm-candidate-number-limit 50)
- '(helm-ff-auto-update-initial-value nil)
+ '(helm-ff-auto-update-initial-value nil t)
  '(helm-input-idle-delay 0.2)
  '(key-chord-two-keys-delay 0.05 t)
+ '(magit-display-buffer-function (quote magit-display-buffer-fullframe-status-v1))
  '(make-backup-files t)
  '(package-selected-packages
    (quote
-    (company-jedi jedi ensime proof-general htmlize fsharp-mode ddskk markdown-mode tuareg yatex haskell-mode madhat2r-theme magit rainbow-delimiters company yasnippet helm-ag evil-leader helm git-gutter linum-relative evil-numbers key-chord evil undohist recentf-ext diminish use-package)))
+    (flycheck-mypy company-jedi jedi ensime proof-general htmlize fsharp-mode ddskk markdown-mode tuareg yatex haskell-mode madhat2r-theme magit rainbow-delimiters company yasnippet helm-ag evil-leader helm git-gutter linum-relative evil-numbers key-chord evil undohist recentf-ext diminish use-package)))
  '(recentf-exclude
    (quote
     ("/recentf" "COMMIT_EDITMSG" "/.?TAGS" "^/sudo:" "/\\.emacs\\.d/games/*-scores" "/\\.emacs\\.d/elpa")))
