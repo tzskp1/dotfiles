@@ -107,11 +107,6 @@
   :config
   (setq tramp-auto-save-directory (expand-file-name "~/.bak/emacs/tramp")))
 
-(use-package undo-tree :diminish ""
-  :bind (:map undo-tree-visualizer-mode-map
-              ("C-t" . undo-tree-visualize-undo)
-              ("C-h" . undo-tree-visualize-redo)))
-
 ;;# key binding
 (bind-keys* :map global-map
             ("C-x h" . nil) ; delete help
