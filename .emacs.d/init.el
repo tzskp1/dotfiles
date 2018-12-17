@@ -67,26 +67,6 @@
 (setq display-line-numbers-type 'relative)
 (global-display-line-numbers-mode)
 
-;;# fonts
-(when (equal system-type 'darwin)
-  (let* ((size 12)
-         (asciifont "Droid Sans Mono Dotted for Powerline")
-         (jpfont "Osaka")
-         (h (* size 10))
-         (fontspec (font-spec :family asciifont))
-         (jp-fontspec (font-spec :family jpfont)))
-    (set-face-attribute 'default nil :family asciifont :height h)
-    (set-fontset-font nil 'japanese-jisx0213.2004-1 jp-fontspec)
-    (set-fontset-font nil 'japanese-jisx0213-2 jp-fontspec)
-    (set-fontset-font nil 'katakana-jisx0201 jp-fontspec)
-    (set-fontset-font nil '(#x0080 . #x024F) fontspec) 
-    (set-fontset-font nil '(#x0370 . #x03FF) fontspec)))
-
-(when (equal system-type 'gnu/linux)
-  (progn
-    (set-face-attribute 'default nil :family "Source Han Code JP N" :height 140)
-    (set-frame-font "Source Han Code JP N" nil t)))
-
 (use-package diminish :ensure t)
 
 (use-package recentf
@@ -373,6 +353,26 @@
   :config
   (load-theme 'nord t))
 (add-to-list 'default-frame-alist '(alpha . 95))
+
+;;# fonts
+(when (equal system-type 'darwin)
+  (let* ((size 12)
+         (asciifont "Droid Sans Mono Dotted for Powerline")
+         (jpfont "Osaka")
+         (h (* size 10))
+         (fontspec (font-spec :family asciifont))
+         (jp-fontspec (font-spec :family jpfont)))
+    (set-face-attribute 'default nil :family asciifont :height h)
+    (set-fontset-font nil 'japanese-jisx0213.2004-1 jp-fontspec)
+    (set-fontset-font nil 'japanese-jisx0213-2 jp-fontspec)
+    (set-fontset-font nil 'katakana-jisx0201 jp-fontspec)
+    (set-fontset-font nil '(#x0080 . #x024F) fontspec) 
+    (set-fontset-font nil '(#x0370 . #x03FF) fontspec)))
+
+(when (equal system-type 'gnu/linux)
+  (progn
+    (set-face-attribute 'default nil :family "Source Han Code JP N" :height 140)
+    (set-frame-font "Source Han Code JP N" nil t)))
 
 (use-package server
   :config
