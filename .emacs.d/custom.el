@@ -3,15 +3,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(auto-revert-check-vc-info t)
- '(auto-save-default t)
- '(auto-save-file-name-transforms
-   (quote
-    (("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
-      (\,
-       (expand-file-name "~/.bak/emacs/autosave"))
-      t))))
- '(backup-directory-alist (quote (("." . "~/.bak/emacs"))))
  '(company-idle-delay 0)
  '(company-minimum-prefix-length 4)
  '(company-selection-wrap-around t)
@@ -26,16 +17,14 @@
  '(evil-want-abbrev-expand-on-insert-exit nil)
  '(helm-boring-buffer-regexp-list
    (quote
-    ("\\` " "\\`\\*helm" "\\`\\*Echo Area" "\\`\\*Minibuf" "\\`\\magit*." "\\`\\*magit*." "\\`\\*Ediff*.")) t)
+    ("\\` " "\\`\\*helm" "\\`\\*Echo Area" "\\`\\*Minibuf" "\\`\\magit*." "\\`\\*magit*." "\\`\\*Ediff*.")))
  '(helm-candidate-number-limit 50)
- '(helm-ff-auto-update-initial-value nil t)
+ '(helm-ff-auto-update-initial-value nil)
  '(helm-input-idle-delay 0.2)
- '(key-chord-two-keys-delay 0.05 t)
  '(magit-display-buffer-function (quote magit-display-buffer-fullframe-status-v1))
- '(make-backup-files t)
  '(package-selected-packages
    (quote
-    (flycheck-mypy company-jedi jedi ensime proof-general htmlize fsharp-mode ddskk markdown-mode tuareg yatex haskell-mode madhat2r-theme magit rainbow-delimiters company yasnippet helm-ag evil-leader helm git-gutter linum-relative evil-numbers key-chord evil undohist recentf-ext diminish use-package)))
+    (ess julia-mode dockerfile-mode docker proof-general flycheck-mypy jedi pipenv ensime haskell-mode nord-theme evil-magit magit rainbow-delimiters company-flx company dumb-jump helm-xref yasnippet helm-ag evil-leader helm evil-numbers evil undohist recentf-ext diminish use-package)))
  '(recentf-exclude
    (quote
     ("/recentf" "COMMIT_EDITMSG" "/.?TAGS" "^/sudo:" "/\\.emacs\\.d/games/*-scores" "/\\.emacs\\.d/elpa")))
@@ -43,11 +32,10 @@
  '(recentf-save-file "/home/tk/.bak/emacs/recentf")
  '(savehist-file "/home/tk/.bak/emacs/history")
  '(undohist-directory "/home/tk/.bak/emacs/undohist")
- '(undohist-ignored-files (quote ("^/tmp" "COMMIT_EDITMSG" "EDITMSG" "/elpa")))
- '(vc-follow-symlinks t))
+ '(undohist-ignored-files (quote ("^/tmp" "COMMIT_EDITMSG" "EDITMSG" "/elpa"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((((class color) (min-colors 89)) (:foreground "#D8DEE9" :background "#2E3440")))))

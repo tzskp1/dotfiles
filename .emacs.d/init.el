@@ -5,8 +5,8 @@
 ;; opam
 
 ;; killing custom
-(let ((custom-file (expand-file-name "custom.el" user-emacs-directory)))
-  (when (file-exists-p custom-file) (load custom-file)))
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (file-exists-p custom-file) (load custom-file))
 
 ;; コンパイル時にパッケージをインストールする.
 (eval-when-compile
@@ -19,12 +19,11 @@
     (package-install 'use-package))
   (package-install-selected-packages))
 
-(setq gc-cons-threshold 100000000)
-
 (package-initialize)
 
 (require 'use-package)
 
+(setq gc-cons-threshold 100000000)
 (setq initial-major-mode 'lisp-interaction-mode)
 (setq inhibit-startup-screen t)
 (setq-default tab-width 4)
@@ -525,5 +524,6 @@
   :custom
   (docker-tramp-use-names t))
 (use-package dockerfile-mode :ensure t)
+
 (use-package julia-mode :ensure t)
 (use-package ess :ensure t)
