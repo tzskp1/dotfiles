@@ -469,7 +469,6 @@
 ;;# Scala
 (use-package ensime :ensure t)
 
-
 (defun install-and-require (name)
   (when (not (require name nil 'noerror))
     (package-install name)))
@@ -506,7 +505,7 @@
                                      ,(sleep-for 1)
                                      ,(condition-case err
                                          (jedi:get-epc)
-                                        (error 
+                                        (err
                                          (progn
                                            (pipenv-run jedi:install-server--command)
                                            (sleep-for 1)
