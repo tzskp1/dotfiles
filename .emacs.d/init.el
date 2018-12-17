@@ -289,6 +289,10 @@
   (company-selection-wrap-around t)
   :init
   (global-company-mode))
+(use-package company-flx :ensure t
+  :after (company)
+  :init
+  (company-flx-mode +1))
 
 ;;# skk
 (use-package ddskk
