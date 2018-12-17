@@ -213,13 +213,12 @@
 (use-package helm :ensure t)
 (use-package helm-config 
   :bind (("M-x" . helm-M-x)
-         :map helm-buffer-map
-         ("C-t" . helm-previous-line)
-         ("C-h" . helm-next-line)
          :map helm-moccur-map
          ("C-h" . helm-next-line)
          ("C-t" . helm-previous-line)
          :map helm-map
+         ("C-d" . helm-buffer-run-kill-persistent)
+         ("C-n" . helm-execute-persistent-action)
          ("C-t" . helm-previous-line)
          ("C-h" . helm-next-line))
   :custom
