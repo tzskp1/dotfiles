@@ -101,6 +101,7 @@
   :custom
   (undohist-ignored-files '("^/tmp" "COMMIT_EDITMSG" "EDITMSG" "/elpa"))
   (undohist-directory (expand-file-name "~/.bak/emacs/undohist")))
+(use-package undo-tree :diminish "")
 
 (use-package tramp
   :config
@@ -378,8 +379,8 @@
   :mode (("\\.md" . markdown-mode)
          ("\\.md.erb\\'" . markdown-mode)
          ("\\.howm\\'" . markdown-mode))
-  :init
-  (setq markdown-command "redcarpet")
+  ;; :init
+  ;; (setq markdown-command "redcarpet")
   :config
   (defun outline-imenu-create-index ()
     (let (index)
@@ -460,8 +461,6 @@
   (:map merlin-mode-map
         ("C-M-g" . merlin-locate)))
 
-(use-package fsharp-mode)
-
 (use-package haskell-mode :ensure t)
 
 ;;# Scala
@@ -508,8 +507,7 @@
                                            (pipenv-run jedi:install-server--command)
                                            (sleep-for 1)
                                            (jedi:setup))))))
-                     (run-python))
-                   )))
+                     (run-python)))))
 
 ;;# Coq
 ;; Open .v files with Proof General's Coq mode
@@ -525,5 +523,7 @@
   (docker-tramp-use-names t))
 (use-package dockerfile-mode :ensure t)
 
-(use-package julia-mode :ensure t)
-(use-package ess :ensure t)
+;; (use-package julia-mode :ensure t)
+;; (use-package ess :ensure t)
+;; (use-package fsharp-mode)
+
