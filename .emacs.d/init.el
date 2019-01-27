@@ -343,12 +343,6 @@
   (ediff-window-setup-function 'ediff-setup-windows-plain)
   (ediff-split-window-function 'split-window-horizontally))
 
-;;# Theme
-(use-package nord-theme :ensure t
-  :config
-  (load-theme 'nord t))
-(add-to-list 'default-frame-alist '(alpha . 95))
-
 ;;# fonts
 (when (equal system-type 'darwin)
   (let* ((size 12)
@@ -368,6 +362,12 @@
   (progn
     (set-face-attribute 'default nil :family "Source Han Code JP N" :height 140)
     (set-frame-font "Source Han Code JP N" nil t)))
+
+;;# Theme
+(use-package nord-theme :ensure t
+  :config
+  (load-theme 'nord t))
+;; (add-to-list 'default-frame-alist '(alpha . 95))
 
 (use-package server
   :config
@@ -512,7 +512,10 @@
 ;;# Coq
 ;; Open .v files with Proof General's Coq mode
 (install-and-require 'proof-general)
-;(use-package proof-general)
+(use-package coq
+  :mode (("\\.v\\`" . coq-mode)))
+  ;; :custom
+  ;; (coq-prog-name "hoqtop"))
 
 ;;# Docker
 (install-and-require 'docker)
@@ -523,7 +526,6 @@
   (docker-tramp-use-names t))
 (use-package dockerfile-mode :ensure t)
 
-;; (use-package julia-mode :ensure t)
-;; (use-package ess :ensure t)
-;; (use-package fsharp-mode)
-
+(use-package shell
+  :config
+  (setenv "EMACS" "1"))
