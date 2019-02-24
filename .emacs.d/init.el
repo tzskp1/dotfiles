@@ -243,14 +243,6 @@
          ("C-M-g" . xref-find-definitions)))
 
 ;;# completion
-(use-package auto-complete
-  :commands (auto-complete-mode)
-  :config
-  (bind-keys :map ac-complete-mode-map
-             ("C-h" . ac-next)
-             ("C-t" . ac-previous))
-  (global-auto-complete-mode -1))
-
 (use-package company :ensure t :diminish ""
   :bind (:map company-active-map
               ("C-h" . company-select-next)
@@ -343,6 +335,28 @@
   (ediff-window-setup-function 'ediff-setup-windows-plain)
   (ediff-split-window-function 'split-window-horizontally))
 
+(use-package eglot :ensure t
+  :after (company)
+  :bind
+  (:map eglot-mode-map
+        ("C-h" . company-select-next)
+        ("C-t" . company-select-previous)
+        ("C-c h". eglot-help-at-point)
+        ("C-M-g" . xref-find-definitions)))
+
+(use-package shell
+  :config
+  (setenv "EMACS" "1"))
+
+;;# Theme
+;; (use-package nord-theme :ensure t
+;;   :config
+;;   (load-theme 'nord t))
+(use-package dracula-theme :ensure t
+  :config
+  (load-theme 'dracula t))
+(add-to-list 'default-frame-alist '(alpha . 95))
+
 ;;# fonts
 (when (equal system-type 'darwin)
   (let* ((size 12)
@@ -362,12 +376,6 @@
   (progn
     (set-face-attribute 'default nil :family "Source Han Code JP N" :height 140)
     (set-frame-font "Source Han Code JP N" nil t)))
-
-;;# Theme
-(use-package nord-theme :ensure t
-  :config
-  (load-theme 'nord t))
-;; (add-to-list 'default-frame-alist '(alpha . 95))
 
 (use-package server
   :config
@@ -466,47 +474,33 @@
 ;;# Scala
 (use-package ensime :ensure t)
 
+;;# F#
+(use-package fsharp-mode :ensure t)
+
 (defun install-and-require (name)
   (when (not (require name nil 'noerror))
     (package-install name)))
 
 ;;# python
-(use-package python :ensure t
-  :custom
-  (python-environment-directory "~/.local/share/virtualenvs/")
-  (python-environment-virtualenv (list "virtualenv")))
-
 (use-package pipenv :ensure t
-  :init
-  (install-and-require 'jedi)
-  (install-and-require 'flycheck-mypy)
+  :mode (("\\.py\\`" . python-mode))
   :bind
-  (:map jedi-mode-map
-        ("C-c C-b" . python-shell-send-buffer)
-        ("C-M-g" . jedi:goto-definition))
+  (:map python-mode-map
+        ("C-c C-b" . python-shell-send-buffer))
   :custom
-  (jedi:complete-on-dot t)
+  (python-environment-virtualenv (list "virtualenv"))
   :hook
   (python-mode . (lambda ()
-                   (flycheck-mode 1)
                    (pipenv-mode)
-                   (company-mode -1)
-                   (auto-complete-mode 1)
+                   (require 'eglot)
+                   (add-to-list 'eglot-server-programs
+                                `(python-mode . ("pipenv" "run" "pyls" "-v" "--tcp" "--host"
+                                                 "localhost" "--port" :autoport)))
+                   (eglot-ensure)
                    (when (pipenv-activate)
                      (setq python-environment-virtualenv
                            (append python-environment-virtualenv
                                    (list "--python" (pipenv-executable-find "python3"))))
-                     (jedi:setup)
-                     ;; fail to setup => install server.
-                     (async-start `(lambda ()
-                                     ,(sleep-for 1)
-                                     ,(condition-case err
-                                         (jedi:get-epc)
-                                        (err
-                                         (progn
-                                           (pipenv-run jedi:install-server--command)
-                                           (sleep-for 1)
-                                           (jedi:setup))))))
                      (run-python)))))
 
 ;;# Coq
@@ -518,14 +512,11 @@
   ;; (coq-prog-name "hoqtop"))
 
 ;;# Docker
-(install-and-require 'docker)
 (use-package docker
+  :config 
+  (install-and-require 'docker)
+  (use-package docker-tramp :ensure t
+    :custom
+    (docker-tramp-use-names t))
+  (use-package dockerfile-mode :ensure t)
   :bind ("C-c C-d" . docker))
-(use-package docker-tramp :ensure t
-  :custom
-  (docker-tramp-use-names t))
-(use-package dockerfile-mode :ensure t)
-
-(use-package shell
-  :config
-  (setenv "EMACS" "1"))
