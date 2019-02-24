@@ -477,10 +477,6 @@
 ;;# F#
 (use-package fsharp-mode :ensure t)
 
-(defun install-and-require (name)
-  (when (not (require name nil 'noerror))
-    (package-install name)))
-
 ;;# python
 (use-package pipenv :ensure t
   :mode (("\\.py\\`" . python-mode))
@@ -505,16 +501,14 @@
 
 ;;# Coq
 ;; Open .v files with Proof General's Coq mode
-(install-and-require 'proof-general)
-(use-package coq
+(use-package proof-general :ensure t
   :mode (("\\.v\\`" . coq-mode)))
   ;; :custom
   ;; (coq-prog-name "hoqtop"))
 
 ;;# Docker
-(use-package docker
+(use-package docker :ensure t
   :config 
-  (install-and-require 'docker)
   (use-package docker-tramp :ensure t
     :custom
     (docker-tramp-use-names t))
