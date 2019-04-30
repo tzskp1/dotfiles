@@ -349,13 +349,15 @@
   (setenv "EMACS" "1"))
 
 ;;# Theme
-;; (use-package nord-theme :ensure t
-;;   :config
-;;   (load-theme 'nord t))
-(use-package dracula-theme :ensure t
+(use-package doom-themes :ensure t
+  :custom
+  (doom-themes-enable-italic t)
+  (doom-themes-enable-bold t)
+  :custom-face
+  (doom-modeline-bar ((t (:background "#6272a4"))))
   :config
-  (load-theme 'dracula t))
-(add-to-list 'default-frame-alist '(alpha . 95))
+  (load-theme 'doom-dracula t)
+  (doom-themes-org-config))
 
 ;;# fonts
 (when (equal system-type 'darwin)
@@ -498,6 +500,7 @@
                            (append python-environment-virtualenv
                                    (list "--python" (pipenv-executable-find "python3"))))
                      (run-python)))))
+(use-package ein :ensure t)
 
 ;;# Coq
 ;; Open .v files with Proof General's Coq mode
