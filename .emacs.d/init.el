@@ -517,3 +517,11 @@
     (docker-tramp-use-names t))
   (use-package dockerfile-mode :ensure t)
   :bind ("C-c C-d" . docker))
+
+(require 'json)
+(setq dropbox-path
+ (cdadar (json-read-file "~/.dropbox/info.json")))
+(use-package org :ensure t
+  :custom
+  (org-directory (concat (file-name-as-directory dropbox-path) "org"))
+  :bind ("C-c c" . org-capture))
