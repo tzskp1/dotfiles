@@ -522,6 +522,15 @@
 (setq dropbox-path
  (cdadar (json-read-file "~/.dropbox/info.json")))
 (use-package org :ensure t
+  :init
+  (require 'org-agenda)
   :custom
+  (org-agenda-files
+   (list (concat (file-name-as-directory dropbox-path) "org/agenda.org")))
   (org-directory (concat (file-name-as-directory dropbox-path) "org"))
-  :bind ("C-c c" . org-capture))
+  :bind (:map global-map
+  ("C-c c" . org-capture)
+  ("C-c a" . org-agenda))
+  (:map org-agenda-mode-map
+  ("t" . org-agenda-previous-line)
+  ("h" . org-agenda-next-line)))
