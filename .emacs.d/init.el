@@ -525,9 +525,12 @@
   :init
   (require 'org-agenda)
   :custom
+  (org-directory (concat (file-name-as-directory dropbox-path) "org"))
   (org-agenda-files
    (list (concat (file-name-as-directory dropbox-path) "org/agenda.org")))
-  (org-directory (concat (file-name-as-directory dropbox-path) "org"))
+  (org-capture-templates
+   `(("T" "TODO" entry (file+headline ,(concat (file-name-as-directory dropbox-path) "org/TODO.org") "Inbox")
+      "*** TODO %?\n    CAPTURED_AT: %a\n    %i")))
   :bind (:map global-map
   ("C-c c" . org-capture)
   ("C-c a" . org-agenda))
