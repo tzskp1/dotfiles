@@ -238,7 +238,8 @@
   (dumb-jump-default-project (expand-file-name "~"))
   (dumb-jump-selector 'helm)
   (dumb-jump-force-searcher 'ag)
-  :bind (("C-M-g" . dumb-jump-go)
+  :bind (:map dumb-jump-mode-map
+         ("C-M-g" . dumb-jump-go)
          :map emacs-lisp-mode-map
          ("C-M-g" . xref-find-definitions)))
 
@@ -505,6 +506,10 @@
 ;;# Coq
 ;; Open .v files with Proof General's Coq mode
 (use-package proof-general :ensure t
+  :hook
+  (coq-mode . (lambda ()
+                (dumb-jump-mode -1)
+                (company-coq-mode 1)))
   :mode (("\\.v\\`" . coq-mode)))
   ;; :custom
   ;; (coq-prog-name "hoqtop"))
