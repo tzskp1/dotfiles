@@ -508,6 +508,9 @@
   :mode (("\\.v\\`" . coq-mode)))
   ;; :custom
   ;; (coq-prog-name "hoqtop"))
+(use-package company-coq :ensure t
+:bind (:map company-coq-map
+        ("C-M-g" . company-coq-jump-to-definition)))
 
 ;;# Docker
 (use-package docker :ensure t
@@ -537,3 +540,5 @@
   (:map org-agenda-mode-map
   ("t" . org-agenda-previous-line)
   ("h" . org-agenda-next-line)))
+
+(use-package reason-mode :ensure t)
