@@ -8,11 +8,16 @@
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file) (load custom-file))
 
+;; (setq package-check-signature nil)
+;; (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+
 ;; コンパイル時にパッケージをインストールする.
 (eval-when-compile
   (package-initialize)
   (setq package-archives
-        '(("gnu" . "https://elpa.gnu.org/packages/")
+        '(
+        ;; ("gnu"   . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/gnu/")
+          ("gnu" . "http://elpa.gnu.org/packages/")
           ("melpa" . "https://melpa.org/packages/")))
   (unless package-archive-contents (package-refresh-contents))
   (when (not (package-installed-p 'use-package))
@@ -22,6 +27,8 @@
 (package-initialize)
 
 (require 'use-package)
+
+(use-package jsonrpc :ensure t)
 
 (setq gc-cons-threshold 100000000)
 (setq initial-major-mode 'lisp-interaction-mode)
@@ -508,11 +515,13 @@
 (use-package proof-general :ensure t
   :hook
   (coq-mode . (lambda ()
+  (font-lock-add-keywords nil
+      '(("^[^\n]\\{80\\}\\(.*\\)$" 1 font-lock-warning-face t)))
                 (dumb-jump-mode -1)
                 (company-coq-mode 1)))
   :mode (("\\.v\\`" . coq-mode)))
   ;; :custom
-  ;; (coq-prog-name "hoqtop"))
+  ;; (coq-prog-name "/Users/tk/coq/bin/coqtop"))
 (use-package company-coq :ensure t
 :bind (:map company-coq-map
         ("C-M-g" . company-coq-jump-to-definition)))
@@ -547,3 +556,4 @@
   ("h" . org-agenda-next-line)))
 
 (use-package reason-mode :ensure t)
+(use-package lean-mode :ensure t)
