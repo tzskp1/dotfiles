@@ -1,4 +1,4 @@
-Config { -- appearance
+Config {
     font = "xft:SourceHanCodeJP:size=10:antialias=true"
    , bgColor = "#2E3440"
    , fgColor = "#8FBCBB"
@@ -36,13 +36,14 @@ Config { -- appearance
    --   color can be set by enclosing in <fc></fc> tags. For more details
    --   see http://projects.haskell.org/xmobar/#system-monitor-plugins.
    , commands = 
+     [
        -- weather monitor
-        [ Run Weather "RJTT" [ "--template", "<skyCondition> <fc=#4682B4><tempC></fc>°C <fc=#4682B4><rh></fc>% <fc=#4682B4><pressure></fc>hPa"
-                             ] 36000
+        -- [ Run Weather "RJTT" [ "--template", "<skyCondition> <fc=#4682B4><tempC></fc>°C <fc=#4682B4><rh></fc>% <fc=#4682B4><pressure></fc>hPa"
+        --                      ] 36000
 
 
         -- cpu core temperature monitor
-        , Run CoreTemp       [ "--template" , "<icon=/home/tk/.icons/sm4tik-icon-pack/xbm/temp.xbm/> <core0>.<core1>.<core2>"
+        Run CoreTemp       [ "--template" , "<icon=/home/tk/.icons/sm4tik-icon-pack/xbm/temp.xbm/> <core0>.<core1>.<core2>"
                              , "--Low"      , "70"        -- units: °C
                              , "--High"     , "80"        -- units: °C
                              , "--low"      , "darkgreen"
