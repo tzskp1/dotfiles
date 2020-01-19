@@ -1,4 +1,4 @@
-;; -*- lexical-binding: t -*- 
+;; -*- lexical-binding: t -*-
 
 ;; package requirement
 ;; silversearcher-ag
@@ -54,7 +54,7 @@
 ;;# Edit
 (show-paren-mode 1)
 (which-function-mode 1)
-(global-auto-revert-mode 1) 
+(global-auto-revert-mode 1)
 ;;# Scroll
 (setq scroll-conservatively 35
       scroll-margin 0
@@ -67,6 +67,7 @@
 ;; like "mkdir -p"
 (add-hook 'find-file-not-found-hooks
           '(lambda () (make-directory (file-name-directory buffer-file-name) t)))
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 ;; 自動分割を抑制
 (setq split-height-threshold nil)
 (setq split-width-threshold nil)
@@ -141,14 +142,14 @@
           (progn
             (if (char-equal (string-to-char "h") (char-before)) (delete-backward-char 1) nil)
             (evil-normal-state))
-    (progn 
+    (progn
       (setq last-h-inserted-time (current-time))
       (if (and (boundp 'skk-j-mode) skk-j-mode)
           (skk-insert)
         (insert-char (string-to-char "h"))))))
 
 ;;# evil
-(eval 
+(eval
 `(use-package evil :ensure t
   :init
   (evil-mode 1)
@@ -193,7 +194,7 @@
 
 ;;# helm
 (use-package helm :ensure t)
-(use-package helm-config 
+(use-package helm-config
   :bind (("M-x" . helm-M-x)
          :map helm-moccur-map
          ("C-h" . helm-next-line)
@@ -205,7 +206,7 @@
          ("C-h" . helm-next-line))
   :custom
   (helm-ff-auto-update-initial-value nil)
-  (helm-input-idle-delay 0.2) 
+  (helm-input-idle-delay 0.2)
   (helm-candidate-number-limit 50)
   (helm-boring-buffer-regexp-list
    '("\\` " "\\`\\*helm" "\\`\\*Echo Area" "\\`\\*Minibuf" "\\`\\magit*." "\\`\\*magit*." "\\`\\*Ediff*."))
@@ -255,7 +256,7 @@
   :bind (:map company-active-map
               ("C-h" . company-select-next)
               ("C-t" . company-select-previous)
-         :map company-search-map 
+         :map company-search-map
               ("C-h" . company-select-next)
               ("C-t" . company-select-previous))
   :custom
@@ -379,7 +380,7 @@
     (set-fontset-font nil 'japanese-jisx0213.2004-1 jp-fontspec)
     (set-fontset-font nil 'japanese-jisx0213-2 jp-fontspec)
     (set-fontset-font nil 'katakana-jisx0201 jp-fontspec)
-    (set-fontset-font nil '(#x0080 . #x024F) fontspec) 
+    (set-fontset-font nil '(#x0080 . #x024F) fontspec)
     (set-fontset-font nil '(#x0370 . #x03FF) fontspec)))
 
 (when (equal system-type 'gnu/linux)
@@ -469,7 +470,7 @@
 (use-package merlin
   :after (tuareg company)
   :commands (merlin-mode)
-  :init 
+  :init
   (add-hook 'tuareg-mode-hook 'merlin-mode t)
   :config
   (evil-make-overriding-map merlin-mode-map 'normal)
@@ -485,7 +486,7 @@
 (use-package ensime :ensure t)
 
 ;;# F#
-(use-package fsharp-mode :ensure t)
+(use-package fsharp-mode :defer t :ensure t)
 
 ;;# python
 (use-package pipenv :ensure t
@@ -528,7 +529,7 @@
 
 ;;# Docker
 (use-package docker :ensure t
-  :config 
+  :config
   (use-package docker-tramp :ensure t
     :custom
     (docker-tramp-use-names t))
