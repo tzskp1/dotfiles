@@ -73,6 +73,7 @@
 (setq split-width-threshold nil)
 (setq display-line-numbers-type 'relative)
 (global-display-line-numbers-mode)
+(setq require-final-newline 'visit)
 
 (use-package diminish :ensure t)
 
