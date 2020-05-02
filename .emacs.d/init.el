@@ -448,6 +448,7 @@
   :mode (("\\.sml\\'" . tuareg-mode)
          ("\\.smi\\'" . tuareg-mode)
          ("\\.ml\\'" . tuareg-mode)
+         ("\\.mlg\\'" . tuareg-mode)
          ("\\.mli\\'" . tuareg-mode))
   :config
   ;; work around
@@ -484,10 +485,13 @@
 (use-package haskell-mode :ensure t)
 
 ;;# Scala
-(use-package ensime :ensure t)
+;; (use-package ensime :ensure t)
 
 ;;# F#
-(use-package fsharp-mode :defer t :ensure t)
+(use-package fsharp-mode :defer t :ensure t
+  :config
+  (require 'eglot-fsharp)
+  (setq inferior-fsharp-program (concat (getenv "DOTNET_ROOT") "/dotnet fsi")))
 
 ;;# python
 (use-package pipenv :ensure t
@@ -557,5 +561,13 @@
   ("t" . org-agenda-previous-line)
   ("h" . org-agenda-next-line)))
 
+;;# Rust
+(use-package rust-mode :ensure t)
+
 (use-package reason-mode :ensure t)
 (use-package lean-mode :ensure t)
+
+;;# Michelson
+(load "~/.emacs.d/emacs_michelson-mode.el" nil t)
+(setq michelson-client-command "~/tezos/tezos-client -A carthagenet.tezos.cryptium.ch -P 8732")
+(setq michelson-alphanet nil)
