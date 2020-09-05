@@ -365,6 +365,11 @@
   :config
   (setenv "EMACS" "1"))
 
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
+
 ;;# Theme
 (use-package doom-themes :ensure t
   :custom
