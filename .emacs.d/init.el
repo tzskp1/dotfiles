@@ -580,18 +580,14 @@
 (setq michelson-alphanet nil)
 
 ;;# TypeScript
-(use-package tide :ensure t)
+(use-package tide
+  :ensure t
+  :after (typescript-mode company flycheck)
+  :hook ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)
+         (before-save . tide-format-before-save)))
 (use-package typescript-mode :ensure t
   :mode (("\\.ts\\'" . typescript-mode)
          ("\\.tsx\\'" . typescript-mode)))
-  ;; :hook
-  ;; (typescript-mode-hook . '(lambda ()
-  ;;                            (interactive)
-  ;;                            (tide-setup)
-  ;;                            (flycheck-mode +1)
-  ;;                            (tide-hl-identifier-mode +1)
-  ;;                            (company-mode +1)
-  ;;                            (eldoc-mode +1)
-  ;;                            )))
 
 (use-package csharp-mode :ensure t)
