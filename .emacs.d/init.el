@@ -254,6 +254,8 @@
 
 (use-package smart-jump
   :ensure t
+  :custom
+  (smart-jump-jump-key "C-M-g")
   :config
   (smart-jump-setup-default-registers))
 
