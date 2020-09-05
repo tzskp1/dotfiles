@@ -252,6 +252,11 @@
          :map emacs-lisp-mode-map
          ("C-M-g" . xref-find-definitions)))
 
+(use-package smart-jump
+  :ensure t
+  :config
+  (smart-jump-setup-default-registers))
+
 ;;# completion
 (use-package company :ensure t :diminish ""
   :bind (:map company-active-map
@@ -571,3 +576,20 @@
 (load "~/.emacs.d/emacs_michelson-mode.el" nil t)
 (setq michelson-client-command "~/tezos/tezos-client -A carthagenet.tezos.cryptium.ch -P 8732")
 (setq michelson-alphanet nil)
+
+;;# TypeScript
+(use-package tide :ensure t)
+(use-package typescript-mode :ensure t
+  :mode (("\\.ts\\'" . typescript-mode)
+         ("\\.tsx\\'" . typescript-mode)))
+  ;; :hook
+  ;; (typescript-mode-hook . '(lambda ()
+  ;;                            (interactive)
+  ;;                            (tide-setup)
+  ;;                            (flycheck-mode +1)
+  ;;                            (tide-hl-identifier-mode +1)
+  ;;                            (company-mode +1)
+  ;;                            (eldoc-mode +1)
+  ;;                            )))
+
+(use-package csharp-mode :ensure t)
