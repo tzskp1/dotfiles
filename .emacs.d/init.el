@@ -43,7 +43,6 @@
       '("emacs@" system-name ":"
         (:eval (or (buffer-file-name)
                    default-directory))))
-;;# ミニバッファを複数起動
 (setq enable-recursive-minibuffers t)
 ;;# 右から左に読む言語に対応させないことで描画高速化
 (setq-default bidi-display-reordering nil)
@@ -74,6 +73,7 @@
 (setq display-line-numbers-type 'relative)
 (global-display-line-numbers-mode)
 (setq require-final-newline 'visit)
+(setq backup-directory-alist '(("" . "~/.emacs.d/backup")))
 
 (use-package diminish :ensure t)
 
@@ -574,7 +574,9 @@
   ("h" . org-agenda-next-line)))
 
 ;;# Rust
-(use-package rust-mode :ensure t)
+(use-package rustic :ensure t
+  :custom
+  (rustic-lsp-client 'eglot))
 
 (use-package reason-mode :ensure t)
 (use-package lean-mode :ensure t)

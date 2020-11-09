@@ -134,7 +134,7 @@ myBorderWidth = 1
 -- ("right alt"), which does not conflict with emacs keybindings. The
 -- "windows key" is usually mod4Mask.
 --
-myModMask = mod4Mask
+myModMask = mod3Mask
 
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   ----------------------------------------------------------------------
@@ -173,7 +173,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   -- Increase volume.
   , ((0, xF86XK_AudioRaiseVolume),
      spawn "amixer -q set Master 10%+")
- 
+
   -- Mute volume.
   , ((modMask .|. controlMask, xK_m),
      spawn "amixer -q set Master toggle")
