@@ -74,6 +74,7 @@
 (global-display-line-numbers-mode)
 (setq require-final-newline 'visit)
 (setq backup-directory-alist '(("" . "~/.emacs.d/backup")))
+(prefer-coding-system 'utf-8-unix)
 
 (use-package diminish :ensure t)
 
@@ -352,14 +353,24 @@
   (ediff-window-setup-function 'ediff-setup-windows-plain)
   (ediff-split-window-function 'split-window-horizontally))
 
-(use-package eglot :ensure t
+(use-package lsp-mode :ensure t
   :after (company)
   :bind
-  (:map eglot-mode-map
+  (:map lsp-mode-map
         ("C-h" . company-select-next)
         ("C-t" . company-select-previous)
-        ("C-c h". eglot-help-at-point)
-        ("C-M-g" . xref-find-definitions)))
+        ("C-M-g" . xref-find-definitions))
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-l")
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (rust-mode . lsp)
+         (python-mode . lsp))
+  :commands lsp)
+
+(use-package lsp-ui :ensure t :commands lsp-ui-mode)
+(use-package helm-lsp :ensure t :commands helm-lsp-workspace-symbol)
+(use-package lsp-treemacs :ensure t :commands lsp-treemacs-errors-list)
 
 (use-package shell
   :config
@@ -496,13 +507,9 @@
 
 (use-package haskell-mode :ensure t)
 
-;;# Scala
-;; (use-package ensime :ensure t)
-
 ;;# F#
 (use-package fsharp-mode :defer t :ensure t
   :config
-  (require 'eglot-fsharp)
   (setq inferior-fsharp-program (concat (getenv "DOTNET_ROOT") "/dotnet fsi")))
 
 ;;# python
@@ -516,16 +523,7 @@
   :hook
   (python-mode . (lambda ()
                    (pipenv-mode)
-                   (require 'eglot)
-                   (add-to-list 'eglot-server-programs
-                                `(python-mode . ("pipenv" "run" "pyls" "-v" "--tcp" "--host"
-                                                 "localhost" "--port" :autoport)))
-                   (eglot-ensure)
-                   (when (pipenv-activate)
-                     (setq python-environment-virtualenv
-                           (append python-environment-virtualenv
-                                   (list "--python" (pipenv-executable-find "python3"))))
-                     (run-python)))))
+                   )))
 (use-package ein :ensure t)
 
 ;;# Coq
@@ -576,14 +574,14 @@
 ;;# Rust
 (use-package rustic :ensure t
   :custom
-  (rustic-lsp-client 'eglot))
+  (rustic-lsp-client 'lsp-mode))
 
 (use-package reason-mode :ensure t)
 (use-package lean-mode :ensure t)
 
 ;;# Michelson
 (load "~/.emacs.d/emacs_michelson-mode.el" nil t)
-(setq michelson-client-command "~/tezos/tezos-client -A carthagenet.tezos.cryptium.ch -P 8732")
+(setq michelson-client-command "~/tezos/tezos-client -A localhost -P 8732")
 (setq michelson-alphanet nil)
 
 ;;# TypeScript
