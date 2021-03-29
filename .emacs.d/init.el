@@ -294,7 +294,7 @@
 
 (use-package dired
   :commands (dired-mode)
-  :after (evil)
+  :after (evil-collection)
   :config
   (evil-make-overriding-map dired-mode-map 'normal)
   (evil-define-key 'normal dired-mode-map
@@ -348,6 +348,7 @@
 
 (use-package evil-collection
   :ensure t
+  :after (evil)
   :init (evil-collection-init))
 
 (use-package ediff
