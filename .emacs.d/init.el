@@ -346,7 +346,9 @@
   :config
   (add-hook 'with-editor-mode-hook 'evil-insert-state))
 
-(use-package evil-magit :ensure t)
+(use-package evil-collection
+  :ensure t
+  :init (evil-collection-init))
 
 (use-package ediff
   :custom
