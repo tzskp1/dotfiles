@@ -136,20 +136,7 @@
             ("C-h" . next-line-or-history-element)
             ("C-t" . previous-line-or-history-element))
 
-(defvar last-h-inserted-time (current-time) "The last inserted time")
-(defun hh-normal ()
-    (interactive)
-    ;; (message "%f" (abs (float-time (time-subtract last-h-inserted-time (current-time) ))))
-    (if (< (abs (float-time (time-subtract (current-time) last-h-inserted-time))) 0.20)
-          (progn
-            (if (char-equal (string-to-char "h") (char-before)) (delete-backward-char 1) nil)
-            (evil-normal-state))
-    (progn
-      (setq last-h-inserted-time (current-time))
-      (if (and (boundp 'skk-j-mode) skk-j-mode)
-          (skk-insert)
-        (insert-char (string-to-char "h"))))))
-
+;;# evil
 (use-package evil-leader :ensure t
   ;; :after (evil helm)
   :init
@@ -163,7 +150,6 @@
     "<SPC>" 'helm-mini)
   (kill-buffer (messages-buffer)))
 
-;;# evil
 (eval
 `(use-package evil :ensure t
   :init
@@ -206,6 +192,26 @@
   :config
   (bind-key "+" 'evil-numbers/inc-at-pt evil-normal-state-map)
   (bind-key "-" 'evil-numbers/dec-at-pt evil-normal-state-map))
+
+(use-package evil-collection
+  :ensure t
+  :after (evil)
+  :init (evil-collection-init))
+
+(defvar last-h-inserted-time (current-time) "The last inserted time")
+(defun hh-normal ()
+    (interactive)
+    ;; (message "%f" (abs (float-time (time-subtract last-h-inserted-time (current-time) ))))
+    (if (< (abs (float-time (time-subtract (current-time) last-h-inserted-time))) 0.20)
+          (progn
+            (if (char-equal (string-to-char "h") (char-before)) (delete-backward-char 1) nil)
+            (evil-normal-state))
+    (progn
+      (setq last-h-inserted-time (current-time))
+      (if (and (boundp 'skk-j-mode) skk-j-mode)
+          (skk-insert)
+        (insert-char (string-to-char "h"))))))
+
 
 ;;# helm
 (use-package helm :ensure t)
@@ -296,7 +302,7 @@
 
 (use-package dired
   :commands (dired-mode)
-  :after (evil-collection)
+  :after (evil evil-collection)
   :config
   (evil-make-overriding-map dired-mode-map 'normal)
   (evil-define-key 'normal dired-mode-map
@@ -347,11 +353,6 @@
          ("H" . magit-section-forward-sibling))
   :config
   (add-hook 'with-editor-mode-hook 'evil-insert-state))
-
-(use-package evil-collection
-  :ensure t
-  :after (evil)
-  :init (evil-collection-init))
 
 (use-package ediff
   :custom
