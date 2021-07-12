@@ -64,7 +64,7 @@
 (setq truncate-partial-width-windows nil)
 (setq ring-bell-function 'ignore) ; No Beeps
 ;; like "mkdir -p"
-(add-hook 'find-file-not-found-hooks
+(add-hook 'find-file-not-found-functions
           '(lambda () (make-directory (file-name-directory buffer-file-name) t)))
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 ;; 自動分割を抑制
@@ -150,6 +150,19 @@
           (skk-insert)
         (insert-char (string-to-char "h"))))))
 
+(use-package evil-leader :ensure t
+  ;; :after (evil helm)
+  :init
+  (setq evil-want-keybinding nil)
+  (global-evil-leader-mode)
+  :config
+  (evil-leader/set-leader "<SPC>")
+  (evil-leader/set-key
+    "q" 'kill-this-buffer
+    "w" 'save-buffer
+    "<SPC>" 'helm-mini)
+  (kill-buffer (messages-buffer)))
+
 ;;# evil
 (eval
 `(use-package evil :ensure t
@@ -215,17 +228,6 @@
   :config
   (helm-mode 1)
   (add-to-list 'helm-completing-read-handlers-alist '(find-file . nil)))
-
-(use-package evil-leader :ensure t
-  :after (evil helm)
-  :config
-  (global-evil-leader-mode)
-  (evil-leader/set-leader "<SPC>")
-  (evil-leader/set-key
-    "q" 'kill-this-buffer
-    "w" 'save-buffer
-    "<SPC>" 'helm-mini)
-  (kill-buffer (messages-buffer)))
 
 (use-package helm-ag :ensure t
   :after (helm)
@@ -336,7 +338,7 @@
   :commands (magit-status)
   :custom
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
-  :after (evil)
+  :after (evil evil-collection)
   :bind (("C-c C-g" . magit-status)
          :map magit-mode-map
          ("t" . evil-previous-visual-line)
@@ -495,7 +497,7 @@
                                   "/../../share/emacs/site-lisp")))
 
 (use-package merlin
-  :after (tuareg company)
+  :after (tuareg company evil-collection)
   :commands (merlin-mode)
   :init
   (add-hook 'tuareg-mode-hook 'merlin-mode t)
