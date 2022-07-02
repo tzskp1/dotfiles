@@ -4,19 +4,23 @@
 ;; silversearcher-ag
 ;; opam
 
+(defun event-apply-meta-control-modifier (ignore-prompt)
+  "\\Add the Meta-Control modifier to the following event.
+For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-%."
+  (vector (event-apply-modifier
+           (event-apply-modifier (read-event) 'control 26 "C-")
+           'meta 27 "M-")))
+
 ;; killing custom
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file) (load custom-file))
 
-;; (setq package-check-signature nil)
-;; (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 
 ;; コンパイル時にパッケージをインストールする.
 (eval-when-compile
   (package-initialize)
   (setq package-archives
         '(
-        ;; ("gnu"   . "https://raw.githubusercontent.com/d12frosted/elpa-mirror/master/gnu/")
           ("gnu" . "http://elpa.gnu.org/packages/")
           ("melpa" . "https://melpa.org/packages/")))
   (unless package-archive-contents (package-refresh-contents))
@@ -30,51 +34,76 @@
 
 (use-package jsonrpc :ensure t)
 
-(setq gc-cons-threshold 100000000)
-(setq initial-major-mode 'lisp-interaction-mode)
-(setq inhibit-startup-screen t)
-(setq-default tab-width 4)
-(setq-default indent-tabs-mode nil)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(line-number-mode t)
-(column-number-mode t)
-(setq frame-title-format
-      '("emacs@" system-name ":"
-        (:eval (or (buffer-file-name)
-                   default-directory))))
-(setq enable-recursive-minibuffers t)
-;;# 右から左に読む言語に対応させないことで描画高速化
-(setq-default bidi-display-reordering nil)
-;;# クリップボード
-(setq select-enable-primary t)
-;;# display EOF
-(setq-default indicate-empty-lines t)
-;;# Edit
-(show-paren-mode 1)
-(which-function-mode 1)
-(global-auto-revert-mode 1)
-;;# Scroll
-(setq scroll-conservatively 35
-      scroll-margin 0
-      scroll-step 1)
-(setq comint-scroll-show-maximum-output t) ;for exec in shell
-;;# fold always
-(setq truncate-lines nil)
-(setq truncate-partial-width-windows nil)
-(setq ring-bell-function 'ignore) ; No Beeps
-;; like "mkdir -p"
-(add-hook 'find-file-not-found-functions
-          '(lambda () (make-directory (file-name-directory buffer-file-name) t)))
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-;; 自動分割を抑制
-(setq split-height-threshold nil)
-(setq split-width-threshold nil)
-(setq display-line-numbers-type 'relative)
-(global-display-line-numbers-mode)
-(setq require-final-newline 'visit)
-(setq backup-directory-alist '(("" . "~/.emacs.d/backup")))
-(prefer-coding-system 'utf-8-unix)
+(use-package emacs
+  :custom
+  (backup-directory-alist '(("" . "~/bak")))
+  (split-height-threshold nil)
+  (split-width-threshold nil)
+  (display-line-numbers-type 'relative)
+  (require-final-newline 'visit)
+  (inhibit-startup-screen t)
+  (initial-major-mode 'lisp-interaction-mode)
+  (select-enable-primary t)
+  (comint-scroll-show-maximum-output t) ;for exec in shell
+  :init
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+  (defun crm-indicator (args)
+    (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+  ;; Vertico commands are hidden in normal buffers.
+  ;; (setq read-extended-command-predicate
+  ;;       #'command-completion-default-include-p)
+
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t)
+  (setq gc-cons-threshold 100000000)
+  (setq-default tab-width 4)
+  (setq-default indent-tabs-mode nil)
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
+  (line-number-mode t)
+  (column-number-mode t)
+  (setq frame-title-format
+        '("emacs@" system-name ":"
+          (:eval (or (buffer-file-name)
+                     default-directory))))
+  (setq enable-recursive-minibuffers t)
+  ;;# 右から左に読む言語に対応させないことで描画高速化
+  (setq-default bidi-display-reordering nil)
+  (setq-default indicate-empty-lines t)
+  ;;# Edit
+  (show-paren-mode 1)
+  (which-function-mode 1)
+  (global-auto-revert-mode 1)
+  ;;# Scroll
+  (setq scroll-conservatively 35
+        scroll-margin 0
+        scroll-step 1)
+  ;;# fold always
+  (setq truncate-lines nil)
+  (setq truncate-partial-width-windows nil)
+  (setq ring-bell-function 'ignore) ; No Beeps
+  ;; like "mkdir -p"
+  (add-hook 'find-file-not-found-functions
+            '(lambda () (make-directory (file-name-directory buffer-file-name) t)))
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+  ;; 自動分割を抑制
+  (global-display-line-numbers-mode)
+  (prefer-coding-system 'utf-8-unix)
+)
 
 (use-package diminish :ensure t)
 
@@ -121,11 +150,13 @@
 (bind-keys* :map global-map
             ("C-x h" . nil) ; delete help
             ("<C-tab>" . other-window)
-            ("<C-iso-lefttab>" . (lambda () (interactive) (other-window -1)))
-            :filter window-system ;; for tiling window manager
-            :filter (equal system-type 'gnu/linux)
-            ("C-x 3" . make-frame-command)
-            ("C-x 2" . make-frame-command)
+            ("<C-S-tab>" . (lambda () (interactive) (other-window -1)))
+            ;:filter window-system ;; for tiling window manager
+            ;:filter (equal system-type 'gnu/linux)
+            ;("C-x 3" . make-frame-command)
+            ;("C-x 2" . make-frame-command)
+            :map function-key-map
+            ("C-x @ M" . event-apply-meta-control-modifier)
             :map isearch-mode-map
             ("C-b" . isearch-delete-char)
             ("C-m" . ret)
@@ -138,7 +169,6 @@
 
 ;;# evil
 (use-package evil-leader :ensure t
-  ;; :after (evil helm)
   :init
   (setq evil-want-keybinding nil)
   (global-evil-leader-mode)
@@ -147,7 +177,7 @@
   (evil-leader/set-key
     "q" 'kill-this-buffer
     "w" 'save-buffer
-    "<SPC>" 'helm-mini)
+    "<SPC>" 'consult-buffer)
   (kill-buffer (messages-buffer)))
 
 (eval
@@ -212,49 +242,16 @@
           (skk-insert)
         (insert-char (string-to-char "h"))))))
 
-
-;;# helm
-(use-package helm :ensure t)
-(use-package helm-config
-  :bind (("M-x" . helm-M-x)
-         :map helm-moccur-map
-         ("C-h" . helm-next-line)
-         ("C-t" . helm-previous-line)
-         :map helm-map
-         ("C-d" . helm-buffer-run-kill-persistent)
-         ("C-n" . helm-execute-persistent-action)
-         ("C-t" . helm-previous-line)
-         ("C-h" . helm-next-line))
-  :custom
-  (helm-ff-auto-update-initial-value nil)
-  (helm-input-idle-delay 0.2)
-  (helm-candidate-number-limit 50)
-  (helm-boring-buffer-regexp-list
-   '("\\` " "\\`\\*helm" "\\`\\*Echo Area" "\\`\\*Minibuf" "\\`\\magit*." "\\`\\*magit*." "\\`\\*Ediff*."))
-  :config
-  (helm-mode 1)
-  (add-to-list 'helm-completing-read-handlers-alist '(find-file . nil)))
-
-(use-package helm-ag :ensure t
-  :after (helm)
-  :bind (("C-M-f" . helm-ag))
-  :init
-  (setq helm-ag-base-command "ag --nocolor --nogrou"))
-
 (use-package yasnippet :ensure t :diminish yas-minor-mode
   :config
   (yas-global-mode 1)
   (yas-load-directory "~/.emacs.d/snippets"))
 
 ;;# Code Jump
-(use-package helm-xref :ensure t
-  :config
-  (setq xref-show-xrefs-function 'helm-xref-show-xrefs))
-
 (use-package dumb-jump :ensure t
   :custom
   (dumb-jump-default-project (expand-file-name "~"))
-  (dumb-jump-selector 'helm)
+  (dumb-jump-selector 'ivy)
   (dumb-jump-force-searcher 'ag)
   :bind (:map dumb-jump-mode-map
          ("C-M-g" . dumb-jump-go)
@@ -310,6 +307,17 @@
     "h" 'dired-next-line
     "d" 'dired-up-directory
     "n" 'dired-find-alternate-file))
+
+(use-package ibuffer
+  :commands (ibuffer-mode)
+  :after (evil evil-collection)
+  :config
+  (evil-make-overriding-map ibuffer-mode-map 'normal)
+  (evil-define-key 'normal ibuffer-mode-map
+    "t" 'evil-previous-visual-line
+    "h" 'evil-next-visual-line
+    "d" 'evil-backward-char
+    "n" 'evil-forward-char))
 
 (use-package arc-mode
   :bind (:map archive-mode-map
@@ -375,7 +383,6 @@
   :commands lsp)
 
 (use-package lsp-ui :ensure t :commands lsp-ui-mode)
-(use-package helm-lsp :ensure t :commands helm-lsp-workspace-symbol)
 
 (use-package shell
   :config
@@ -387,15 +394,17 @@
   (editorconfig-mode 1))
 
 ;;# Theme
-(use-package doom-themes :ensure t
-  :custom
-  (doom-themes-enable-italic t)
-  (doom-themes-enable-bold t)
-  :custom-face
-  (doom-modeline-bar ((t (:background "#6272a4"))))
+(use-package modus-themes :ensure t
+  :init
+  ;; Add all your customizations prior to loading the themes
+  (setq modus-themes-italic-constructs t
+        modus-themes-bold-constructs nil
+        modus-themes-region '(bg-only no-extend))
   :config
-  (load-theme 'doom-dracula t)
-  (doom-themes-org-config))
+  ;; Load the theme of your choice:
+  ;; (load-theme 'modus-operandi)
+  (load-theme 'modus-vivendi)
+  )
 
 ;;# fonts
 (when (equal system-type 'darwin)
@@ -601,3 +610,176 @@
          ("\\.tsx\\'" . typescript-mode)))
 
 (use-package csharp-mode :ensure t)
+
+;; sync with x clipboard
+(unless window-system
+  (when (getenv "DISPLAY")
+    ;; Callback for when user cuts
+    (defun xsel-cut-function (text &optional push)
+      ;; Insert text to temp-buffer, and "send" content to xsel stdin
+      (with-temp-buffer
+        (insert text)
+        ;; I prefer using the "clipboard" selection (the one the
+        ;; typically is used by c-c/c-v) before the primary selection
+        ;; (that uses mouse-select/middle-button-click)
+        (call-process-region (point-min) (point-max) "xsel" nil 0 nil "--clipboard" "--input")))
+    ;; Call back for when user pastes
+    (defun xsel-paste-function()
+      ;; Find out what is current selection by xsel. If it is different
+      ;; from the top of the kill-ring (car kill-ring), then return
+      ;; it. Else, nil is returned, so whatever is in the top of the
+      ;; kill-ring will be used.
+      (let ((xsel-output (shell-command-to-string "xsel --clipboard --output")))
+        (unless (string= (car kill-ring) xsel-output)
+          xsel-output )))
+    ;; Attach callbacks to hooks
+    (setq interprogram-cut-function 'xsel-cut-function)
+    (setq interprogram-paste-function 'xsel-paste-function)
+    ;; Idea from
+    ;; http://shreevatsa.wordpress.com/2006/10/22/emacs-copypaste-and-x/
+    ;; http://www.mail-archive.com/help-gnu-emacs@gnu.org/msg03577.html
+    ))
+
+(use-package vertico :ensure t
+  :init
+  (vertico-mode)
+  :custom
+  (consult-preview-key nil)
+  :bind (:map vertico-map
+         ("C-t" . 'vertico-previous)
+         ("C-h" . 'vertico-next)))
+
+(use-package ivy :ensure t
+  :bind (:map ivy-mode-map
+         ("C-t" . 'ivy-previous-line)
+         ("C-h" . 'ivy-next-line)))
+
+(use-package consult :ensure t
+  ;; Replace bindings. Lazily loaded due by `use-package'.
+  :bind (;; C-c bindings (mode-specific-map)
+         ("C-c h" . consult-history)
+         ("C-c m" . consult-mode-command)
+         ("C-c k" . consult-kmacro)
+         ;; C-x bindings (ctl-x-map)
+         ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+         ;; ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+         ;; ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+         ;; ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+         ;; ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+         ;; ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+         ;; Custom M-# bindings for fast register access
+         ("M-#" . consult-register-load)
+         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+         ("C-M-#" . consult-register)
+         ;; Other custom bindings
+         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+         ("<help> a" . consult-apropos)            ;; orig. apropos-command
+         ;; M-g bindings (goto-map)
+         ("M-g e" . consult-compile-error)
+         ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+         ("M-g g" . consult-goto-line)             ;; orig. goto-line
+         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+         ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+         ("M-g m" . consult-mark)
+         ("M-g k" . consult-global-mark)
+         ("M-g i" . consult-imenu)
+         ("M-g I" . consult-imenu-multi)
+         ;; M-s bindings (search-map)
+         ("M-s d" . consult-find)
+         ("M-s D" . consult-locate)
+         ("M-s g" . consult-grep)
+         ("M-s G" . consult-git-grep)
+         ("M-s r" . consult-ripgrep)
+         ("M-s l" . consult-line)
+         ("M-s L" . consult-line-multi)
+         ("M-s m" . consult-multi-occur)
+         ("M-s k" . consult-keep-lines)
+         ("M-s u" . consult-focus-lines)
+         ;; Isearch integration
+         ("M-s e" . consult-isearch-history)
+         :map isearch-mode-map
+         ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+         ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+         ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+         ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+         ;; Minibuffer history
+         :map minibuffer-local-map
+         ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+         ("M-r" . consult-history))                ;; orig. previous-matching-history-element
+
+  ;; Enable automatic preview at point in the *Completions* buffer. This is
+  ;; relevant when you use the default completion UI.
+  :hook (completion-list-mode . consult-preview-at-point-mode)
+
+  ;; The :init configuration is always executed (Not lazy)
+  :init
+
+  ;; Optionally configure the register formatting. This improves the register
+  ;; preview for `consult-register', `consult-register-load',
+  ;; `consult-register-store' and the Emacs built-ins.
+  (setq register-preview-delay 0.5
+        register-preview-function #'consult-register-format)
+
+  ;; Optionally tweak the register preview window.
+  ;; This adds thin lines, sorting and hides the mode line of the window.
+  (advice-add #'register-preview :override #'consult-register-window)
+
+  ;; Use Consult to select xref locations with preview
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+
+  ;; Configure other variables and modes in the :config section,
+  ;; after lazily loading the package.
+  :config
+
+  ;; Optionally configure preview. The default value
+  ;; is 'any, such that any key triggers the preview.
+  ;; (setq consult-preview-key 'any)
+  ;; (setq consult-preview-key (kbd "M-."))
+  ;; (setq consult-preview-key (list (kbd "<S-down>") (kbd "<S-up>")))
+  ;; For some commands and buffer sources it is useful to configure the
+  ;; :preview-key on a per-command basis using the `consult-customize' macro.
+  (consult-customize
+   consult-theme
+   :preview-key '(:debounce 0.2 any)
+   consult-ripgrep consult-git-grep consult-grep
+   consult-bookmark consult-recent-file consult-xref
+   consult--source-bookmark consult--source-recent-file
+   consult--source-project-recent-file
+   :preview-key (kbd "M-."))
+
+  ;; Optionally configure the narrowing key.
+  ;; Both < and C-+ work reasonably well.
+  (setq consult-narrow-key "<") ;; (kbd "C-+")
+
+  ;; Optionally make narrowing help available in the minibuffer.
+  ;; You may want to use `embark-prefix-help-command' or which-key instead.
+  ;; (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help)
+
+  ;; By default `consult-project-function' uses `project-root' from project.el.
+  ;; Optionally configure a different project root function.
+  ;; There are multiple reasonable alternatives to chose from.
+  ;;;; 1. project.el (the default)
+  ;; (setq consult-project-function #'consult--default-project--function)
+  ;;;; 2. projectile.el (projectile-project-root)
+  ;; (autoload 'projectile-project-root "projectile")
+  ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
+  ;;;; 3. vc.el (vc-root-dir)
+  (setq consult-project-function (lambda (_) (vc-root-dir)))
+  ;;;; 4. locate-dominating-file
+  ;; (setq consult-project-function (lambda (_) (locate-dominating-file "." ".git")))
+)
+
+(use-package consult-ag :ensure t
+  :after (consult)
+  :bind (("C-M-f" . consult-ag)))
+
+;; Optionally use the `orderless' completion style.
+(use-package orderless :ensure t
+  :init
+  ;; Configure a custom style dispatcher (see the Consult wiki)
+  ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
+  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
