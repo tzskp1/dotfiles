@@ -36,15 +36,17 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
 
 (use-package emacs
   :custom
-  (backup-directory-alist '(("" . "~/bak")))
+  (backup-directory-alist '(("" . "~/.bak")))
   (split-height-threshold nil)
   (split-width-threshold nil)
   (display-line-numbers-type 'relative)
   (require-final-newline 'visit)
   (inhibit-startup-screen t)
   (initial-major-mode 'lisp-interaction-mode)
+  (global-auto-revert-mode t)
   (select-enable-primary t)
   (comint-scroll-show-maximum-output t) ;for exec in shell
+  (warning-suppress-types '((comp) comp))
   :init
   ;; Add prompt indicator to `completing-read-multiple'.
   ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
@@ -177,6 +179,7 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   (evil-leader/set-key
     "q" 'kill-this-buffer
     "w" 'save-buffer
+    "W" 'save-buffer
     "<SPC>" 'consult-buffer)
   (kill-buffer (messages-buffer)))
 
@@ -279,10 +282,6 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   (company-selection-wrap-around t)
   :init
   (global-company-mode))
-(use-package company-flx :ensure t
-  :after (company)
-  :init
-  (company-flx-mode +1))
 
 ;;# skk
 (use-package ddskk
@@ -367,6 +366,13 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   (ediff-window-setup-function 'ediff-setup-windows-plain)
   (ediff-split-window-function 'split-window-horizontally))
 
+(use-package gcmh
+  :ensure t
+  :demand t
+  :diminish ""
+  :config
+  (gcmh-mode 1))
+
 (use-package lsp-mode :ensure t
   :after (company)
   :bind
@@ -378,11 +384,30 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
   (setq lsp-keymap-prefix "C-l")
   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (fsharp-mode . lsp)
          (rust-mode . lsp)
-         (python-mode . lsp))
+         (python-mode . lsp-deferred))
   :commands lsp)
-
+(use-package dap-mode :ensure t)
 (use-package lsp-ui :ensure t :commands lsp-ui-mode)
+(use-package lsp-docker :ensure t
+  :after lsp-mode
+  :config
+  (defvar lsp-docker-client-packages
+    '(lsp-css lsp-clients lsp-bash lsp-go lsp-html lsp-typescript
+              lsp-terraform lsp-clangd))
+  (setq lsp-docker-client-configs
+        '((:server-id bash-ls :docker-server-id bashls-docker :server-command "bash-language-server start")
+          (:server-id clangd :docker-server-id clangd-docker :server-command "clangd")
+          (:server-id css-ls :docker-server-id cssls-docker :server-command "css-languageserver --stdio")
+          (:server-id dockerfile-ls :docker-server-id dockerfilels-docker :server-command "docker-langserver --stdio")
+          (:server-id gopls :docker-server-id gopls-docker :server-command "gopls")
+          (:server-id html-ls :docker-server-id htmls-docker :server-command "html-languageserver --stdio")
+          (:server-id ts-ls :docker-server-id tsls-docker :server-command "typescript-language-server --stdio")))
+  (lsp-docker-init-clients
+   :path-mappings '(("." . "~/projects"))
+   :client-packages lsp-docker-client-packages
+   :client-configs lsp-docker-client-configs))
 
 (use-package shell
   :config
@@ -402,8 +427,8 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
         modus-themes-region '(bg-only no-extend))
   :config
   ;; Load the theme of your choice:
-  ;; (load-theme 'modus-operandi)
-  (load-theme 'modus-vivendi)
+  (load-theme 'modus-operandi)
+  ;;(load-theme 'modus-vivendi)
   )
 
 ;;# fonts
@@ -495,16 +520,16 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
 ;; opam install merlin utop core
 ;; -- opam and utop setup --------------------------------
 ;; Setup environment variables using opam
-(when (executable-find "opam")
-  (dolist
-      (var (car (read-from-string
-                 (shell-command-to-string "opam config env --sexp"))))
-    (setenv (car var) (cadr var)))
+;(when (executable-find "opam")
+;  (dolist
+;      (var (car (read-from-string
+;                 (shell-command-to-string "opam config env --sexp"))))
+;    (setenv (car var) (cadr var)))
   ;; Update the emacs path
-  (setq exec-path (split-string (getenv "PATH") path-separator))
+;  (setq exec-path (split-string (getenv "PATH") path-separator))
   ;; Update the emacs load path
-  (add-to-list 'load-path (concat (getenv "OCAML_TOPLEVEL_PATH")
-                                  "/../../share/emacs/site-lisp")))
+;  (add-to-list 'load-path (concat (getenv "OCAML_TOPLEVEL_PATH")
+;                                  "/../../share/emacs/site-lisp")))
 
 (use-package merlin
   :after (tuareg company evil-collection)
@@ -527,18 +552,33 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   (setq inferior-fsharp-program (concat (getenv "DOTNET_ROOT") "/dotnet fsi")))
 
 ;;# python
-(use-package pipenv :ensure t
+(use-package blacken :ensure t)
+(use-package py-isort :ensure t
+  :custom
+  (py-isort-options '("--multi-line=3"
+                      "--line-length=88"
+                      "--trailing-comma"
+                      "--use-parentheses"
+                      "--ensure-newline-before-comments"
+                      "--force-grid-wrap=0")))
+(defun format-py ()
+  (when (eq major-mode 'python-mode)
+    (blacken-buffer)
+    (py-isort-before-save)))
+(use-package python-mode :ensure t
   :mode (("\\.py\\`" . python-mode))
   :bind
   (:map python-mode-map
         ("C-c C-b" . python-shell-send-buffer))
-  :custom
-  (python-environment-virtualenv (list "virtualenv"))
   :hook
-  (python-mode . (lambda ()
-                   (pipenv-mode)
-                   )))
+  (before-save . format-py))
+(use-package cython-mode :ensure t)
 (use-package ein :ensure t)
+
+;;# R
+(use-package ess
+  :ensure t
+  :init (require 'ess-site))
 
 ;;# Coq
 ;; Open .v files with Proof General's Coq mode
@@ -592,11 +632,6 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
 
 (use-package reason-mode :ensure t)
 (use-package lean-mode :ensure t)
-
-;;# Michelson
-(load "~/.emacs.d/emacs_michelson-mode.el" nil t)
-(setq michelson-client-command "~/tezos/tezos-client -A localhost -P 8732")
-(setq michelson-alphanet nil)
 
 ;;# TypeScript
 (use-package tide
@@ -783,3 +818,4 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
+;; (put 'upcase-region 'disabled nil)
