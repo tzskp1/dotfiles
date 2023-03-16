@@ -29,3 +29,5 @@ export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 export DOTNET_ROOT=$HOME/dotnet
 export PATH=$PATH:$HOME/dotnet
+export PATH=$PATH:$HOME/.cargo/bin
+export PATH=$PATH:$HOME/.dotnet/tools

@@ -1,16 +1,16 @@
 Config {
-    font = "xft:SourceHanCodeJP:size=10:antialias=true"
+    font = "SourceHanCodeJP Normal Demi-Light 13"
    , bgColor = "#2E3440"
    , fgColor = "#8FBCBB"
-   , position = TopSize C 100 20
+   , position = TopH 30
    , border = NoBorder
    , borderColor = "#26a69a"
 
    -- layout
    , sepChar =  "%"   -- delineator between plugin names and straight text
    , alignSep = "}{"  -- separator between left-right alignment
-   -- , template = " %StdinReader% }{ %multicpu%%dynnetwork%%memory%%battery%<fc=#ece391>%RJTT%%date%</fc> " -- note PC
-   , template = " %StdinReader% }{ %multicpu% %coretemp% %dynnetwork% %memory% <fc=#ece391>%RJTT% %date%</fc> "
+   -- , template = " %StdinReader% }{ %multicpu%%dynnetwork%%memory%%battery%<fc=#ece391>%date%</fc> " -- note PC
+   , template = " %StdinReader% }{ %multicpu% %coretemp% %dynnetwork% %memory% <fc=#ece391>%date%</fc> "
    -- , template = "%battery% | %multicpu% | %coretemp% | %memory% | %dynnetwork% }{ %RJTT% | %date% || %kbd% "
 
    -- general behavior
@@ -35,11 +35,10 @@ Config {
    --   The --template option controls how the plugin is displayed. Text
    --   color can be set by enclosing in <fc></fc> tags. For more details
    --   see http://projects.haskell.org/xmobar/#system-monitor-plugins.
-   , commands = 
+   , commands =
      [
-       -- weather monitor
-        -- [ Run Weather "RJTT" [ "--template", "<skyCondition> <fc=#4682B4><tempC></fc>°C <fc=#4682B4><rh></fc>% <fc=#4682B4><pressure></fc>hPa"
-        --                      ] 36000
+        -- weather monitor
+        -- Run Weather "RJTT" [ "--template", "<skyCondition> | <fc=#4682B4><tempC></fc>°C | <fc=#4682B4><rh></fc>% | <fc=#4682B4><pressure></fc>hPa"] 36000
 
 
         -- cpu core temperature monitor
