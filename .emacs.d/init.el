@@ -170,18 +170,27 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
             ("C-t" . previous-line-or-history-element))
 
 ;;# evil
-(use-package evil-leader :ensure t
-  :init
-  (setq evil-want-keybinding nil)
-  (global-evil-leader-mode)
+(use-package general
+  :ensure t
+  :after evil
+  :custom
+  (evil-search-module 'evil-search)
   :config
-  (evil-leader/set-leader "<SPC>")
-  (evil-leader/set-key
+  (general-create-definer tyrant-def
+    :states '(normal insert motion emacs)
+    :keymaps 'override
+    :prefix "SPC"
+    :non-normal-prefix "M-SPC")
+  (tyrant-def "" nil)
+
+  (general-def universal-argument-map
+    "SPC u" 'universal-argument-more)
+
+  (tyrant-def
     "q" 'kill-this-buffer
     "w" 'save-buffer
     "W" 'save-buffer
-    "<SPC>" 'consult-buffer)
-  (kill-buffer (messages-buffer)))
+    "SPC" 'consult-buffer))
 
 (eval
 `(use-package evil :ensure t
@@ -781,7 +790,7 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
    consult-bookmark consult-recent-file consult-xref
    consult--source-bookmark consult--source-recent-file
    consult--source-project-recent-file
-   :preview-key (kbd "M-."))
+   :preview-key "M-.")
 
   ;; Optionally configure the narrowing key.
   ;; Both < and C-+ work reasonably well.
