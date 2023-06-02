@@ -657,32 +657,51 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
 
 ;; sync with x clipboard
 (unless window-system
-  (when (getenv "DISPLAY")
-    ;; Callback for when user cuts
-    (defun xsel-cut-function (text &optional push)
-      ;; Insert text to temp-buffer, and "send" content to xsel stdin
-      (with-temp-buffer
-        (insert text)
-        ;; I prefer using the "clipboard" selection (the one the
-        ;; typically is used by c-c/c-v) before the primary selection
-        ;; (that uses mouse-select/middle-button-click)
-        (call-process-region (point-min) (point-max) "xsel" nil 0 nil "--clipboard" "--input")))
-    ;; Call back for when user pastes
-    (defun xsel-paste-function()
-      ;; Find out what is current selection by xsel. If it is different
-      ;; from the top of the kill-ring (car kill-ring), then return
-      ;; it. Else, nil is returned, so whatever is in the top of the
-      ;; kill-ring will be used.
-      (let ((xsel-output (shell-command-to-string "xsel --clipboard --output")))
-        (unless (string= (car kill-ring) xsel-output)
-          xsel-output )))
-    ;; Attach callbacks to hooks
-    (setq interprogram-cut-function 'xsel-cut-function)
-    (setq interprogram-paste-function 'xsel-paste-function)
-    ;; Idea from
-    ;; http://shreevatsa.wordpress.com/2006/10/22/emacs-copypaste-and-x/
-    ;; http://www.mail-archive.com/help-gnu-emacs@gnu.org/msg03577.html
-    ))
+  (cond
+   ((getenv "WAYLAND_DISPLAY")
+    (progn
+      (setq wl-copy-process nil)
+      (defun wl-copy (text)
+        (setq wl-copy-process (make-process :name "wl-copy"
+                                            :buffer nil
+                                            :command '("wl-copy" "-f" "-n")
+                                            :connection-type 'pipe))
+        (process-send-string wl-copy-process text)
+        (process-send-eof wl-copy-process))
+      (defun wl-paste ()
+        (if (and wl-copy-process (process-live-p wl-copy-process))
+            nil ; should return nil if we're the current paste owner
+          (shell-command-to-string "wl-paste -n | tr -d \r")))
+      (setq interprogram-cut-function 'wl-copy)
+      (setq interprogram-paste-function 'wl-paste)))
+   ((getenv "DISPLAY")
+    (progn
+      ;; Callback for when user cuts
+      (defun xsel-cut-function (text &optional push)
+        ;; Insert text to temp-buffer, and "send" content to xsel stdin
+        (with-temp-buffer
+          (insert text)
+          ;; I prefer using the "clipboard" selection (the one the
+          ;; typically is used by c-c/c-v) before the primary selection
+          ;; (that uses mouse-select/middle-button-click)
+          (call-process-region (point-min) (point-max) "xsel" nil 0 nil "--clipboard" "--input")))
+      ;; Call back for when user pastes
+      (defun xsel-paste-function()
+        ;; Find out what is current selection by xsel. If it is different
+        ;; from the top of the kill-ring (car kill-ring), then return
+        ;; it. Else, nil is returned, so whatever is in the top of the
+        ;; kill-ring will be used.
+        (let ((xsel-output (shell-command-to-string "xsel --clipboard --output")))
+          (unless (string= (car kill-ring) xsel-output)
+            xsel-output )))
+      ;; Attach callbacks to hooks
+      (setq interprogram-cut-function 'xsel-cut-function)
+      (setq interprogram-paste-function 'xsel-paste-function)
+      ;; Idea from
+      ;; http://shreevatsa.wordpress.com/2006/10/22/emacs-copypaste-and-x/
+      ;; http://www.mail-archive.com/help-gnu-emacs@gnu.org/msg03577.html
+      ))
+   ))
 
 (use-package vertico :ensure t
   :init
