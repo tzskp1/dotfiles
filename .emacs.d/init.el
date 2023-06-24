@@ -5,7 +5,6 @@
 
 ;; killing custom
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-;; (when (file-exists-p custom-file) (load custom-file))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -85,8 +84,11 @@
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
   ;; 自動分割を抑制
   (global-display-line-numbers-mode)
-  (prefer-coding-system 'utf-8-unix)
-  (ffap-bindings))
+  (prefer-coding-system 'utf-8-unix))
+
+(use-package ffap
+  :bind (:map text-mode-map
+         ([remap find-file] . find-file-at-point)))
 
 (use-package diminish :ensure t)
 
@@ -538,10 +540,6 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
                           (mapconcat 'identity `("cd" ,default-directory "&&" "hatch" "run" "pylsp" "--tcp" "--port" "$0") " ")))
                      (add-to-list 'eglot-server-programs
                                   `(python-mode . ("bash" "-c" ,command :autoport))))
-                   ;; (let ((command
-                   ;;        (mapconcat 'identity `("cd" ,default-directory "&&" "hatch" "run" "pylsp") " ")))
-                   ;;   (add-to-list 'eglot-server-programs
-                   ;;                `(python-mode . ("bash" "-c" ,command))))
                    (eglot-ensure))))
 (use-package cython-mode :ensure t)
 
