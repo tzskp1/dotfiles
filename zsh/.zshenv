@@ -31,3 +31,4 @@ export DOTNET_ROOT=$HOME/dotnet
 export PATH=$PATH:$HOME/dotnet
 export PATH=$PATH:$HOME/.cargo/bin
 export PATH=$PATH:$HOME/.dotnet/tools
+export XDG_CURRENT_DESKTOP=GNOME

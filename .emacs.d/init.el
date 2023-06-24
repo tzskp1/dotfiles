@@ -1,35 +1,18 @@
 ;; -*- lexical-binding: t -*-
 
-;; package requirement
+;; package requirements
 ;; silversearcher-ag
-;; opam
-
-(defun event-apply-meta-control-modifier (ignore-prompt)
-  "\\Add the Meta-Control modifier to the following event.
-For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-%."
-  (vector (event-apply-modifier
-           (event-apply-modifier (read-event) 'control 26 "C-")
-           'meta 27 "M-")))
 
 ;; killing custom
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(when (file-exists-p custom-file) (load custom-file))
+;; (when (file-exists-p custom-file) (load custom-file))
 
-
-;; コンパイル時にパッケージをインストールする.
-(eval-when-compile
-  (package-initialize)
-  (setq package-archives
-        '(
-          ("gnu" . "http://elpa.gnu.org/packages/")
-          ("melpa" . "https://melpa.org/packages/")))
-  (unless package-archive-contents (package-refresh-contents))
-  (when (not (package-installed-p 'use-package))
-    (package-install 'use-package))
-  (package-install-selected-packages))
-
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
-
+(unless package-archive-contents (package-refresh-contents))
+(when (not (package-installed-p 'use-package))
+  (package-install 'use-package))
 (require 'use-package)
 
 (use-package jsonrpc :ensure t)
@@ -37,6 +20,7 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
 (use-package emacs
   :custom
   (backup-directory-alist '(("" . "~/.bak")))
+  (auto-save-file-name-transforms '((".*" "~/.bak/" t)))
   (split-height-threshold nil)
   (split-width-threshold nil)
   (display-line-numbers-type 'relative)
@@ -50,6 +34,7 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   :init
   ;; Add prompt indicator to `completing-read-multiple'.
   ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+  (defvar crm-separator)
   (defun crm-indicator (args)
     (cons (format "[CRM%s] %s"
                   (replace-regexp-in-string
@@ -58,19 +43,16 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
                   (car args))
           (cdr args)))
   (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
-
   ;; Do not allow the cursor in the minibuffer prompt
   (setq minibuffer-prompt-properties
         '(read-only t cursor-intangible t face minibuffer-prompt))
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
-
-  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
-  ;; Vertico commands are hidden in normal buffers.
-  ;; (setq read-extended-command-predicate
-  ;;       #'command-completion-default-include-p)
-
-  ;; Enable recursive minibuffers
   (setq enable-recursive-minibuffers t)
+  ;; TAB cycle if there are only few candidates
+  (setq completion-cycle-threshold 3)
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (setq tab-always-indent 'complete)
   (setq gc-cons-threshold 100000000)
   (setq-default tab-width 4)
   (setq-default indent-tabs-mode nil)
@@ -82,7 +64,6 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
         '("emacs@" system-name ":"
           (:eval (or (buffer-file-name)
                      default-directory))))
-  (setq enable-recursive-minibuffers t)
   ;;# 右から左に読む言語に対応させないことで描画高速化
   (setq-default bidi-display-reordering nil)
   (setq-default indicate-empty-lines t)
@@ -100,19 +81,18 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   (setq ring-bell-function 'ignore) ; No Beeps
   ;; like "mkdir -p"
   (add-hook 'find-file-not-found-functions
-            '(lambda () (make-directory (file-name-directory buffer-file-name) t)))
+            #'(lambda () (make-directory (file-name-directory buffer-file-name) t)))
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
   ;; 自動分割を抑制
   (global-display-line-numbers-mode)
   (prefer-coding-system 'utf-8-unix)
-)
+  (ffap-bindings))
 
 (use-package diminish :ensure t)
 
 (use-package recentf
   :init
-  (setq recentf-auto-cleanup 'never)  ;; 存在しないファイルは消さない
-  (setq recentf-auto-save-timer (run-with-idle-timer 60 t 'recentf-save-list))
+  ;; (setq recentf-auto-save-timer (run-with-idle-timer 60 t 'recentf-save-list))
   (recentf-mode 1)
   :config
   ;; recentf の メッセージをエコーエリア(ミニバッファ)に表示しない
@@ -124,13 +104,14 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   (advice-add 'recentf-cleanup   :around 'recentf-save-list-inhibit-message:around)
   (advice-add 'recentf-save-list :around 'recentf-save-list-inhibit-message:around)
   :custom
+  (recentf-auto-cleanup 'never)  ;; 存在しないファイルは消さない
   (recentf-max-saved-items 2000)
   (recentf-exclude '("/recentf" "COMMIT_EDITMSG" "/.?TAGS" "^/sudo:" "/\\.emacs\\.d/games/*-scores" "/\\.emacs\\.d/elpa"))
   (recentf-save-file (expand-file-name "~/.bak/emacs/recentf")))
 
 (use-package recentf-ext :ensure t)
 
-(use-package savehist :ensure t
+(use-package savehist
   :init
   (savehist-mode 1)
   :custom
@@ -142,13 +123,21 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   :custom
   (undohist-ignored-files '("^/tmp" "COMMIT_EDITMSG" "EDITMSG" "/elpa"))
   (undohist-directory (expand-file-name "~/.bak/emacs/undohist")))
-(use-package undo-tree :diminish "")
 
 (use-package tramp
+  :custom
+  (auto-revert-remote-files 't)
   :config
   (setq tramp-auto-save-directory (expand-file-name "~/.bak/emacs/tramp")))
 
 ;;# key binding
+(defun event-apply-meta-control-modifier (_)
+  "\\Add the Meta-Control modifier to the following event.
+For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-%."
+  (vector (event-apply-modifier
+           (event-apply-modifier (read-event) 'control 26 "C-")
+           'meta 27 "M-")))
+
 (bind-keys* :map global-map
             ("C-x h" . nil) ; delete help
             ("<C-tab>" . other-window)
@@ -161,7 +150,6 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
             ("C-x @ M" . event-apply-meta-control-modifier)
             :map isearch-mode-map
             ("C-b" . isearch-delete-char)
-            ("C-m" . ret)
             :map minibuffer-local-map
             ("C-d" . left-char)
             ("C-n" . right-char)
@@ -170,64 +158,65 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
             ("C-t" . previous-line-or-history-element))
 
 ;;# evil
-(use-package general
-  :ensure t
-  :after evil
-  :custom
-  (evil-search-module 'evil-search)
-  :config
-  (general-create-definer tyrant-def
-    :states '(normal insert motion emacs)
-    :keymaps 'override
-    :prefix "SPC"
-    :non-normal-prefix "M-SPC")
-  (tyrant-def "" nil)
-
-  (general-def universal-argument-map
-    "SPC u" 'universal-argument-more)
-
-  (tyrant-def
-    "q" 'kill-this-buffer
-    "w" 'save-buffer
-    "W" 'save-buffer
-    "SPC" 'consult-buffer))
-
-(eval
-`(use-package evil :ensure t
-  :init
-  (evil-mode 1)
-  :custom
-  (evil-ex-substitute-case 'smart)
-  (evil-want-abbrev-expand-on-insert-exit 'nil)
-  (evil-search-module 'evil-search)
-  (evil-shift-width 2)
+(defvar last-h-inserted-time (current-time) "The last inserted time")
+(defun hh-normal ()
+    (interactive)
+    ;; (message "%f" (abs (float-time (time-subtract last-h-inserted-time (current-time) ))))
+    (if (< (abs (float-time (time-subtract (current-time) last-h-inserted-time))) 0.20)
+          (progn
+            (if (char-equal (string-to-char "h") (char-before)) (delete-char -1) nil)
+            (evil-normal-state))
+    (progn
+      (setq last-h-inserted-time (current-time))
+      (if (and (boundp 'skk-j-mode) skk-j-mode)
+          (skk-insert)
+        (insert-char (string-to-char "h"))))))
+(use-package evil :ensure t
+  :after (consult)
   :bind (:map evil-ex-search-keymap
          ("C-b" . backward-delete-char-untabify)
+         :map evil-normal-state-map
+         ("<leader>q" . kill-this-buffer)
+         ("<leader>w" . save-buffer)
+         ("<leader>W" . save-buffer)
+         ("<leader>SPC" . consult-buffer)
          :map evil-insert-state-map
          ("h" . hh-normal)
          ("C-d" . backward-char)
          ("C-n" . forward-char)
          ("C-t" . previous-line)
-         ("C-b" . backward-delete-char-untabify)
          ("C-h" . next-line)
-         ,@(mapcan (lambda (x)
-                     (list ':map x
-                           '("h" . evil-next-visual-line)
-                           '("t" . evil-previous-visual-line)
-                           '("n" . evil-forward-char)
-                           '("d" . evil-backward-char)
-                           '("k" . evil-delete)
-                           '("K" . evil-delete-line)
-                           '("M" . evil-ex-search-previous)
-                           '("N" . evil-ex-search-previous)
-                           '("m" . evil-ex-search-next)
-                           '("C-w" . comment-or-uncomment-region)))
-                   '(evil-visual-state-map evil-motion-state-map evil-normal-state-map)))
+         ("C-b" . backward-delete-char-untabify))
+  :init
+  (setq evil-search-module 'evil-search
+        evil-ex-substitute-case 'smart
+        evil-want-keybinding nil
+        evil-want-abbrev-expand-on-insert-exit nil
+        evil-shift-width 2)
+  (evil-mode 1)
   :config
+  (let* ((common-evil-keys
+          `(("h" . evil-next-visual-line)
+            ("t" . evil-previous-visual-line)
+            ("n" . evil-forward-char)
+            ("d" . evil-backward-char)
+            ("k" . evil-delete)
+            ("K" . evil-delete-line)
+            ("M" . evil-ex-search-previous)
+            ("N" . evil-ex-search-previous)
+            ("m" . evil-ex-search-next)
+            (,(kbd "C-w") . comment-or-uncomment-region)))
+         (evil-modes '(visual motion normal)))
+    (mapc (lambda (mode)
+            (mapc (lambda (key)
+                    (evil-define-key mode 'global (car key) (cdr key)))
+                  common-evil-keys))
+          evil-modes))
+  (evil-set-leader 'normal (kbd "SPC"))
   (evil-set-initial-state 'tabulated-list-mode 'emacs)
   (evil-define-key 'emacs tabulated-list-mode-map
     "t" 'tablist-previous-line
-    "h" 'tablist-next-line)))
+    "h" 'tablist-next-line))
 
 (use-package evil-numbers :ensure t
   :after (evil)
@@ -235,24 +224,11 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   (bind-key "+" 'evil-numbers/inc-at-pt evil-normal-state-map)
   (bind-key "-" 'evil-numbers/dec-at-pt evil-normal-state-map))
 
-(use-package evil-collection
-  :ensure t
+(use-package evil-collection :ensure t
   :after (evil)
-  :init (evil-collection-init))
-
-(defvar last-h-inserted-time (current-time) "The last inserted time")
-(defun hh-normal ()
-    (interactive)
-    ;; (message "%f" (abs (float-time (time-subtract last-h-inserted-time (current-time) ))))
-    (if (< (abs (float-time (time-subtract (current-time) last-h-inserted-time))) 0.20)
-          (progn
-            (if (char-equal (string-to-char "h") (char-before)) (delete-backward-char 1) nil)
-            (evil-normal-state))
-    (progn
-      (setq last-h-inserted-time (current-time))
-      (if (and (boundp 'skk-j-mode) skk-j-mode)
-          (skk-insert)
-        (insert-char (string-to-char "h"))))))
+  :init
+  (setq evil-want-keybinding nil)
+  (evil-collection-init))
 
 (use-package yasnippet :ensure t :diminish yas-minor-mode
   :config
@@ -263,37 +239,66 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
 (use-package dumb-jump :ensure t
   :custom
   (dumb-jump-default-project (expand-file-name "~"))
-  (dumb-jump-selector 'ivy)
   (dumb-jump-force-searcher 'ag)
   :bind (:map dumb-jump-mode-map
-         ("C-M-g" . dumb-jump-go)
+         ("C-M-g" . xref-find-definitions)
          :map emacs-lisp-mode-map
          ("C-M-g" . xref-find-definitions)))
 
-(use-package smart-jump
-  :ensure t
-  :custom
-  (smart-jump-jump-key "C-M-g")
-  :config
-  (smart-jump-setup-default-registers))
-
 ;;# completion
-(use-package company :ensure t :diminish ""
-  :bind (:map company-active-map
-              ("C-h" . company-select-next)
-              ("C-t" . company-select-previous)
-         :map company-search-map
-              ("C-h" . company-select-next)
-              ("C-t" . company-select-previous))
-  :custom
-  (company-idle-delay 0)
-  (company-minimum-prefix-length 4)
-  (company-selection-wrap-around t)
+(use-package vertico :ensure t
   :init
-  (global-company-mode))
+  (require 'consult)
+  (vertico-mode)
+  :custom
+  (consult-preview-key nil)
+  :bind (:map vertico-map
+         ("C-t" . 'vertico-previous)
+         ("C-h" . 'vertico-next)))
+
+(use-package consult :ensure t
+  ;; Enable automatic preview at point in the *Completions* buffer. This is
+  ;; relevant when you use the default completion UI.
+  :hook (completion-list-mode . consult-preview-at-point-mode)
+  :custom
+  (register-preview-delay 0.5)
+  (register-preview-function #'consult-register-format)
+  (xref-show-xrefs-function #'consult-xref)
+  (xref-show-definitions-function #'consult-xref)
+  (consult-project-function #'(lambda (_) (vc-root-dir)))
+  :init
+  ;; Optionally tweak the register preview window.
+  ;; This adds thin lines, sorting and hides the mode line of the window.
+  (advice-add #'register-preview :override #'consult-register-window))
+
+(use-package consult-ag :ensure t
+  :after (consult)
+  :bind (("C-M-f" . consult-ag)))
+
+(use-package orderless :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles partial-completion))))
+  :init
+  (setq completion-category-defaults nil))
+
+(use-package corfu :ensure t
+  :custom
+  (corfu-auto t)
+  (corfu-auto-prefix 1)
+  (corfu-auto-delay 0)
+  (corfu-cycle t)
+  :init
+  (global-corfu-mode))
+(use-package corfu-terminal :ensure t
+  :after (corfu)
+  :init
+  (unless (display-graphic-p)
+    (corfu-terminal-mode 1)))
 
 ;;# skk
 (use-package ddskk
+  :ensure t
   :bind (("C-x C-j" . skk-mode))
   :after (evil)
   :init
@@ -306,11 +311,13 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   (setq skk-user-directory "~/skk"))
 
 (use-package dired
-  :commands (dired-mode)
   :after (evil evil-collection)
+  :commands (dired-mode)
+  :bind (:map dired-mode-map ("SPC" . nil))
   :config
   (evil-make-overriding-map dired-mode-map 'normal)
   (evil-define-key 'normal dired-mode-map
+    (kbd "SPC") nil
     "t" 'dired-previous-line
     "h" 'dired-next-line
     "d" 'dired-up-directory
@@ -319,9 +326,11 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
 (use-package ibuffer
   :commands (ibuffer-mode)
   :after (evil evil-collection)
+  :bind (:map ibuffer-mode-map ("SPC" . nil))
   :config
   (evil-make-overriding-map ibuffer-mode-map 'normal)
   (evil-define-key 'normal ibuffer-mode-map
+    (kbd "SPC") nil
     "t" 'evil-previous-visual-line
     "h" 'evil-next-visual-line
     "d" 'evil-backward-char
@@ -382,41 +391,12 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   :config
   (gcmh-mode 1))
 
-(use-package lsp-mode :ensure t
-  :after (company)
+(use-package eglot
+  :ensure t
   :bind
-  (:map lsp-mode-map
-        ("C-h" . company-select-next)
-        ("C-t" . company-select-previous)
-        ("C-M-g" . xref-find-definitions))
-  :init
-  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-  (setq lsp-keymap-prefix "C-l")
-  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-         (fsharp-mode . lsp)
-         (rust-mode . lsp)
-         (python-mode . lsp-deferred))
-  :commands lsp)
-(use-package dap-mode :ensure t)
-(use-package lsp-ui :ensure t :commands lsp-ui-mode)
-(use-package lsp-docker :ensure t
-  :after lsp-mode
-  :config
-  (defvar lsp-docker-client-packages
-    '(lsp-css lsp-clients lsp-bash lsp-go lsp-html lsp-typescript
-              lsp-terraform lsp-clangd))
-  (setq lsp-docker-client-configs
-        '((:server-id bash-ls :docker-server-id bashls-docker :server-command "bash-language-server start")
-          (:server-id clangd :docker-server-id clangd-docker :server-command "clangd")
-          (:server-id css-ls :docker-server-id cssls-docker :server-command "css-languageserver --stdio")
-          (:server-id dockerfile-ls :docker-server-id dockerfilels-docker :server-command "docker-langserver --stdio")
-          (:server-id gopls :docker-server-id gopls-docker :server-command "gopls")
-          (:server-id html-ls :docker-server-id htmls-docker :server-command "html-languageserver --stdio")
-          (:server-id ts-ls :docker-server-id tsls-docker :server-command "typescript-language-server --stdio")))
-  (lsp-docker-init-clients
-   :path-mappings '(("." . "~/projects"))
-   :client-packages lsp-docker-client-packages
-   :client-configs lsp-docker-client-configs))
+  (:map eglot-mode-map
+        ("C-c h" . eldoc)
+        ("C-M-g" . xref-find-definitions)))
 
 (use-package shell
   :config
@@ -429,16 +409,14 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
 
 ;;# Theme
 (use-package modus-themes :ensure t
-  :init
-  ;; Add all your customizations prior to loading the themes
-  (setq modus-themes-italic-constructs t
-        modus-themes-bold-constructs nil
-        modus-themes-region '(bg-only no-extend))
+  :custom
+  (modus-themes-italic-constructs t)
+  (modus-themes-bold-constructs nil)
+  (modus-themes-region '(bg-only no-extend))
   :config
   ;; Load the theme of your choice:
-  (load-theme 'modus-operandi)
-  ;;(load-theme 'modus-vivendi)
-  )
+  ;; (load-theme 'modus-vivendi t)
+  (load-theme 'modus-operandi t))
 
 ;;# fonts
 (when (equal system-type 'darwin)
@@ -479,7 +457,7 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
       (while (re-search-forward "^\*\s*\\(.+\\)" (point-max) t)
         (push (cons (match-string 1) (match-beginning 1)) index))
       (nreverse index)))
-  (add-hook 'markdown-mode '(lambda ()
+  (add-hook 'markdown-mode #'(lambda ()
                               (setq imenu-create-index-function 'outline-imenu-create-index)
                               (auto-fill-mode))))
 
@@ -497,6 +475,7 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   (c-set-offset 'cpp-macro 0 nil))
 
 (use-package yatex
+  :ensure t
   :commands (yatex-mode)
   :mode ("\\.tex\\'" . yatex-mode)
   :hook ((skk-mode-hook . (lambda ()
@@ -510,11 +489,11 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
                               (define-key reftex-mode-map (concat YaTeX-prefix ">") 'YaTeX-comment-region)
                               (define-key reftex-mode-map (concat YaTeX-prefix "<") 'YaTeX-uncomment-region))))
   :init
-  (setq YaTeX-inhibit-prefix-letter t)
   (setq YaTeX-kanji-code 4))
 
 ;;# OCaml
 (use-package tuareg
+  :ensure t
   :commands (tuareg-mode)
   :mode (("\\.sml\\'" . tuareg-mode)
          ("\\.smi\\'" . tuareg-mode)
@@ -524,34 +503,6 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   :config
   ;; work around
   (defun tuareg-abbrev-hook () nil))
-
-;; opam init
-;; opam install merlin utop core
-;; -- opam and utop setup --------------------------------
-;; Setup environment variables using opam
-;(when (executable-find "opam")
-;  (dolist
-;      (var (car (read-from-string
-;                 (shell-command-to-string "opam config env --sexp"))))
-;    (setenv (car var) (cadr var)))
-  ;; Update the emacs path
-;  (setq exec-path (split-string (getenv "PATH") path-separator))
-  ;; Update the emacs load path
-;  (add-to-list 'load-path (concat (getenv "OCAML_TOPLEVEL_PATH")
-;                                  "/../../share/emacs/site-lisp")))
-
-(use-package merlin
-  :after (tuareg company evil-collection)
-  :commands (merlin-mode)
-  :init
-  (add-hook 'tuareg-mode-hook 'merlin-mode t)
-  :config
-  (evil-make-overriding-map merlin-mode-map 'normal)
-  (add-to-list 'company-backends 'merlin-company-backend)
-  (setq merlin-command 'opam)
-  :bind
-  (:map merlin-mode-map
-        ("C-M-g" . merlin-locate)))
 
 (use-package haskell-mode :ensure t)
 
@@ -580,30 +531,24 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   (:map python-mode-map
         ("C-c C-b" . python-shell-send-buffer))
   :hook
-  (before-save . format-py))
+  (before-save . format-py)
+  (python-mode . (lambda ()
+                   (require 'eglot)
+                   (let ((command
+                          (mapconcat 'identity `("cd" ,default-directory "&&" "hatch" "run" "pylsp" "--tcp" "--port" "$0") " ")))
+                     (add-to-list 'eglot-server-programs
+                                  `(python-mode . ("bash" "-c" ,command :autoport))))
+                   ;; (let ((command
+                   ;;        (mapconcat 'identity `("cd" ,default-directory "&&" "hatch" "run" "pylsp") " ")))
+                   ;;   (add-to-list 'eglot-server-programs
+                   ;;                `(python-mode . ("bash" "-c" ,command))))
+                   (eglot-ensure))))
 (use-package cython-mode :ensure t)
-(use-package ein :ensure t)
 
 ;;# R
 (use-package ess
   :ensure t
   :init (require 'ess-site))
-
-;;# Coq
-;; Open .v files with Proof General's Coq mode
-(use-package proof-general :ensure t
-  :hook
-  (coq-mode . (lambda ()
-  (font-lock-add-keywords nil
-      '(("^[^\n]\\{80\\}\\(.*\\)$" 1 font-lock-warning-face t)))
-                (dumb-jump-mode -1)
-                (company-coq-mode 1)))
-  :mode (("\\.v\\`" . coq-mode)))
-  ;; :custom
-  ;; (coq-prog-name "/Users/tk/coq/bin/coqtop"))
-(use-package company-coq :ensure t
-:bind (:map company-coq-map
-        ("C-M-g" . company-coq-jump-to-definition)))
 
 ;;# Docker
 (use-package docker :ensure t
@@ -614,38 +559,17 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   (use-package dockerfile-mode :ensure t)
   :bind ("C-c C-d" . docker))
 
-(require 'json)
-(setq dropbox-path
- (cdadar (json-read-file "~/.dropbox/info.json")))
-(use-package org :ensure t
-  :init
-  (require 'org-agenda)
-  :custom
-  (org-directory (concat (file-name-as-directory dropbox-path) "org"))
-  (org-agenda-files
-   (list (concat (file-name-as-directory dropbox-path) "org/agenda.org")))
-  (org-capture-templates
-   `(("T" "TODO" entry (file+headline ,(concat (file-name-as-directory dropbox-path) "org/TODO.org") "Inbox")
-      "*** TODO %?\n    CAPTURED_AT: %a\n    %i")))
-  :bind (:map global-map
-  ("C-c c" . org-capture)
-  ("C-c a" . org-agenda))
-  (:map org-agenda-mode-map
-  ("t" . org-agenda-previous-line)
-  ("h" . org-agenda-next-line)))
+;; (require 'json)
 
 ;;# Rust
 (use-package rustic :ensure t
   :custom
-  (rustic-lsp-client 'lsp-mode))
-
-(use-package reason-mode :ensure t)
-(use-package lean-mode :ensure t)
+  (rustic-lsp-client 'eglot))
 
 ;;# TypeScript
 (use-package tide
   :ensure t
-  :after (typescript-mode company flycheck)
+  :after (typescript-mode flycheck)
   :hook ((typescript-mode . tide-setup)
          (typescript-mode . tide-hl-identifier-mode)
          (before-save . tide-format-before-save)))
@@ -677,7 +601,7 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
    ((getenv "DISPLAY")
     (progn
       ;; Callback for when user cuts
-      (defun xsel-cut-function (text &optional push)
+      (defun xsel-cut-function (text &optional _)
         ;; Insert text to temp-buffer, and "send" content to xsel stdin
         (with-temp-buffer
           (insert text)
@@ -693,157 +617,11 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
         ;; kill-ring will be used.
         (let ((xsel-output (shell-command-to-string "xsel --clipboard --output")))
           (unless (string= (car kill-ring) xsel-output)
-            xsel-output )))
+            xsel-output)))
       ;; Attach callbacks to hooks
       (setq interprogram-cut-function 'xsel-cut-function)
       (setq interprogram-paste-function 'xsel-paste-function)
       ;; Idea from
       ;; http://shreevatsa.wordpress.com/2006/10/22/emacs-copypaste-and-x/
       ;; http://www.mail-archive.com/help-gnu-emacs@gnu.org/msg03577.html
-      ))
-   ))
-
-(use-package vertico :ensure t
-  :init
-  (vertico-mode)
-  :custom
-  (consult-preview-key nil)
-  :bind (:map vertico-map
-         ("C-t" . 'vertico-previous)
-         ("C-h" . 'vertico-next)))
-
-(use-package ivy :ensure t
-  :bind (:map ivy-mode-map
-         ("C-t" . 'ivy-previous-line)
-         ("C-h" . 'ivy-next-line)))
-
-(use-package consult :ensure t
-  ;; Replace bindings. Lazily loaded due by `use-package'.
-  :bind (;; C-c bindings (mode-specific-map)
-         ("C-c h" . consult-history)
-         ("C-c m" . consult-mode-command)
-         ("C-c k" . consult-kmacro)
-         ;; C-x bindings (ctl-x-map)
-         ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
-         ;; ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
-         ;; ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
-         ;; ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
-         ;; ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
-         ;; ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
-         ;; Custom M-# bindings for fast register access
-         ("M-#" . consult-register-load)
-         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
-         ("C-M-#" . consult-register)
-         ;; Other custom bindings
-         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
-         ("<help> a" . consult-apropos)            ;; orig. apropos-command
-         ;; M-g bindings (goto-map)
-         ("M-g e" . consult-compile-error)
-         ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
-         ("M-g g" . consult-goto-line)             ;; orig. goto-line
-         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
-         ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
-         ("M-g m" . consult-mark)
-         ("M-g k" . consult-global-mark)
-         ("M-g i" . consult-imenu)
-         ("M-g I" . consult-imenu-multi)
-         ;; M-s bindings (search-map)
-         ("M-s d" . consult-find)
-         ("M-s D" . consult-locate)
-         ("M-s g" . consult-grep)
-         ("M-s G" . consult-git-grep)
-         ("M-s r" . consult-ripgrep)
-         ("M-s l" . consult-line)
-         ("M-s L" . consult-line-multi)
-         ("M-s m" . consult-multi-occur)
-         ("M-s k" . consult-keep-lines)
-         ("M-s u" . consult-focus-lines)
-         ;; Isearch integration
-         ("M-s e" . consult-isearch-history)
-         :map isearch-mode-map
-         ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
-         ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
-         ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
-         ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
-         ;; Minibuffer history
-         :map minibuffer-local-map
-         ("M-s" . consult-history)                 ;; orig. next-matching-history-element
-         ("M-r" . consult-history))                ;; orig. previous-matching-history-element
-
-  ;; Enable automatic preview at point in the *Completions* buffer. This is
-  ;; relevant when you use the default completion UI.
-  :hook (completion-list-mode . consult-preview-at-point-mode)
-
-  ;; The :init configuration is always executed (Not lazy)
-  :init
-
-  ;; Optionally configure the register formatting. This improves the register
-  ;; preview for `consult-register', `consult-register-load',
-  ;; `consult-register-store' and the Emacs built-ins.
-  (setq register-preview-delay 0.5
-        register-preview-function #'consult-register-format)
-
-  ;; Optionally tweak the register preview window.
-  ;; This adds thin lines, sorting and hides the mode line of the window.
-  (advice-add #'register-preview :override #'consult-register-window)
-
-  ;; Use Consult to select xref locations with preview
-  (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref)
-
-  ;; Configure other variables and modes in the :config section,
-  ;; after lazily loading the package.
-  :config
-
-  ;; Optionally configure preview. The default value
-  ;; is 'any, such that any key triggers the preview.
-  ;; (setq consult-preview-key 'any)
-  ;; (setq consult-preview-key (kbd "M-."))
-  ;; (setq consult-preview-key (list (kbd "<S-down>") (kbd "<S-up>")))
-  ;; For some commands and buffer sources it is useful to configure the
-  ;; :preview-key on a per-command basis using the `consult-customize' macro.
-  (consult-customize
-   consult-theme
-   :preview-key '(:debounce 0.2 any)
-   consult-ripgrep consult-git-grep consult-grep
-   consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-recent-file
-   consult--source-project-recent-file
-   :preview-key "M-.")
-
-  ;; Optionally configure the narrowing key.
-  ;; Both < and C-+ work reasonably well.
-  (setq consult-narrow-key "<") ;; (kbd "C-+")
-
-  ;; Optionally make narrowing help available in the minibuffer.
-  ;; You may want to use `embark-prefix-help-command' or which-key instead.
-  ;; (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help)
-
-  ;; By default `consult-project-function' uses `project-root' from project.el.
-  ;; Optionally configure a different project root function.
-  ;; There are multiple reasonable alternatives to chose from.
-  ;;;; 1. project.el (the default)
-  ;; (setq consult-project-function #'consult--default-project--function)
-  ;;;; 2. projectile.el (projectile-project-root)
-  ;; (autoload 'projectile-project-root "projectile")
-  ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
-  ;;;; 3. vc.el (vc-root-dir)
-  (setq consult-project-function (lambda (_) (vc-root-dir)))
-  ;;;; 4. locate-dominating-file
-  ;; (setq consult-project-function (lambda (_) (locate-dominating-file "." ".git")))
-)
-
-(use-package consult-ag :ensure t
-  :after (consult)
-  :bind (("C-M-f" . consult-ag)))
-
-;; Optionally use the `orderless' completion style.
-(use-package orderless :ensure t
-  :init
-  ;; Configure a custom style dispatcher (see the Consult wiki)
-  ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
-  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
-  (setq completion-styles '(orderless basic)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
-;; (put 'upcase-region 'disabled nil)
+      ))))
