@@ -1,4 +1,0 @@
-nvidia-settings --assign CurrentMetaMode="DPY-1: nvidia-auto-select @1920x1080 +0+0 {ViewPortIn=1920x1080, ViewPortOut=1920x1080+0+0, ForceCompositionPipeline = On},DPY-2: nvidia-auto-select @1920x1080 +1920+0 {ViewPortIn=1920x1080, ViewPortOut=1920x1080+0+0, ForceCompositionPipeline = On}"
-xrandr --output HDMI-0 --mode 1920x1080 --rate 60.0 --output DVI-D-0 --mode 1920x1080 --rate 60.0 --primary --right-of HDMI-0
-compton -b -f -I 0.10 -O 0.10 --backend glx --vsync opengl
-nitrogen --restore

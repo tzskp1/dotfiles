@@ -1,9 +1,0 @@
-{
-    "keymap": {
-        "C-h": "peco.SelectDown",
-        "C-t": "peco.SelectUp",
-        "C-d": "peco.ScrollPageDown",
-        "C-n": "peco.ScrollPageUp",
-        "C-b": "peco.DeleteBackwardChar"
-    }
-}

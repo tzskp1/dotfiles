@@ -1,2 +1,0 @@
-#!/bin/sh
-sudo -S chsh -s $(which zsh)

@@ -1,0 +1,4 @@
+{
+  username = "tk";
+  useNvidia = true;
+}

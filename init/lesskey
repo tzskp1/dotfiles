@@ -1,4 +1,0 @@
-#!/bin/sh
-cud=$(echo $(cd $(dirname $0)/..;pwd))
-cp $cud/.lesskey ~
-lesskey
