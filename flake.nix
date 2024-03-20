@@ -31,7 +31,6 @@
     in
     {
       formatter = forAllSystems (system: (pkgs system).nixpkgs-fmt);
-      # packages.${system}.default = hmcfg.activationPackage;
       packages = forAllSystems (system: { default = (hmcfg (pkgs system)).activationPackage; });
     };
 }

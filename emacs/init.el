@@ -561,8 +561,6 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
 (use-package dockerfile-mode :ensure t
   :bind ("C-c C-d" . docker))
 
-;; (require 'json)
-
 ;;# Rust
 (use-package rustic :ensure t
   :custom
