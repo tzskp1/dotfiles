@@ -4,6 +4,7 @@
   inputs = {
     hyprland.url = "github:hyprwm/Hyprland";
     emacs.url = "github:nix-community/emacs-overlay";
+    waybar.url = "github:Alexays/Waybar";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     home-manager = {
@@ -12,13 +13,18 @@
     };
   };
 
-  outputs = { self, hyprland, emacs, nixpkgs, home-manager }:
+  outputs = { self, hyprland, emacs, waybar, nixpkgs, home-manager }:
     let
       opts = import ./options.nix;
       home = import ./home.nix opts;
+      eols = builtins.attrValues emacs.overlays;
+      hols = builtins.attrValues hyprland.overlays;
+      wol = system: final: previous: {
+        waybar = waybar.packages."${system}".default;
+      };
       pkgs = system: import nixpkgs {
         inherit system;
-        overlays = builtins.attrValues hyprland.overlays ++ builtins.attrValues emacs.overlays;
+        overlays = [ (wol system) ] ++ hols ++ eols;
         config = {
           allowUnfree = true;
         };

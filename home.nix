@@ -139,7 +139,7 @@ rec {
   };
 
   programs.waybar = {
-    # enable = true;
+    enable = true;
   };
   xdg.configFile."waybar" = { source = ./de/waybar; recursive = true; };
 
@@ -160,7 +160,6 @@ rec {
 
   programs.alacritty = {
     enable = true;
-    # package = wrapNvidia pkgs.alacritty "alacritty";
     settings =
       {
         font.size = 15;
@@ -225,13 +224,13 @@ rec {
       bindkey -M vicmd "k" vi-delete
       zle -A .backward-kill-word vi-backward-kill-word
       zle -A .backward-delete-char vi-backward-delete-char
-
-      umask 002
-      setopt no_beep
-      setopt correct
-      setopt magic_equal_subst
     '';
     initExtra = ''
+      umask 002
+      setopt no_beep
+      unsetopt BEEP
+      setopt correct
+      setopt magic_equal_subst
       setopt auto_list
       setopt auto_menu
       setopt list_packed
