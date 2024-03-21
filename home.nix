@@ -269,7 +269,7 @@ rec {
       }
 
       function cd() {
-          builtin cd $@ && ls;
+          builtin cd $@ && ls --color;
       }
     '';
     plugins = [
