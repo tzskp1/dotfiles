@@ -8,7 +8,7 @@ trap atexit EXIT
 trap 'rc=$?; trap - EXIT; atexit; exit $?' INT PIPE TERM
 tmpfile=$(mktemp "/tmp/${0##*/}.tmp.XXXXXX")
 
-cache=/tmp/.cache/nixglhypr/
+cache=${HOME}/.cache/nixglhypr/
 mkdir -p ${cache}
 
 function copy_so() {
@@ -67,14 +67,38 @@ if ! test -f ${cache%/}/.cached; then
     libXdmcp\.so.*$
     libwayland-server\.so.*$
     libwayland-client\.so.*$
+    libva.*\.so.*$
+    libbsd\.so.*$
+    libmd\.so.*$
 EOF
 	cat <<EOF | xargs -I {} grep {} ${tmpfile} | xargs -I {} bash -c "copy_so {} ${cache} egl"
     libEGL_nvidia\.so.*$
     libnvidia-egl-wayland\.so.*$
     libnvidia-egl-gbm\.so.*$
+    libwayland-egl\.so.*$
 EOF
+    # for swaylock auth
+	cat <<EOF | xargs -I {} grep {} ${tmpfile} | xargs -I {} bash -c "copy_so {} ${cache} pam"
+    libpam\.so.*$
+    libaudit\.so.*$
+    libcap-ng\.so.*$
+    libgssapi_krb5\.so.*$
+    libkrb5\.so.*$
+    libk5crypto\.so.*$
+    libcom_err\.so.*$
+    libkrb5support\.so.*$
+    libkeyutils\.so.*$
+EOF
+
 	touch ${cache%/}/.cached
 fi
+
+cat <<EOF
+It works with dirty hacks.
+If it doesn't work properly due to system updates, etc., please try
+
+rm -r ${cache}
+EOF
 
 ps=$(find ${cache} -mindepth 2 -maxdepth 2)
 for p in ${ps}; do
