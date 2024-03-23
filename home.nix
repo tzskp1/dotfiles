@@ -91,6 +91,7 @@ rec {
 
       noremap k d
       noremap K D
+      noremap M N
       noremap m n
       noremap! <C-b> <BS>
 
