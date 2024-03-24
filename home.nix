@@ -153,8 +153,25 @@ rec {
         env = WLR_NO_HARDWARE_CURSORS,1
       '';
       nvidiaSettings = if useNvidia then nvidiaSettings_ else "";
+      inputs = ''
+        # For all categories, see https://wiki.hyprland.org/Configuring/Variables/
+        input {
+            kb_layout = ${kb_layout}
+            kb_variant = ${kb_variant}
+            kb_model =
+            kb_options =
+            kb_rules =
+
+            follow_mouse = 1
+
+            repeat_rate = 50
+            repeat_delay = 300
+
+            sensitivity = 0 # -1.0 - 1.0, 0 means no modification.
+        }
+      '';
     in
-    (builtins.readFile ./de/hypr/hyprland.conf) + nvidiaSettings;
+    inputs ++ (builtins.readFile ./de/hypr/hyprland.conf) + nvidiaSettings;
   xdg.configFile."hypr/scripts" = { source = ./de/hypr/scripts; recursive = true; };
 
   programs.alacritty = {
