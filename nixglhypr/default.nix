@@ -5,8 +5,6 @@ let
   dri = pkgs.lib.makeSearchPathOutput "lib" "lib/dri" [ mesa.drivers ];
   glvnd = pkgs.lib.makeSearchPathOutput "share" "share/glvnd" [ mesa.drivers ];
   lib_ = pkgs.lib.makeSearchPathOutput "lib" "lib" [ mesa.drivers ];
-      # cp $src/nixglhypr_nvidia $out/bin/nixglhypr
-      # cp $src/nixglhypr_mesa $out/bin/nixglhypr
   build =
     if useNvidia then ''
       substituteInPlace $out/bin/nixglhypr \
