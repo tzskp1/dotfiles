@@ -11,6 +11,7 @@ let
         --replace "patchelf" "${pkgs.patchelf}/bin/patchelf"
     '' else ''
       substituteInPlace $out/bin/nixglhypr \
+        --replace "patchelf" "${pkgs.patchelf}/bin/patchelf" \
         --replace "DRI_VALUE" "${dri}" \
         --replace "GLVND_VALUE" "${glvnd}" \
         --replace "LIB_VALUE" "${lib_}"
