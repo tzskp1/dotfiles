@@ -45,10 +45,6 @@ rec {
       ] ++ hypr;
       homeDirectory = "/${homeDirPrefix}/${username}";
       stateVersion = "23.11";
-
-      shellAliases = {
-        reload-home-manager-config = "home-manager switch --flake ${builtins.toString ./.}";
-      };
     };
 
   programs.home-manager.enable = true;
