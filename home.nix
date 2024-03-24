@@ -153,7 +153,7 @@ rec {
         env = WLR_NO_HARDWARE_CURSORS,1
       '';
       nvidiaSettings = if useNvidia then nvidiaSettings_ else "";
-      inputs = ''
+      inputSettings = ''
         # For all categories, see https://wiki.hyprland.org/Configuring/Variables/
         input {
             kb_layout = ${kb_layout}
@@ -171,7 +171,7 @@ rec {
         }
       '';
     in
-    inputs ++ (builtins.readFile ./de/hypr/hyprland.conf) + nvidiaSettings;
+    inputSettings + (builtins.readFile ./de/hypr/hyprland.conf) + nvidiaSettings;
   xdg.configFile."hypr/scripts" = { source = ./de/hypr/scripts; recursive = true; };
 
   programs.alacritty = {
