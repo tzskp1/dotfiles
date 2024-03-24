@@ -25,14 +25,18 @@ rec {
     let
       isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
       homeDirPrefix = if isDarwin then "/Users" else "/home";
-      hypr = if isDarwin then [ ] else [ (wrapGL pkgs.hyprland "Hyprland") ];
+      hypr = with pkgs;
+        if isDarwin then [ ] else [
+          swayidle
+          bemenu
+          (wrapGL hyprland "Hyprland")
+        ];
       sshrc = import ./sshrc pkgs;
     in
     {
       inherit username;
       packages = with pkgs; [
         tree-sitter # for emacs
-        bemenu
         source-han-code-jp
         hack-font
         silver-searcher
