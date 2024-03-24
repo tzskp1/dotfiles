@@ -1,4 +1,4 @@
-{ username, useNvidia }: { config, pkgs, ... }:
+{ username, useNvidia, kb_layout, kb_variant }: { config, pkgs, ... }:
 let
   nixglhypr = import ./nixglhypr useNvidia pkgs;
   wrapGL = package: prog:
