@@ -1,0 +1,5 @@
+#!/bin/bash
+export LIBGL_DRIVERS_PATH=DRI_VALUE
+export __EGL_VENDOR_LIBRARY_FILENAMES=GLVND_VALUE/egl_vendor.d/50_mesa.json
+export LD_LIBRARY_PATH=LIB_VALUE
+exec "$@"

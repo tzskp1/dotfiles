@@ -1,33 +1,31 @@
 { username, useNvidia }: { config, pkgs, ... }:
 let
-  nixglhypr = import ./nixglhypr pkgs;
-  # TODO: Implement OpenGL wrapper for non-nvidia environment
-  wrapNvidia = package: prog:
-    if useNvidia then
-      pkgs.symlinkJoin
-        {
-          name = package.name;
-          version = package.version;
-          paths = [
-            package
-            nixglhypr
-          ];
-          buildInputs = [ pkgs.makeWrapper ];
-          postBuild = ''
-            mv $out/bin/${prog} $out/bin/${prog}-orig
-            chmod +x $out/bin/nixglhypr
-            makeWrapper $out/bin/nixglhypr $out/bin/${prog} \
-              --add-flags $out/bin/${prog}-orig \
-              --inherit-argv0
-          '';
-        } else package;
+  nixglhypr = import ./nixglhypr useNvidia pkgs;
+  wrapGL = package: prog:
+    pkgs.symlinkJoin
+      {
+        name = package.name;
+        version = package.version;
+        paths = [
+          package
+          nixglhypr
+        ];
+        buildInputs = [ pkgs.makeWrapper ];
+        postBuild = ''
+          mv $out/bin/${prog} $out/bin/${prog}-orig
+          chmod +x $out/bin/nixglhypr
+          makeWrapper $out/bin/nixglhypr $out/bin/${prog} \
+            --add-flags $out/bin/${prog}-orig \
+            --inherit-argv0
+        '';
+      };
 in
 rec {
   home =
     let
       isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
       homeDirPrefix = if isDarwin then "/Users" else "/home";
-      hypr = if isDarwin then [ ] else [ (wrapNvidia pkgs.hyprland "Hyprland") ];
+      hypr = if isDarwin then [ ] else [ (wrapGL pkgs.hyprland "Hyprland") ];
       sshrc = import ./sshrc pkgs;
     in
     {

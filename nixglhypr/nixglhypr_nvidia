@@ -75,7 +75,6 @@ EOF
     libEGL_nvidia\.so.*$
     libnvidia-egl-wayland\.so.*$
     libnvidia-egl-gbm\.so.*$
-    libEGL_mesa\.so.*$
     libwayland-egl\.so.*$
 EOF
     # for swaylock auth
