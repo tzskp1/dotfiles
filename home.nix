@@ -1,5 +1,6 @@
 { username, useNvidia, kb_layout, kb_variant }: { config, pkgs, ... }:
 let
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
   nixglhypr = import ./nixglhypr useNvidia pkgs;
   wrapGL = package: prog:
     pkgs.symlinkJoin
@@ -23,12 +24,13 @@ in
 rec {
   home =
     let
-      isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
       homeDirPrefix = if isDarwin then "/Users" else "/home";
       hypr = with pkgs;
         if isDarwin then [ ] else [
-          swayidle
           bemenu
+          waybar
+          swayidle
+          swaylock
           (wrapGL hyprland "Hyprland")
         ];
       sshrc = import ./sshrc pkgs;
@@ -137,12 +139,7 @@ rec {
     ];
   };
 
-  programs.waybar = {
-    enable = true;
-  };
   xdg.configFile."waybar" = { source = ./de/waybar; recursive = true; };
-
-  # TODO: Add keyboard settings of dvorak layout
   xdg.configFile."hypr/hyprland.conf".text =
     let
       nvidiaSettings_ = ''
@@ -192,7 +189,7 @@ rec {
   programs.emacs = {
     enable = true;
     package = pkgs.emacsWithPackagesFromUsePackage {
-      package = pkgs.emacs-unstable-pgtk;
+      package = if isDarwin then pkgs.emacs else pkgs.emacs-pgtk;
       config = ./emacs/init.el;
     };
     # TODO: Refactoring
@@ -303,9 +300,6 @@ rec {
   programs.dircolors = {
     enable = true;
     enableZshIntegration = true;
-  };
-  programs.swaylock = {
-    enable = true;
   };
 
   xdg.configFile.".sshrc" = { source = ./sshrc/.sshrc; };

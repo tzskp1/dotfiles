@@ -431,7 +431,7 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
 
 ;;# fonts
 (when (equal system-type 'darwin)
-  (let* ((size 12)
+  (let* ((size 14)
          (asciifont "Droid Sans Mono Dotted for Powerline")
          (jpfont "Osaka")
          (h (* size 10))
