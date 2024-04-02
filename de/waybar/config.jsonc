@@ -73,9 +73,8 @@
         "spacing": 10
     },
     "clock": {
-        // "timezone": "Asia/Tokyo",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "format-alt": "{:%Y-%m-%d}"
+      	"format": "{:%m/%d %H:%M}",
+      	"format-alt": "{:%Y/%m/%d %A (%R)}",
     },
     "cpu": {
         "format": "{usage}% ",
