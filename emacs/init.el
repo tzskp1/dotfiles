@@ -543,12 +543,12 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
         ("C-c C-b" . python-shell-send-buffer))
   :hook
   (before-save . format-py)
-  (python-mode . (lambda ()
+  (python-ts-mode . (lambda ()
                    (require 'eglot)
                    (let ((command
                           (mapconcat 'identity `("cd" ,default-directory "&&" "hatch" "run" "pylsp" "--tcp" "--port" "$0") " ")))
                      (add-to-list 'eglot-server-programs
-                                  `(python-mode . ("bash" "-c" ,command :autoport))))
+                                  `(python-ts-mode . ("bash" "-c" ,command :autoport))))
                    (eglot-ensure))))
 (use-package cython-mode :ensure t)
 
