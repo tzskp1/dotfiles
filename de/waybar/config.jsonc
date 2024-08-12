@@ -126,7 +126,7 @@
       }
     },
     "network": {
-        "interface": "wlp4s*", // (Optional) To force the use of this interface
+        "interface": "wlp5s*", // (Optional) To force the use of this interface
         "format-wifi": "{essid} ({signalStrength}%) ",
         "format-ethernet": "{ipaddr}/{cidr} ",
         "tooltip-format": "{ifname} via {gwaddr} ",
