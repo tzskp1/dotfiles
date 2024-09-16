@@ -2,7 +2,7 @@
   description = "Home Manager configuration of tzskp1";
 
   inputs = {
-    hyprland.url = "github:hyprwm/Hyprland";
+    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     emacs.url = "github:nix-community/emacs-overlay";
     waybar.url = "github:Alexays/Waybar";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
