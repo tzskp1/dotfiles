@@ -71,44 +71,22 @@ rec {
   xdg.dataFile."icons/Nordzy-cursors-hyprcursor" = { source = ./de/Nordzy-cursors-hyprcursor; recursive = true; };
   xdg.configFile."gtk-4.0/settings.ini".text = ''
     [Settings]
-    gtk-theme-name=Pop
-    gtk-icon-theme-name=Adwaita
-    gtk-font-name=Cantarell 11
     gtk-cursor-theme-name=Nordzy-cursors
     gtk-cursor-theme-size=24
-    gtk-toolbar-style=GTK_TOOLBAR_ICONS
-    gtk-toolbar-icon-size=GTK_ICON_SIZE_LARGE_TOOLBAR
-    gtk-button-images=0
-    gtk-menu-images=0
-    gtk-enable-event-sounds=1
-    gtk-enable-input-feedback-sounds=0
-    gtk-xft-antialias=1
-    gtk-xft-hinting=1
-    gtk-xft-hintstyle=hintslight
-    gtk-xft-rgba=rgb
-    gtk-application-prefer-dark-theme=0
   '';
 
   xdg.configFile."hypr/hypridle.conf".text = ''
     general {
         lock_cmd = pidof hyprlock || hyprlock       # avoid starting multiple hyprlock instances.
-        before_sleep_cmd = loginctl lock-session    # lock before suspend.
-        after_sleep_cmd = hyprctl dispatch dpms on  # to avoid having to press a key twice to turn on the display.
-        pam_module = hyprlock
     }
     listener {
         timeout = 150                                # 2.5min.
-        on-timeout = brightnessctl -s set 10         # set monitor backlight to minimum, avoid 0 on OLED monitor.
-        on-resume = brightnessctl -r                 # monitor backlight restore.
+        on-timeout = hyprctl dispatch dpms off        # screen off when timeout has passed
+        on-resume = hyprctl dispatch dpms on          # screen on when activity is detected after timeout has fired.
     }
     listener {
         timeout = 300                                 # 5min
         on-timeout = loginctl lock-session            # lock screen when timeout has passed
-    }
-    listener {
-        timeout = 330                                 # 5.5min
-        on-timeout = hyprctl dispatch dpms off        # screen off when timeout has passed
-        on-resume = hyprctl dispatch dpms on          # screen on when activity is detected after timeout has fired.
     }
   '';
   xdg.configFile."hypr/hyprlock.conf".text = ''
