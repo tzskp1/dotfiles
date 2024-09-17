@@ -346,24 +346,7 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
 ;; http://d.hatena.ne.jp/murase_syuka/20140815/1408061850
 (use-package rainbow-delimiters :ensure t
   :config
-  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
-  (require 'color)
-  (defmacro rainbow-delimiters--define-depth-faces ()
-    (let ((faces '())
-          (light-colors ["#707183" "#7388d6" "#909183" "#709870" "#907373"
-                         "#6276ba" "#858580" "#80a880" "#887070"])
-          (dark-colors ["grey55" "#93a8c6" "#b0b1a3" "#97b098" "#aebed8"
-                        "#b0b0b3" "#90a890" "#a2b6da" "#9cb6ad"]))
-      (dotimes (i 9)
-        (push `(defface ,(intern (format "rainbow-delimiters-depth-%d-face" (1+ i)))
-                 '((default (:inherit rainbow-delimiters-base-face))
-                   (((class color) (background light)) :foreground ,(color-saturate-name (aref light-colors i) 30))
-                   (((class color) (background dark)) :foreground ,(color-saturate-name (aref dark-colors i) 30)))
-                 ,(format "Nested delimiter face, depth %d." (1+ i))
-                 :group 'rainbow-delimiters-faces)
-              faces))
-      `(progn ,@faces)))
-  (rainbow-delimiters--define-depth-faces))
+  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 
 ;;# git
 (use-package magit :ensure t
