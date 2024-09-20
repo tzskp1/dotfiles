@@ -29,6 +29,7 @@ rec {
         if isDarwin then [ ] else [
           bemenu
           waybar
+          hyprpaper
           hyprcursor
           hypridle
           hyprlock
@@ -75,12 +76,17 @@ rec {
     gtk-cursor-theme-size=24
   '';
 
+  xdg.configFile."hypr/wallpaper.png" = { source = ./de/wallpaper.png; };
+  xdg.configFile."hypr/hyprpaper.conf".text = ''
+    preload = ${config.home.homeDirectory}/${config.xdg.configFile."hypr/wallpaper.png".target}
+    wallpaper = , ${config.home.homeDirectory}/${config.xdg.configFile."hypr/wallpaper.png".target}
+  '';
   xdg.configFile."hypr/hypridle.conf".text = ''
     general {
-        lock_cmd = pidof hyprlock || hyprlock       # avoid starting multiple hyprlock instances.
+        lock_cmd = pidof hyprlock || hyprlock         # avoid starting multiple hyprlock instances.
     }
     listener {
-        timeout = 150                                # 2.5min.
+        timeout = 150                                 # 2.5min.
         on-timeout = hyprctl dispatch dpms off        # screen off when timeout has passed
         on-resume = hyprctl dispatch dpms on          # screen on when activity is detected after timeout has fired.
     }
@@ -90,12 +96,9 @@ rec {
     }
   '';
   xdg.configFile."hypr/hyprlock.conf".text = ''
-    general {
-        pam_module = hyprlock
-    }
     background {
         monitor =
-        path = /home/me/someImage.png   # supports png, jpg, webp (no animations, though)
+        # path = /home/me/someImage.png   # supports png, jpg, webp (no animations, though)
         color = rgba(25, 20, 20, 1.0)
 
         # all these options are taken from hyprland, see https://wiki.hyprland.org/Configuring/Variables/#blur for explanations
