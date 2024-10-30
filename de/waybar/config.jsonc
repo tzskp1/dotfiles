@@ -73,8 +73,9 @@
         "spacing": 10
     },
     "clock": {
-      	"format": "{:%m/%d %H:%M}",
-      	"format-alt": "{:%Y/%m/%d %A (%R)}",
+       "timezone": "Asia/Tokyo",
+       "format": "{:%m/%d %H:%M}",
+       "format-alt": "{:%Y/%m/%d %A (%R)}",
     },
     "cpu": {
         "format": "{usage}% ",

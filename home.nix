@@ -28,7 +28,8 @@ rec {
       hypr = with pkgs;
         if isDarwin then [ ] else [
           bemenu
-          waybar
+          # TODO: Fix version of glibc
+          # waybar
           hyprpaper
           hyprcursor
           hypridle
@@ -48,7 +49,7 @@ rec {
         sshrc
       ] ++ hypr;
       homeDirectory = "/${homeDirPrefix}/${username}";
-      stateVersion = "23.11";
+      stateVersion = "24.11";
     };
 
   programs.home-manager.enable = true;

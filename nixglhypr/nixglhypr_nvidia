@@ -62,7 +62,10 @@ if ! test -f ${cache%/}/.cached; then
     libX11\.so.*$
     libXext\.so.*$
     libxcb-randr\.so.*$
+    libxcb-present\.so.*$
+    libxcb-sync\.so.*$
     libxcb\.so.*$
+    libxshmfence\.so.*$
     libXau\.so.*$
     libXdmcp\.so.*$
     libwayland-server\.so.*$
@@ -73,6 +76,7 @@ if ! test -f ${cache%/}/.cached; then
 EOF
 	cat <<EOF | xargs -I {} grep {} ${tmpfile} | xargs -I {} bash -c "copy_so {} ${cache} egl"
     libgallium-.*-arch.*\.so.*$
+    libxcb-dri2\.so.*$
     libxcb-dri3\.so.*$
     libsensors\.so.*$
     libLLVM\.so.*$
