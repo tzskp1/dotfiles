@@ -62,6 +62,7 @@ if ! test -f ${cache%/}/.cached; then
     libX11\.so.*$
     libXext\.so.*$
     libxcb-randr\.so.*$
+    libxcb-xfixes\.so.*$
     libxcb-present\.so.*$
     libxcb-sync\.so.*$
     libxcb\.so.*$

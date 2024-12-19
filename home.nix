@@ -32,6 +32,7 @@ rec {
           # waybar
           hyprpaper
           hyprcursor
+          # TODO: wait to stabilize
           hypridle
           hyprlock
           (wrapGL hyprland "Hyprland")
@@ -91,10 +92,10 @@ rec {
         on-timeout = hyprctl dispatch dpms off        # screen off when timeout has passed
         on-resume = hyprctl dispatch dpms on          # screen on when activity is detected after timeout has fired.
     }
-    listener {
-        timeout = 300                                 # 5min
-        on-timeout = loginctl lock-session            # lock screen when timeout has passed
-    }
+    # listener {
+    #    timeout = 300                                 # 5min
+    #    on-timeout = loginctl lock-session            # lock screen when timeout has passed
+    # }
   '';
   xdg.configFile."hypr/hyprlock.conf".text = ''
     background {
