@@ -381,6 +381,11 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   (:map eglot-mode-map
         ("C-c h" . eldoc)
         ("C-M-g" . xref-find-definitions)))
+(use-package eglot-booster
+  :ensure (:type git :host "github.com" :repo "jdtsmith/eglot-booster" :files (:defaults "*.el"))
+  :after eglot
+  :config
+  (eglot-booster-mode))
 
 (use-package treesit-auto
   :ensure t

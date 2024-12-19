@@ -42,6 +42,7 @@ rec {
     {
       inherit username;
       packages = with pkgs; [
+        emacs-lsp-booster
         tree-sitter # for emacs
         source-han-code-jp
         hack-font
