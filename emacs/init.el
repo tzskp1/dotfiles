@@ -565,6 +565,11 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   :hook ((typescript-mode . typescript-eglot)
          (tsx-ts-mode . typescript-eglot)))
 
+;;# typst
+(use-package typst-ts-mode
+  :ensure (:type git :host codeberg :repo "meow_king/typst-ts-mode"
+                 :files (:defaults "*.el")))
+
 ;;# Nix
 (use-package nix-mode :ensure t :mode "\\.nix\\'")
 
