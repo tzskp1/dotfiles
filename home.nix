@@ -26,7 +26,9 @@ rec {
     let
       homeDirPrefix = if isDarwin then "/Users" else "/home";
       hypr = with pkgs;
-        if isDarwin then [ ] else [
+        if isDarwin then [
+          coreutils-full
+        ] else [
           bemenu
           # TODO: Fix version of glibc
           # waybar
