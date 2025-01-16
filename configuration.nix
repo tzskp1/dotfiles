@@ -10,6 +10,8 @@
       ./hardware-configuration.nix
     ];
 
+  virtualisation.docker.enable = true;
+  hardware.nvidia-container-toolkit.enable = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   fonts.packages = with pkgs; [
@@ -29,8 +31,10 @@
   hardware.graphics = {
     enable = true;
   };
+
   # Load nvidia driver for Xorg and Wayland
   services.xserver.videoDrivers = ["nvidia"];
+
   hardware.nvidia = {
     # Modesetting is required.
     modesetting.enable = true;
@@ -51,7 +55,7 @@
     # Currently alpha-quality/buggy, so false is currently the recommended setting.
     open = false;
     # Enable the Nvidia settings menu,
-	  # accessible via `nvidia-settings`.
+    # accessible via `nvidia-settings`.
     nvidiaSettings = true;
     # Optionally, you may need to select the appropriate driver version for your specific GPU.
     package = config.boot.kernelPackages.nvidiaPackages.stable;
@@ -129,7 +133,7 @@
   users.users.tk = {
     isNormalUser = true;
     description = "tk";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
     shell = pkgs.zsh;
     packages = with pkgs; [
     #  thunderbird
@@ -154,6 +158,16 @@
   networking.firewall = {
     allowedTCPPorts = [ 17500 ];
     allowedUDPPorts = [ 17500 ];
+  };
+
+  fileSystems."/media/work" = {
+    device = "/dev/disk/by-uuid/733a0282-53cb-40d1-8d71-8a10b748beb1";
+    fsType = "ext4";
+    options = [ # If you don't have this options attribute, it'll default to "defaults"
+      # boot options for fstab. Search up fstab mount options you can use
+      "x-systemd.device-timeout=5" # Allows any user to mount and unmount
+      "nofail" # Prevent system from failing if this drive doesn't mount
+    ];
   };
 
   # Some programs need SUID wrappers, can be configured further or are
