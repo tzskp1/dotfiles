@@ -10,6 +10,7 @@ rec {
         if isDarwin then [
           coreutils-full
         ] else [
+          dconf
           maestral
           bemenu
           waybar
