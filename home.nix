@@ -1,25 +1,6 @@
 { username, useNvidia, kb_layout, kb_variant }: { config, pkgs, ... }:
 let
   isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
-  nixglhypr = import ./nixglhypr useNvidia pkgs;
-  wrapGL = package: prog:
-    pkgs.symlinkJoin
-      {
-        name = package.name;
-        version = package.version;
-        paths = [
-          package
-          nixglhypr
-        ];
-        buildInputs = [ pkgs.makeWrapper ];
-        postBuild = ''
-          mv $out/bin/${prog} $out/bin/${prog}-orig
-          chmod +x $out/bin/nixglhypr
-          makeWrapper $out/bin/nixglhypr $out/bin/${prog} \
-            --add-flags $out/bin/${prog}-orig \
-            --inherit-argv0
-        '';
-      };
 in
 rec {
   home =
@@ -29,15 +10,15 @@ rec {
         if isDarwin then [
           coreutils-full
         ] else [
+          maestral
           bemenu
-          # TODO: Fix version of glibc
-          # waybar
+          waybar
           hyprpaper
           hyprcursor
           # TODO: wait to stabilize
           hypridle
           hyprlock
-          (wrapGL hyprland "Hyprland")
+          hyprland
         ];
       sshrc = import ./sshrc pkgs;
     in
@@ -51,6 +32,7 @@ rec {
         silver-searcher
         peco
         sshrc
+        gnupg
       ] ++ hypr;
       homeDirectory = "/${homeDirPrefix}/${username}";
       stateVersion = "24.11";
