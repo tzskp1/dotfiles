@@ -153,7 +153,18 @@
      wget
      git
      dropbox-cli
+     openssl
   ];
+  environment.variables = {
+    PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig";
+  };
+
+  programs.gnupg.agent = {
+    enable = true;
+    pinentryPackage = pkgs.pinentry-tty;
+    enableSSHSupport = true;
+  };
+  services.pcscd.enable = true;
 
   networking.firewall = {
     allowedTCPPorts = [ 17500 ];
