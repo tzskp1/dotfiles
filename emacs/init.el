@@ -551,14 +551,9 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
 
 ;;# Rust
 (use-package rustic :ensure t
-  ;https://syohex.hatenablog.com/entry/2022/11/08/000610
-  :config
-  (defun my/find-rust-project-root (dir)
-    (when-let ((root (locate-dominating-file dir "Cargo.toml")))
-      (list 'vc 'Git root)))
-  (defun my/rust-mode-hook ()
-    (setq-local project-find-functions (list #'my/find-rust-project-root)))
-  (add-hook 'rust-mode-hook #'my/rust-mode-hook)
+  ; MEMO
+  ; MUST DO BELLOW LINE IN PROJECT ROOT.
+  ; rustup component add rust-analyzer
   :custom
   (rustic-lsp-client 'eglot))
 
