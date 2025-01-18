@@ -557,15 +557,45 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   :custom
   (rustic-lsp-client 'eglot))
 
+; ref: https://zenn.dev/hyakt/articles/5c947cc22c4bfa
 ;;# TypeScript
 (use-package typescript-mode :ensure t
   :init
+  (defun deno-project-p ()
+    "Predicate for determining if the open project is a Deno one."
+    (let ((p-root (car (cdr (cdr (project-current))))))
+      (or (file-exists-p (concat p-root "deno.json")) (file-exists-p (concat p-root "deno.jsonc")))))
+  (defun node-project-p ()
+    "Predicate for determining if the open project is a Node one."
+    (let ((p-root (car (cdr (cdr (project-current))))))
+      (file-exists-p (concat p-root "package.json"))))
+  (defun es-server-program (_)
+    "Decide which server to use for ECMA Script based on project characteristics."
+    (cond ((deno-project-p) '("deno" "lsp" :initializationOptions (:enable t :lint t)))
+          ((node-project-p) '("typescript-language-server" "--stdio"))
+          (t                nil)))
+  (defun advice-eglot--xref-make-match (old-fn name uri range)
+    (cond
+     ((string-prefix-p "deno:/" uri)
+      (let ((contents (jsonrpc-request (eglot--current-server-or-lose)
+                                       :deno/virtualTextDocument
+                                       (list :textDocument (list :uri uri))))
+            (filepath (concat (temporary-file-directory)
+                              (replace-regexp-in-string "^deno:/\\(.*\\)$" "\\1" (url-unhex-string uri)))))
+        (unless (file-exists-p filepath)
+          (make-empty-file filepath 't)
+          (write-region contents nil filepath nil 'silent nil nil))
+        (apply old-fn (list name filepath range))))
+     (t
+      (apply old-fn (list name uri range)))))
   (defun typescript-eglot ()
     (require 'eglot)
+    (add-to-list 'eglot-server-programs '((typescript-ts-mode :language-id "typescript") . es-server-program))
+    (advice-add 'eglot--xref-make-match :around #'advice-eglot--xref-make-match)
     (eglot-ensure))
-  :mode (("\\.ts\\'" . typescript-mode)
+  :mode (("\\.ts\\'" . typescript-ts-mode)
          ("\\.tsx\\'" . tsx-ts-mode))
-  :hook ((typescript-mode . typescript-eglot)
+  :hook ((typescript-ts-mode . typescript-eglot)
          (tsx-ts-mode . typescript-eglot)))
 
 ;;# typst
