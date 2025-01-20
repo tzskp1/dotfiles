@@ -257,6 +257,7 @@ rec {
     package = pkgs.emacsWithPackagesFromUsePackage {
       package = if isDarwin then pkgs.emacs else pkgs.emacs-pgtk;
       config = ./emacs/init.el;
+      extraEmacsPackages = epkgs: [ epkgs.treesit-grammars.with-all-grammars ];
     };
     # TODO: Refactoring
     extraConfig = builtins.readFile ./emacs/init.el;
