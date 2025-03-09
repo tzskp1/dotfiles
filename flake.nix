@@ -15,8 +15,8 @@
 
   outputs = { self, hyprland, emacs, waybar, nixpkgs, home-manager }:
     let
-      opts = import ./options.nix;
-      home = import ./home.nix opts;
+      options = import ./options.nix;
+      home = import ./home.nix options;
       eols = builtins.attrValues emacs.overlays;
       hols = builtins.attrValues hyprland.overlays;
       wol = system: final: previous: {
@@ -32,6 +32,9 @@
       forAllSystems = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
       hmcfg = pkgs: home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
+        extraSpecialArgs = {
+          isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
+        };
         modules = [ home ];
       };
     in
