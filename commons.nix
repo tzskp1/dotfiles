@@ -110,7 +110,7 @@
   programs.emacs = {
     enable = true;
     package = pkgs.emacsWithPackagesFromUsePackage {
-      package = if isDarwin then pkgs.emacs else pkgs.emacs-pgtk;
+      package = if isDarwin then pkgs.emacs else pkgs.emacs-git-pgtk;
       config = ./emacs/init.el;
       extraEmacsPackages = epkgs: [ epkgs.treesit-grammars.with-all-grammars ];
     };

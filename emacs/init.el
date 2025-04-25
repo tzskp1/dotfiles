@@ -414,8 +414,8 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   (modus-themes-region '(bg-only no-extend))
   :config
   ;; Load the theme of your choice:
-  ;; (load-theme 'modus-vivendi t)
-  (load-theme 'modus-operandi t))
+  (load-theme 'modus-vivendi t))
+  ;; (load-theme 'modus-operandi t))
 
 ;;# fonts
 (when (equal system-type 'darwin)
