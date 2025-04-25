@@ -144,7 +144,7 @@
       export LANG=en_US.UTF-8
       export PATH=$PATH:~/.local/bin
     '';
-    initExtraFirst = ''
+    initContent = lib.mkBefore ''
       autoload -U edit-command-line
       zle -N edit-command-line
       bindkey "^X^E" edit-command-line
@@ -161,7 +161,7 @@
       zle -A .backward-kill-word vi-backward-kill-word
       zle -A .backward-delete-char vi-backward-delete-char
     '';
-    initExtra = ''
+    initContent = ''
       umask 002
       setopt no_beep
       unsetopt BEEP
