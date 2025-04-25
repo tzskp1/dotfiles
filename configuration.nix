@@ -6,7 +6,8 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [
+      # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./cachix.nix
     ];
@@ -29,13 +30,13 @@
     proggyfonts
   ];
 
-   # Enable OpenGL
+  # Enable OpenGL
   hardware.graphics = {
     enable = true;
   };
 
   # Load nvidia driver for Xorg and Wayland
-  services.xserver.videoDrivers = ["nvidia"];
+  services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware.nvidia = {
     # Modesetting is required.
@@ -128,7 +129,7 @@
     extraGroups = [ "networkmanager" "wheel" "docker" ];
     shell = pkgs.zsh;
     packages = with pkgs; [
-    #  thunderbird
+      #  thunderbird
     ];
   };
 
@@ -141,14 +142,14 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-     wget
-     git
-     openssl
-     config.boot.kernelPackages.perf
+    vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    wget
+    git
+    openssl
+    config.boot.kernelPackages.perf
   ];
   environment.variables = {
-    PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig";
+    PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
   };
 
   programs.gnupg.agent = {
@@ -172,7 +173,8 @@
   fileSystems."/media/work" = {
     device = "/dev/disk/by-uuid/733a0282-53cb-40d1-8d71-8a10b748beb1";
     fsType = "ext4";
-    options = [ # If you don't have this options attribute, it'll default to "defaults"
+    options = [
+      # If you don't have this options attribute, it'll default to "defaults"
       # boot options for fstab. Search up fstab mount options you can use
       "x-systemd.device-timeout=5" # Allows any user to mount and unmount
       "nofail" # Prevent system from failing if this drive doesn't mount

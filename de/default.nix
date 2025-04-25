@@ -18,33 +18,34 @@
         sync_gsettings_theme = true;
       };
     };
-    extraConfig = let
-      nvidiaSettings_ = ''
-        env = LIBVA_DRIVER_NAME,nvidia
-        env = XDG_SESSION_TYPE,wayland
-        env = GBM_BACKEND,nvidia-drm
-        env = __GLX_VENDOR_LIBRARY_NAME,nvidia
-        env = WLR_NO_HARDWARE_CURSORS,1
-      '';
-      nvidiaSettings = if useNvidia then nvidiaSettings_ else "";
-      inputSettings = ''
-        # For all categories, see https://wiki.hyprland.org/Configuring/Variables/
-        input {
-            kb_layout = ${kb_layout}
-            kb_variant = ${kb_variant}
-            kb_model =
-            kb_options =
-            kb_rules =
+    extraConfig =
+      let
+        nvidiaSettings_ = ''
+          env = LIBVA_DRIVER_NAME,nvidia
+          env = XDG_SESSION_TYPE,wayland
+          env = GBM_BACKEND,nvidia-drm
+          env = __GLX_VENDOR_LIBRARY_NAME,nvidia
+          env = WLR_NO_HARDWARE_CURSORS,1
+        '';
+        nvidiaSettings = if useNvidia then nvidiaSettings_ else "";
+        inputSettings = ''
+          # For all categories, see https://wiki.hyprland.org/Configuring/Variables/
+          input {
+              kb_layout = ${kb_layout}
+              kb_variant = ${kb_variant}
+              kb_model =
+              kb_options =
+              kb_rules =
 
-            follow_mouse = 1
+              follow_mouse = 1
 
-            repeat_rate = 50
-            repeat_delay = 300
+              repeat_rate = 50
+              repeat_delay = 300
 
-            sensitivity = 0 # -1.0 - 1.0, 0 means no modification.
-        }
-      '';
-    in
+              sensitivity = 0 # -1.0 - 1.0, 0 means no modification.
+          }
+        '';
+      in
       inputSettings + (builtins.readFile ./hypr/hyprland.conf) + nvidiaSettings;
   };
 

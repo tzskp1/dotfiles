@@ -23,7 +23,7 @@ else
     ];
     home = {
       inherit username;
-      packages = [];
+      packages = [ ];
       homeDirectory = "/home/${username}";
       stateVersion = "25.05";
     };

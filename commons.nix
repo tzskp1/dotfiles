@@ -4,18 +4,18 @@
     let
       sshrc = import ./sshrc pkgs;
     in
-      {
-        packages = with pkgs; [
-          emacs-lsp-booster
-          tree-sitter # for emacs
-          source-han-code-jp
-          hack-font
-          silver-searcher
-          peco
-          sshrc
-          gnupg
-        ];
-      };
+    {
+      packages = with pkgs; [
+        emacs-lsp-booster
+        tree-sitter # for emacs
+        source-han-code-jp
+        hack-font
+        silver-searcher
+        peco
+        sshrc
+        gnupg
+      ];
+    };
 
   programs.less = {
     enable = true;
@@ -144,70 +144,72 @@
       export LANG=en_US.UTF-8
       export PATH=$PATH:~/.local/bin
     '';
-    initContent = lib.mkBefore ''
-      autoload -U edit-command-line
-      zle -N edit-command-line
-      bindkey "^X^E" edit-command-line
-      bindkey -M viins "^B" vi-backward-delete-char
-      bindkey -M viins "^T" up-line-or-history
-      bindkey -M viins "^H" down-line-or-history
-      bindkey -M viins "hh" vi-cmd-mode
-      bindkey -M viins "^[OC" vi-forward-char
-      bindkey -M viins "^[OD" vi-backward-char
-      bindkey -M viins "^G" send-break
-      bindkey -M vicmd "n" vi-forward-char
-      bindkey -M vicmd "d" vi-backward-char
-      bindkey -M vicmd "k" vi-delete
-      zle -A .backward-kill-word vi-backward-kill-word
-      zle -A .backward-delete-char vi-backward-delete-char
-    '';
-    initContent = ''
-      umask 002
-      setopt no_beep
-      unsetopt BEEP
-      setopt correct
-      setopt magic_equal_subst
-      setopt auto_list
-      setopt auto_menu
-      setopt list_packed
-      setopt list_types
-      bindkey "^[[Z" reverse-menu-complete
-      zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+    initContent = pkgs.lib.mkMerge [
+      (pkgs.lib.mkBefore ''
+        autoload -U edit-command-line
+        zle -N edit-command-line
+        bindkey "^X^E" edit-command-line
+        bindkey -M viins "^B" vi-backward-delete-char
+        bindkey -M viins "^T" up-line-or-history
+        bindkey -M viins "^H" down-line-or-history
+        bindkey -M viins "hh" vi-cmd-mode
+        bindkey -M viins "^[OC" vi-forward-char
+        bindkey -M viins "^[OD" vi-backward-char
+        bindkey -M viins "^G" send-break
+        bindkey -M vicmd "n" vi-forward-char
+        bindkey -M vicmd "d" vi-backward-char
+        bindkey -M vicmd "k" vi-delete
+        zle -A .backward-kill-word vi-backward-kill-word
+        zle -A .backward-delete-char vi-backward-delete-char
+      '')
+      (pkgs.lib.mkAfter ''
+        umask 002
+        setopt no_beep
+        unsetopt BEEP
+        setopt correct
+        setopt magic_equal_subst
+        setopt auto_list
+        setopt auto_menu
+        setopt list_packed
+        setopt list_types
+        bindkey "^[[Z" reverse-menu-complete
+        zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
-      function peco-history-selection() {
-          BUFFER=$(history -n 1 | tac | awk '!a[$0]++' | peco)
-          CURSOR=$#BUFFER
-          zle reset-prompt
-      }
-      zle -N peco-history-selection
-      bindkey '^R' peco-history-selection
+        function peco-history-selection() {
+            BUFFER=$(history -n 1 | tac | awk '!a[$0]++' | peco)
+            CURSOR=$#BUFFER
+            zle reset-prompt
+        }
+        zle -N peco-history-selection
+        bindkey '^R' peco-history-selection
 
-      function send_emacs(){
-          emacsclient $1 > /dev/null &
-      }
-      alias e=send_emacs
+        function send_emacs(){
+            emacsclient $1 > /dev/null &
+        }
+        alias e=send_emacs
 
-      function extract() {
-        case $1 in
-          *.tar.gz|*.tgz) tar xzvf $1;;
-          *.tar.xz) tar Jxvf $1;;
-          *.zip) unzip $1;;
-          *.lzh) lha e $1;;
-          *.tar.bz2|*.tbz) tar xjvf $1;;
-          *.tar.Z) tar zxvf $1;;
-          *.gz) gzip -d $1;;
-          *.bz2) bzip2 -dc $1;;
-          *.Z) uncompress $1;;
-          *.tar) tar xvf $1;;
-          *.arj) unarj $1;;
-          *.rar) unrar x $1;;
-        esac
-      }
+        function extract() {
+          case $1 in
+            *.tar.gz|*.tgz) tar xzvf $1;;
+            *.tar.xz) tar Jxvf $1;;
+            *.zip) unzip $1;;
+            *.lzh) lha e $1;;
+            *.tar.bz2|*.tbz) tar xjvf $1;;
+            *.tar.Z) tar zxvf $1;;
+            *.gz) gzip -d $1;;
+            *.bz2) bzip2 -dc $1;;
+            *.Z) uncompress $1;;
+            *.tar) tar xvf $1;;
+            *.arj) unarj $1;;
+            *.rar) unrar x $1;;
+          esac
+        }
 
-      function cd() {
-          builtin cd $@ && ls --color;
-      }
-    '';
+        function cd() {
+            builtin cd $@ && ls --color;
+        }
+      '')
+    ];
     plugins = [
       {
         name = "pure";
