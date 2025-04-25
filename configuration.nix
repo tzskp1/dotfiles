@@ -144,6 +144,7 @@
      wget
      git
      openssl
+     config.boot.kernelPackages.perf
   ];
   environment.variables = {
     PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig";
@@ -199,4 +200,7 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.11"; # Did you read the comment?
+
+  xdg.portal.enable = true;
+  xdg.portal.extraPortals = [pkgs.xdg-desktop-portal-gtk];
 }
