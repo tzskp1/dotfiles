@@ -9,6 +9,7 @@
 
   wayland.windowManager.hyprland = {
     enable = true;
+    xwayland.enable = true;
     # set the flake package
     package = pkgs.hyprland;
     portalPackage = pkgs.xdg-desktop-portal-hyprland;
