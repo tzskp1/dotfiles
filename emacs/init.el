@@ -4,6 +4,13 @@
 
 (use-package jsonrpc :ensure t)
 
+(defun crm-indicator (args)
+  (cons (format "[CRM%s] %s"
+                (replace-regexp-in-string
+                 "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                 crm-separator)
+                (car args))
+        (cdr args)))
 (use-package emacs
   :custom
   (backup-directory-alist '(("" . "~/.bak")))
@@ -22,13 +29,6 @@
   ;; Add prompt indicator to `completing-read-multiple'.
   ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
   (defvar crm-separator)
-  (defun crm-indicator (args)
-    (cons (format "[CRM%s] %s"
-                  (replace-regexp-in-string
-                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                   crm-separator)
-                  (car args))
-          (cdr args)))
   (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
   ;; Do not allow the cursor in the minibuffer prompt
   (setq minibuffer-prompt-properties
@@ -361,6 +361,7 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
          ("T" . magit-section-backward-sibling)
          ("H" . magit-section-forward-sibling))
   :config
+  (setq magit-show-long-lines-warning nil)
   (add-hook 'with-editor-mode-hook 'evil-insert-state))
 
 (use-package ediff
@@ -380,7 +381,15 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   :bind
   (:map eglot-mode-map
         ("C-c h" . eldoc)
-        ("C-M-g" . xref-find-definitions)))
+        ("C-M-g" . xref-find-definitions))
+  :config
+  ;; Improve Eglot performance and file monitoring
+  ; Automatically shut down unused LSP servers
+  (setq eglot-autoshutdown t)
+  ; Reduce the delay in sending changes
+  (setq eglot-send-changes-idle-time 0.1)
+  ; Disable event logging to improve performance
+  (fset #'jsonrpc--log-event #'ignore))
 (use-package eglot-booster
   :vc (:url "https://github.com/jdtsmith/eglot-booster" :rev :newest)
   :after eglot
@@ -555,44 +564,55 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   ; MUST DO BELLOW LINE IN PROJECT ROOT.
   ; rustup component add rust-analyzer
   :custom
-  (rustic-lsp-client 'eglot))
+  (rustic-lsp-client 'eglot)
+  :config
+  ;; Settings for rust-analyzer to correctly detect file changes
+  (with-eval-after-load 'eglot
+    ;; Eglot file monitoring settings
+    ; Disable debugging information to improve performance
+    (setq eglot-events-buffer-size 0)
+    ; Asynchronous connection
+    (setq eglot-sync-connect nil)
+    ; Improve integration with xref
+    (setq eglot-extend-to-xref t))
+  :init
+  (add-hook 'rustic-mode-hook #'eglot-ensure))
 
 ; ref: https://zenn.dev/hyakt/articles/5c947cc22c4bfa
 ;;# TypeScript
+(defun deno-project-p ()
+  "Predicate for determining if the open project is a Deno one."
+  (let ((p-root (car (cdr (cdr (project-current))))))
+    (or (file-exists-p (concat p-root "deno.json")) (file-exists-p (concat p-root "deno.jsonc")))))
+(defun node-project-p ()
+  "Predicate for determining if the open project is a Node one."
+  (let ((p-root (car (cdr (cdr (project-current))))))
+    (file-exists-p (concat p-root "package.json"))))
+(defun es-server-program (_)
+  "Decide which server to use for ECMA Script based on project characteristics."
+  (cond ((deno-project-p) '("deno" "lsp" :initializationOptions (:enable t :lint t)))
+        ((node-project-p) '("typescript-language-server" "--stdio"))
+        (t                nil)))
+(defun advice-eglot--xref-make-match (old-fn name uri range)
+  (cond
+   ((string-prefix-p "deno:/" uri)
+    (let ((contents (jsonrpc-request (eglot--current-server-or-lose)
+                                     :deno/virtualTextDocument
+                                     (list :textDocument (list :uri uri))))
+          (filepath (concat (temporary-file-directory)
+                            (replace-regexp-in-string "^deno:/\\(.*\\)$" "\\1" (url-unhex-string uri)))))
+      (unless (file-exists-p filepath)
+        (make-empty-file filepath 't)
+        (write-region contents nil filepath nil 'silent nil nil))
+      (apply old-fn (list name filepath range))))
+   (t
+    (apply old-fn (list name uri range)))))
+(defun typescript-eglot ()
+  (require 'eglot)
+  (add-to-list 'eglot-server-programs '((typescript-ts-mode :language-id "typescript") . es-server-program))
+  (advice-add 'eglot--xref-make-match :around #'advice-eglot--xref-make-match)
+  (eglot-ensure))
 (use-package typescript-mode :ensure t
-  :init
-  (defun deno-project-p ()
-    "Predicate for determining if the open project is a Deno one."
-    (let ((p-root (car (cdr (cdr (project-current))))))
-      (or (file-exists-p (concat p-root "deno.json")) (file-exists-p (concat p-root "deno.jsonc")))))
-  (defun node-project-p ()
-    "Predicate for determining if the open project is a Node one."
-    (let ((p-root (car (cdr (cdr (project-current))))))
-      (file-exists-p (concat p-root "package.json"))))
-  (defun es-server-program (_)
-    "Decide which server to use for ECMA Script based on project characteristics."
-    (cond ((deno-project-p) '("deno" "lsp" :initializationOptions (:enable t :lint t)))
-          ((node-project-p) '("typescript-language-server" "--stdio"))
-          (t                nil)))
-  (defun advice-eglot--xref-make-match (old-fn name uri range)
-    (cond
-     ((string-prefix-p "deno:/" uri)
-      (let ((contents (jsonrpc-request (eglot--current-server-or-lose)
-                                       :deno/virtualTextDocument
-                                       (list :textDocument (list :uri uri))))
-            (filepath (concat (temporary-file-directory)
-                              (replace-regexp-in-string "^deno:/\\(.*\\)$" "\\1" (url-unhex-string uri)))))
-        (unless (file-exists-p filepath)
-          (make-empty-file filepath 't)
-          (write-region contents nil filepath nil 'silent nil nil))
-        (apply old-fn (list name filepath range))))
-     (t
-      (apply old-fn (list name uri range)))))
-  (defun typescript-eglot ()
-    (require 'eglot)
-    (add-to-list 'eglot-server-programs '((typescript-ts-mode :language-id "typescript") . es-server-program))
-    (advice-add 'eglot--xref-make-match :around #'advice-eglot--xref-make-match)
-    (eglot-ensure))
   :mode (("\\.ts\\'" . typescript-ts-mode)
          ("\\.tsx\\'" . tsx-ts-mode))
   :hook ((typescript-ts-mode . typescript-eglot)
