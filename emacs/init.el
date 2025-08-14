@@ -569,6 +569,21 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   ;; Settings for rust-analyzer to correctly detect file changes
   (with-eval-after-load 'eglot
     ;; Eglot file monitoring settings
+    (add-to-list 'eglot-server-programs
+                 '((rust-ts-mode rust-mode rustic-mode) .
+                   ("rust-analyzer" :initializationOptions
+                    (:checkOnSave (:command "clippy")
+                     :diagnostics (:enable t)
+                     :cargo (:autoreload t
+                             :buildScripts (:enable t))
+                     :procMacro (:enable t
+                                 :attributes (:enable t))
+                     :files (:watcher "client"
+                             :excludeDirs [".git" "target"])
+                     :inlayHints (:bindingModeHints (:enable t)
+                                  :chainingHints (:enable t)
+                                  :lifetimeElisionHints (:enable "skip_trivial")
+                                  :typeHints (:enable t))))))
     ; Disable debugging information to improve performance
     (setq eglot-events-buffer-size 0)
     ; Asynchronous connection
