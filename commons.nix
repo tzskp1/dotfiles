@@ -19,7 +19,7 @@
 
   programs.less = {
     enable = true;
-    keys = ''
+    config = ''
       m               repeat-search
       \em             repeat-search-all
       M               reverse-search
