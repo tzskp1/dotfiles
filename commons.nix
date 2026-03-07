@@ -113,6 +113,16 @@
       package = if isDarwin then pkgs.emacs else pkgs.emacs-git-pgtk;
       config = ./emacs/init.el;
       extraEmacsPackages = epkgs: [ epkgs.treesit-grammars.with-all-grammars ];
+      override = final: prev: {
+        yatex = prev.yatex.overrideAttrs (old: {
+          src = pkgs.fetchFromGitHub {
+            owner = "emacsmirror";
+            repo = "yatex";
+            rev = "2e1104f62b98cb9e73f4836a267b5c8271fb5b9b";
+            hash = "sha256-rlZJPP+Z0S2+dNhuiXf+NCX2rbfJFW27UuGT9PidzNs=";
+          };
+        });
+      };
     };
     # TODO: Refactoring
     extraConfig = builtins.readFile ./emacs/init.el;
