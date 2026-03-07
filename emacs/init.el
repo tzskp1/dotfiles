@@ -282,11 +282,6 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   (corfu-cycle t)
   :init
   (global-corfu-mode))
-(use-package corfu-terminal :ensure t
-  :after (corfu)
-  :init
-  (unless (display-graphic-p)
-    (corfu-terminal-mode 1)))
 
 ;;# skk
 (use-package ddskk
