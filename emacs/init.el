@@ -405,6 +405,12 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   :config
   (setenv "EMACS" "1"))
 
+(use-package vterm :ensure t
+  :commands (vterm)
+  :after (evil evil-collection)
+  :config
+  (evil-set-initial-state 'vterm-mode 'emacs))
+
 (use-package editorconfig
   :ensure t
   :config
