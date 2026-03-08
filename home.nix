@@ -11,7 +11,7 @@ if isDarwin then
           coreutils-full
         ];
       homeDirectory = "/Users/${username}";
-      stateVersion = "25.05";
+      stateVersion = "25.11";
     };
     programs.home-manager.enable = true;
   }
@@ -25,7 +25,7 @@ else
       inherit username;
       packages = [ ];
       homeDirectory = "/home/${username}";
-      stateVersion = "25.05";
+      stateVersion = "25.11";
     };
     programs.home-manager.enable = true;
   }
