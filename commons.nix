@@ -14,6 +14,7 @@
         peco
         sshrc
         gnupg
+        lean4
       ];
     };
 
@@ -112,7 +113,20 @@
     package = pkgs.emacsWithPackagesFromUsePackage {
       package = if isDarwin then pkgs.emacs else pkgs.emacs-git-pgtk;
       config = ./emacs/init.el;
-      extraEmacsPackages = epkgs: [ epkgs.treesit-grammars.with-all-grammars ];
+      extraEmacsPackages = epkgs: [
+      epkgs.treesit-grammars.with-all-grammars
+      (epkgs.trivialBuild {
+        pname = "lean4-mode";
+        version = "1.1.2";
+        src = pkgs.fetchFromGitHub {
+          owner = "leanprover-community";
+          repo = "lean4-mode";
+          rev = "master";
+          hash = "sha256-6XFcyqSTx1CwNWqQvIc25cuQMwh3YXnbgr5cDiOCxBk=";
+        };
+        packageRequires = with epkgs; [ compat dash magit-section lsp-mode ];
+      })
+    ];
       override = final: prev: {
         yatex = prev.yatex.overrideAttrs (old: {
           src = pkgs.fetchFromGitHub {

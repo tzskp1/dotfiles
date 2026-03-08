@@ -642,6 +642,10 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
 ;;# Nix
 (use-package nix-mode :ensure t :mode "\\.nix\\'")
 
+;;# Lean
+(use-package lean4-mode
+  :commands lean4-mode)
+
 ;; sync with x clipboard
 (unless window-system
   (cond
