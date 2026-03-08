@@ -151,12 +151,6 @@
     gtk-cursor-theme-size=24
   '';
 
-  services.hyprpaper.enable = true;
-  xdg.configFile."hypr/wallpaper.png".source = ./wallpaper.png;
-  xdg.configFile."hypr/hyprpaper.conf".text = ''
-    preload = ${config.home.homeDirectory}/${config.xdg.configFile."hypr/wallpaper.png".target}
-    wallpaper = , ${config.home.homeDirectory}/${config.xdg.configFile."hypr/wallpaper.png".target}
-  '';
 
   programs.alacritty = {
     enable = true;
