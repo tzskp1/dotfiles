@@ -14,7 +14,7 @@
         peco
         sshrc
         gnupg
-        lean4
+        elan
       ];
     };
 
