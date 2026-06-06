@@ -167,6 +167,7 @@
       export LESS="-R"
       export LANG=en_US.UTF-8
       export PATH=$PATH:~/.local/bin
+      export PATH=$PATH:~/.npm-global/bin
     '';
     initContent = pkgs.lib.mkMerge [
       (pkgs.lib.mkBefore ''

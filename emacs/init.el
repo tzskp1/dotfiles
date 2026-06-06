@@ -151,7 +151,6 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
 (defvar last-h-inserted-time (current-time) "The last inserted time")
 (defun hh-normal ()
     (interactive)
-    ;; (message "%f" (abs (float-time (time-subtract last-h-inserted-time (current-time) ))))
     (if (< (abs (float-time (time-subtract (current-time) last-h-inserted-time))) 0.40)
           (progn
             (if (char-equal (string-to-char "h") (char-before)) (delete-char -1) nil)
@@ -593,6 +592,26 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
     (setq eglot-extend-to-xref t))
   :init
   (add-hook 'rustic-mode-hook #'eglot-ensure))
+
+(use-package agent-shell :ensure t
+  :init
+  ;; NixOS fix: bundled claude binary in npm package is not patched for NixOS,
+  ;; so point claude-agent-acp to the system claude instead.
+  (when-let ((claude (executable-find "claude")))
+    (setenv "CLAUDE_CODE_EXECUTABLE" claude))
+  :config
+  ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
+  (evil-define-key 'insert agent-shell-mode-map (kbd "RET") #'newline)
+  (evil-define-key 'normal agent-shell-mode-map (kbd "RET") #'comint-send-input)
+  ;; Restore "n" to self-insert in insert mode so SKK can handle な行
+  ;; (agent-shell-mode-map binds "n" to agent-shell-next-item which blocks SKK)
+  (evil-define-key 'insert agent-shell-mode-map (kbd "n") #'self-insert-command)
+
+  ;; Configure *agent-shell-diff* buffers to start in Emacs state
+  (add-hook 'diff-mode-hook
+	    (lambda ()
+	      (when (string-match-p "\\*agent-shell-diff\\*" (buffer-name))
+		(evil-emacs-state)))))
 
 ; ref: https://zenn.dev/hyakt/articles/5c947cc22c4bfa
 ;;# TypeScript
