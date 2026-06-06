@@ -12,16 +12,89 @@
       ./cachix.nix
     ];
 
-  virtualisation.docker.enable = true;
+
+  virtualisation = {
+    containers.enable = true;
+    podman = {
+      enable = true;
+      dockerCompat = true;
+      defaultNetwork.settings.dns_enabled = true; # Required for containers under podman-compose to be able to talk to each other.
+    };
+  };
+
   hardware.nvidia-container-toolkit.enable = true;
   nix.settings.download-buffer-size = 5242880000;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   fonts.packages = with pkgs; [
-    nerdfonts
+    nerd-fonts.agave
+    nerd-fonts.anonymice
+    nerd-fonts.arimo
+    nerd-fonts.aurulent-sans-mono
+    nerd-fonts.bigblue-terminal
+    nerd-fonts.bitstream-vera-sans-mono
+    nerd-fonts.blex-mono
+    nerd-fonts.caskaydia-cove
+    nerd-fonts.caskaydia-mono
+    nerd-fonts.code-new-roman
+    nerd-fonts.comic-shanns-mono
+    nerd-fonts.commit-mono
+    nerd-fonts.cousine
+    nerd-fonts.d2coding
+    nerd-fonts.daddy-time-mono
+    nerd-fonts.departure-mono
+    nerd-fonts.dejavu-sans-mono
+    nerd-fonts.droid-sans-mono
+    nerd-fonts.envy-code-r
+    nerd-fonts.fantasque-sans-mono
+    nerd-fonts.fira-code
+    nerd-fonts.fira-mono
+    nerd-fonts.geist-mono
+    nerd-fonts.go-mono
+    nerd-fonts.gohufont
+    nerd-fonts.hack
+    nerd-fonts.hasklug
+    nerd-fonts.heavy-data
+    nerd-fonts.hurmit
+    nerd-fonts.im-writing
+    nerd-fonts.inconsolata
+    nerd-fonts.inconsolata-go
+    nerd-fonts.inconsolata-lgc
+    nerd-fonts.intone-mono
+    nerd-fonts.iosevka
+    nerd-fonts.iosevka-term
+    nerd-fonts.iosevka-term-slab
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.lekton
+    nerd-fonts.liberation
+    nerd-fonts.lilex
+    nerd-fonts.martian-mono
+    nerd-fonts.meslo-lg
+    nerd-fonts.monaspace
+    nerd-fonts.monofur
+    nerd-fonts.monoid
+    nerd-fonts.mononoki
+    nerd-fonts.noto
+    nerd-fonts.open-dyslexic
+    nerd-fonts.overpass
+    nerd-fonts.profont
+    nerd-fonts.proggy-clean-tt
+    nerd-fonts.recursive-mono
+    nerd-fonts.roboto-mono
+    nerd-fonts.shure-tech-mono
+    nerd-fonts.sauce-code-pro
+    nerd-fonts.space-mono
+    nerd-fonts.symbols-only
+    nerd-fonts.terminess-ttf
+    nerd-fonts.tinos
+    nerd-fonts.ubuntu
+    nerd-fonts.ubuntu-mono
+    nerd-fonts.ubuntu-sans
+    nerd-fonts.victor-mono
+    nerd-fonts.zed-mono
     noto-fonts
     noto-fonts-cjk-sans
-    noto-fonts-emoji
+    noto-fonts-color-emoji
     liberation_ttf
     fira-code
     fira-code-symbols
@@ -104,7 +177,7 @@
   };
 
   # Enable sound with pipewire.
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -127,7 +200,7 @@
   users.users.tk = {
     isNormalUser = true;
     description = "tk";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "podman" ];
     shell = pkgs.zsh;
     packages = with pkgs; [
       #  thunderbird
@@ -148,7 +221,7 @@
     wget
     git
     openssl
-    config.boot.kernelPackages.perf
+    perf
   ];
   environment.variables = {
     PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
