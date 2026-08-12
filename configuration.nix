@@ -211,6 +211,11 @@
   programs.firefox.enable = true;
   programs.steam.enable = true;
 
+  programs.obs-studio = {
+    enable = true;
+    enableVirtualCamera = true;
+  };
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -222,6 +227,12 @@
     git
     openssl
     perf
+    signal-desktop
+    usbutils
+    v4l-utils
+    pulseaudio
+    qpwgraph
+    pavucontrol
   ];
   environment.variables = {
     PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
