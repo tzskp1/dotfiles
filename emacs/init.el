@@ -603,9 +603,15 @@ For example, type \\[event-apply-meta-control-modifier] % to enter Meta-Control-
   ;; Evil state-specific RET behavior: insert mode = newline, normal mode = send
   (evil-define-key 'insert agent-shell-mode-map (kbd "RET") #'newline)
   (evil-define-key 'normal agent-shell-mode-map (kbd "RET") #'comint-send-input)
-  ;; Restore "n" to self-insert in insert mode so SKK can handle な行
-  ;; (agent-shell-mode-map binds "n" to agent-shell-next-item which blocks SKK)
-  (evil-define-key 'insert agent-shell-mode-map (kbd "n") #'self-insert-command)
+  ;; In insert mode, defer to skk-insert when SKK hiragana mode is active so
+  ;; na/ni/nu/ne/no produce な行 (agent-shell-mode-map binds "n" to
+  ;; agent-shell-next-item which shadows skk-j-mode-map otherwise)
+  (evil-define-key 'insert agent-shell-mode-map (kbd "n")
+    (lambda ()
+      (interactive)
+      (if (and (boundp 'skk-j-mode) skk-j-mode)
+          (skk-insert)
+        (self-insert-command 1))))
 
   ;; Configure *agent-shell-diff* buffers to start in Emacs state
   (add-hook 'diff-mode-hook
