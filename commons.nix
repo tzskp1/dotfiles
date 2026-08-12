@@ -10,7 +10,7 @@
         tree-sitter # for emacs
         source-han-code-jp
         hack-font
-        silver-searcher
+        silver-searcher-ng
         peco
         sshrc
         gnupg
