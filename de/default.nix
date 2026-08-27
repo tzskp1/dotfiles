@@ -1,4 +1,4 @@
-{ useNvidia, kb_layout, kb_variant, ... }: { config, pkgs, ... }:
+{ useNvidia, kb_layout, kb_variant, ... }: { config, lib, pkgs, ... }:
 {
   home = {
     packages = with pkgs; [
@@ -10,44 +10,43 @@
   wayland.windowManager.hyprland = {
     enable = true;
     xwayland.enable = true;
+    configType = "lua";
     # set the flake package
     package = pkgs.hyprland;
     portalPackage = pkgs.xdg-desktop-portal-hyprland;
+    # The bulk of the config lives in ./hypr/hyprland.lua; only the parts that
+    # depend on Nix options are generated here.
+    extraLuaFiles."hyprland-config" = ./hypr/hyprland.lua;
     settings = {
-      cursor = {
-        enable_hyprcursor = true;
-        sync_gsettings_theme = true;
+      config = {
+        cursor = {
+          enable_hyprcursor = true;
+          sync_gsettings_theme = true;
+        };
+        # For all categories, see https://wiki.hypr.land/Configuring/Basics/Variables/
+        input = {
+          inherit kb_layout kb_variant;
+          kb_model = "";
+          kb_options = "";
+          kb_rules = "";
+
+          follow_mouse = 1;
+
+          repeat_rate = 50;
+          repeat_delay = 300;
+
+          # -1.0 - 1.0, 0 means no modification.
+          sensitivity = 0;
+        };
       };
+      env = lib.optionals useNvidia [
+        { _args = [ "LIBVA_DRIVER_NAME" "nvidia" ]; }
+        { _args = [ "XDG_SESSION_TYPE" "wayland" ]; }
+        { _args = [ "GBM_BACKEND" "nvidia-drm" ]; }
+        { _args = [ "__GLX_VENDOR_LIBRARY_NAME" "nvidia" ]; }
+        { _args = [ "WLR_NO_HARDWARE_CURSORS" "1" ]; }
+      ];
     };
-    extraConfig =
-      let
-        nvidiaSettings_ = ''
-          env = LIBVA_DRIVER_NAME,nvidia
-          env = XDG_SESSION_TYPE,wayland
-          env = GBM_BACKEND,nvidia-drm
-          env = __GLX_VENDOR_LIBRARY_NAME,nvidia
-          env = WLR_NO_HARDWARE_CURSORS,1
-        '';
-        nvidiaSettings = if useNvidia then nvidiaSettings_ else "";
-        inputSettings = ''
-          # For all categories, see https://wiki.hyprland.org/Configuring/Variables/
-          input {
-              kb_layout = ${kb_layout}
-              kb_variant = ${kb_variant}
-              kb_model =
-              kb_options =
-              kb_rules =
-
-              follow_mouse = 1
-
-              repeat_rate = 50
-              repeat_delay = 300
-
-              sensitivity = 0 # -1.0 - 1.0, 0 means no modification.
-          }
-        '';
-      in
-      inputSettings + (builtins.readFile ./hypr/hyprland.conf) + nvidiaSettings;
   };
 
   programs.waybar.enable = true;
@@ -128,9 +127,9 @@
           # 2.5min.
           timeout = 150;
           # screen off when timeout has passed
-          on-timeout = "hyprctl dispatch dpms off";
+          on-timeout = "hyprctl dispatch 'hl.dsp.dpms({ action = \"off\" })'";
           # screen on when activity is detected after timeout has fired.
-          on-resume = "hyprctl dispatch dpms on";
+          on-resume = "hyprctl dispatch 'hl.dsp.dpms({ action = \"on\" })'";
         }
         {
           # 5min
