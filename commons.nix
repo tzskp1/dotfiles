@@ -11,7 +11,6 @@
         source-han-code-jp
         hack-font
         silver-searcher-ng
-        peco
         sshrc
         gnupg
         elan
@@ -32,22 +31,22 @@
     '';
   };
 
-  xdg.configFile."peco/config.json".text = ''
-    {
-        "keymap": {
-            "C-h": "peco.SelectDown",
-            "C-t": "peco.SelectUp",
-            "C-d": "peco.ScrollPageDown",
-            "C-n": "peco.ScrollPageUp",
-            "C-b": "peco.DeleteBackwardChar"
-        }
-    }
-  '';
+  programs.fzf = {
+    enable = true;
+    # The ^R widget in programs.zsh below drives fzf; fzf's own zsh
+    # integration is left off so it does not grab ^R / ^T / M-c itself.
+    enableZshIntegration = false;
+    defaultOptions = [
+      "--layout=reverse"
+      "--bind=ctrl-h:down,ctrl-t:up,ctrl-d:half-page-down,ctrl-n:half-page-up,ctrl-b:backward-delete-char"
+    ];
+  };
 
   programs.neovim = {
     enable = true;
     vimAlias = true;
     withPython3 = true;
+    withRuby = false;
     extraConfig = ''
       noremap d h
       noremap h gj
@@ -200,13 +199,13 @@
         bindkey "^[[Z" reverse-menu-complete
         zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 
-        function peco-history-selection() {
-            BUFFER=$(history -n 1 | tac | awk '!a[$0]++' | peco)
+        function fzf-history-selection() {
+            BUFFER=$(history -n 1 | tac | awk '!a[$0]++' | fzf)
             CURSOR=$#BUFFER
             zle reset-prompt
         }
-        zle -N peco-history-selection
-        bindkey '^R' peco-history-selection
+        zle -N fzf-history-selection
+        bindkey '^R' fzf-history-selection
 
         function send_emacs(){
             emacsclient $1 > /dev/null &
